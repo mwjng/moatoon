@@ -39,9 +39,9 @@
 ### 와이어프레임 작성
 
   - 기능에 따른 초기 페이지 분리  
-    <image src="./assets/페이지분리.png" width=600 alt="초기페이지분리"/>
+    ![초기페이지분리](./assets/페이지분리.png)
   - 와이어프레임  
-    <image src="./assets/와이어프레임.png" width=600 alt="와이어프레임"/>
+    ![와이어프레임](./assets/와이어프레임.png)
 
 ### 요구사항 명세서 작성
 
@@ -49,6 +49,6 @@
 
 ### DB 테이블 짜기
   - 초안  
-    <image src="./assets/ERD초안.jpg" width=600 alt="erd초안"/>
+   ![erd초안](./assets/ERD초안.jpg)
     
 ### 기능 명세서 작성중
