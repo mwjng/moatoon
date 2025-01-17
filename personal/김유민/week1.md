@@ -27,9 +27,38 @@
     - 즉, 모든 Sub-Task가 끝나야 해당 업무 종료
     - 예) 사용자 관리(UI) 개발, 사용자관리(Service) 개발
 
-![alt text](image-2.png)
+## 1. Jira 추가 학습
 
-(참고: [https://medium.com/dtevangelist/devops-jira를-활용한-협업-1부-63c71489f21d](https://medium.com/dtevangelist/devops-jira%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%98%91%EC%97%85-1%EB%B6%80-63c71489f21d))
+### Jira란?
+
+- Planning : user story 및 issue(일감)를 생성하고 sprint를 계획
+- Tracking : 팀 업무의 우선순위를 정하고, 수행 상태 등 가시성 제공
+- Release : 일감의 개발완료 등 최신 정보를 가지고 제품 출시 관리
+- Report : 실시간 시각적 데이터를 기반으로 팀 효율을 향상
+
+### Kanban vs Scrum 보드 차이
+
+- Kanban보드 : 일감 전체가 보드에 보임
+- Scrum보드 : 현재 실행중인 Sprint에 할당된 일감만 보임
+
+### Issue
+
+- Epic
+    - 큰 단위의 업무 (여러 story, task 등을 묶은 단위)
+- Story
+    - 고객에게 가치를 제공하는 기능
+    - 예) 사용자 관리 개발
+- Task
+    - story와의 기술적, 관리적 업무
+    - 예) 설계, 서버 설치, 클라우드 도입 등
+- Subtask
+    - story, task를 더 작은 단위로 나눈 업무
+    - 즉, 모든 Sub-Task가 끝나야 해당 업무 종료
+    - 예) 사용자 관리(UI) 개발, 사용자관리(Service) 개발
+
+![image](/uploads/29a44679a9df85e82e84628c5287c600/image.png)
+
+[참고한 자료](https://medium.com/dtevangelist/devops-jira%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%ED%98%91%EC%97%85-1%EB%B6%80-63c71489f21d)
 
 ## 프로젝트
 
@@ -62,18 +91,23 @@
 
 - 아이디어를 디벨롭하고 요구사항 명세서를 함께 작성
 
-![alt text](image.png)
+![image](/uploads/93a8afd62785e5ca1167123cb5a7b40f/image.png)
+
+[요구사항 명세서 링크](https://www.notion.so/9906dc1835174d21bb129ba747848faf?v=17c5aafc5df581e29097000cbf0c22a0)
 
 ### 3. 와이어프레임
 
 - 와이어 프레임 나눠서 제작
 
-![alt text](image-1.png)
+![image](/uploads/0582a570ca9dfcca765a647c4043a03f/image.png)
 
-![alt text](image-3.png)
+![image](/uploads/83cdbd91d15c9e2e78039e503dc3cf95/image.png)
 
 ### 4. DB ERD
 
 - DB ERD 구상해오기
 
-![alt text](E0B71DD4-0D10-47D0-8A89-89E4597C3E28.jpg)
+![image](/uploads/770b91ebe6fa55109f4c1deccc8a6917/image.png)
+
+
+
