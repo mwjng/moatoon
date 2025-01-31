@@ -36,6 +36,7 @@
     ]
   },
   "devDependencies": {
+    "daisyui": "^4.12.23",
     "web-vitals": "^4.2.4"
   }
 }
