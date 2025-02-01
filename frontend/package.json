@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/parser": "^7.26.7",
     "autoprefixer": "^10.4.20",
     "cra-template": "1.2.0",
     "postcss": "^8.5.1",
