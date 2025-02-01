@@ -36,7 +36,7 @@ public class Party extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PartyStatus status;
+    private PartyState status;
 
     @Column(nullable = false)
     private LocalDate startDate;
