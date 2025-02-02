@@ -9,5 +9,10 @@
     }
     ]
   },
-  "parser":"@babel/eslint-parser"
+  "parser":"@babel/eslint-parser",
+  "parserOptions": {
+    "babelOptions": {
+       "presets": ["@babel/preset-react"]
+    },
+   }
 }
