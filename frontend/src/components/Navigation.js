@@ -10,13 +10,14 @@ import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router';
 
+// stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, targetTime, schedule }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 10, 5, 15, 15, 10]; //단계별 시간
 
     //단계 정보, 삭제 필요 (대기방, 단어 학습, 뽑기, 그림 그리기, 그림 보기, 퀴즈)
-    stage = 'waiting'; //waiting, learning, picking, drawing, endDrawing, quiz
+    stage = 'waiting';
     const [targetTimeDummy, setTargetTime] = useState(Date.now() + 5 * MINUTE);
     const [scheduleDummy, setSchedule] = useState({
         bookTitle: '사과와 생쥐', //책 제목
@@ -32,7 +33,6 @@ function Navigation({ stage, targetTime, schedule }) {
     });
     //일정 정보
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
-    console.log(remainTime);
 
     // 남은 시간 계산
     const getRemainingTime = targetTime => {
