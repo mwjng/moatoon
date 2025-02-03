@@ -17,7 +17,7 @@ function Navigation({ stage, targetTime, schedule }) {
     const INITTIME = [10, 10, 5, 15, 15, 10]; //단계별 시간
 
     //단계 정보, 삭제 필요 (대기방, 단어 학습, 뽑기, 그림 그리기, 그림 보기, 퀴즈)
-    stage = 'waiting';
+    // stage = 'quiz';
     const [targetTimeDummy, setTargetTime] = useState(Date.now() + 5 * MINUTE);
     const [scheduleDummy, setSchedule] = useState({
         bookTitle: '사과와 생쥐', //책 제목
@@ -100,7 +100,7 @@ function Navigation({ stage, targetTime, schedule }) {
     };
 
     return (
-        <header className="shadow-lg">
+        <header className="shadow-lg rounded-full">
             {stage ? (
                 <div className="flex flew-row justify-between py-4 px-10 items-center">
                     {stage === 'waiting' ? (
@@ -132,8 +132,13 @@ function Navigation({ stage, targetTime, schedule }) {
                                 <span className="text-2xl font-bold">오늘의 단어 학습</span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 10:00</span>
-                                <progress value={0.75} className="rotate-180"></progress>
+                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                    <div
+                                        className="bg-blue-600 h-2.5 rounded-full"
+                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[1])}%` }}
+                                    ></div>
+                                </div>
                             </div>
                         </>
                     ) : stage === 'picking' ? (
@@ -149,16 +154,21 @@ function Navigation({ stage, targetTime, schedule }) {
                             <div className="flex items-center gap-8">
                                 <span className="text-2xl font-bold">오늘의 단어</span>
                                 <div className="flex gap-8">
-                                    <button className="px-8 py-4">단어1</button>
-                                    <button className="px-8 py-4">단어2</button>
-                                    <button className="px-8 py-4">단어3</button>
-                                    <button className="px-8 py-4">단어4</button>
+                                    <button className="px-8 py-4 shadow-lg rounded-full">단어1</button>
+                                    <button className="px-8 py-4 shadow-lg rounded-full">단어2</button>
+                                    <button className="px-8 py-4 shadow-lg rounded-full">단어3</button>
+                                    <button className="px-8 py-4 shadow-lg rounded-full">단어4</button>
                                 </div>
                             </div>
                             <div></div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 10:00</span>
-                                <progress value={0.75} className="rotate-180"></progress>
+                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                    <div
+                                        className="bg-blue-600 h-2.5 rounded-full"
+                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[3])}%` }}
+                                    ></div>
+                                </div>
                             </div>
                         </>
                     ) : stage === 'endDrawing' ? (
@@ -167,7 +177,15 @@ function Navigation({ stage, targetTime, schedule }) {
                                 <span className="text-2xl font-bold">오늘의 그림</span>
                             </div>
                             <div></div>
-                            <div></div>
+                            <div className="flex flex-col text-center gap-4">
+                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                    <div
+                                        className="bg-blue-600 h-2.5 rounded-full"
+                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[4])}%` }}
+                                    ></div>
+                                </div>
+                            </div>
                         </>
                     ) : stage === 'quiz' ? (
                         <>
@@ -176,8 +194,13 @@ function Navigation({ stage, targetTime, schedule }) {
                                 <span className="text-2xl font-bold">오늘의 단어 학습</span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 10:00</span>
-                                <progress value={0.75} className="rotate-180"></progress>
+                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                    <div
+                                        className="bg-blue-600 h-2.5 rounded-full"
+                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[5])}%` }}
+                                    ></div>
+                                </div>
                             </div>
                         </>
                     ) : (
