@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import DrawPage from './pages/drawPage';
-import Navigation from './components/Navigation';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,7 +25,6 @@ root.render(
             <Route path="user">
                 <Route index />
             </Route>
-            <Route path="/nav" element={<Navigation />} />
         </Routes>
     </BrowserRouter>,
 );
