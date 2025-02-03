@@ -17,7 +17,10 @@ function Navigation({ stage }) {
             'https://i.namu.wiki/i/KUM2tQX1XioB6nLXb1hNgb47SQkzckA4LAbfCUWej7_opVso4ebnkijBdglFek7Dn2FzcKoGgOjOlm_UeIAYdQ3_i-CmhnnYc-PiI3erJmqqWI03S5ci3WZBbaqENJ90FcL3FtIjpnxFB8kNEynbag.webp',
         role: 'parent',
     });
-    stage = 'learning';
+    const [book, setBook] = useState({
+        title: '사과와 생쥐',
+    });
+    stage = 'waiting'; //waiting, learning, picking, drawing, endDrawing, quiz
 
     const navigationHandler = path => {
         navigate(`/${path}`);
@@ -37,7 +40,7 @@ function Navigation({ stage }) {
                                 <img src={`${arrowBack}`} alt="back" width="50"></img>
                             </NavLink>
                             <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">제목</span>
+                                <span className="text-2xl font-bold">{book.title}</span>
                                 <span>오늘의 일정 : 9:00 ~ 10:00</span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
@@ -47,22 +50,59 @@ function Navigation({ stage }) {
                         </>
                     ) : stage === 'learning' ? (
                         <>
+                            <div></div>
                             <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">제목</span>
+                                <span className="text-2xl font-bold">오늘의 단어 학습</span>
                             </div>
-                            {/* <div className="flex flex-col text-center gap-4">
+                            <div className="flex flex-col text-center gap-4">
                                 <span>남은 시간 10:00</span>
                                 <progress value={0.75}></progress>
-                            </div> */}
+                            </div>
+                        </>
+                    ) : stage === 'picking' ? (
+                        <>
+                            <div></div>
+                            <div className="flex flex-col text-center gap-4">
+                                <span className="text-2xl font-bold">내가 그리게 될 컷은 몇번일까요?</span>
+                            </div>
+                            <div></div>
                         </>
                     ) : stage === 'drawing' ? (
-                        <></>
-                    ) : stage === 'drawing' ? (
-                        <></>
+                        <>
+                            <div className="flex items-center gap-8">
+                                <span className="text-2xl font-bold">오늘의 단어</span>
+                                <div className="flex gap-8">
+                                    <button className="px-8 py-4">단어1</button>
+                                    <button className="px-8 py-4">단어2</button>
+                                    <button className="px-8 py-4">단어3</button>
+                                    <button className="px-8 py-4">단어4</button>
+                                </div>
+                            </div>
+                            <div></div>
+                            <div className="flex flex-col text-center gap-4">
+                                <span>남은 시간 10:00</span>
+                                <progress value={0.75}></progress>
+                            </div>
+                        </>
                     ) : stage === 'endDrawing' ? (
-                        <></>
+                        <>
+                            <div className="flex flex-col text-center gap-4">
+                                <span className="text-2xl font-bold">오늘의 그림</span>
+                            </div>
+                            <div></div>
+                            <div></div>
+                        </>
                     ) : stage === 'quiz' ? (
-                        <></>
+                        <>
+                            <div></div>
+                            <div className="flex flex-col text-center gap-4">
+                                <span className="text-2xl font-bold">오늘의 단어 학습</span>
+                            </div>
+                            <div className="flex flex-col text-center gap-4">
+                                <span>남은 시간 10:00</span>
+                                <progress value={0.75}></progress>
+                            </div>
+                        </>
                     ) : (
                         <></>
                     )}
