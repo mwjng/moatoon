@@ -32,8 +32,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .body(new ExceptionResponse(INVALID_REQUEST, errorMessage));
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ExceptionResponse> handleBadRequestException(final BadRequestException e) {
+    @ExceptionHandler(MoaException.class)
+    public ResponseEntity<ExceptionResponse> handleMoaException(final MoaException e) {
         log.warn(e.getMessage(), e);
         return ResponseEntity.badRequest()
             .body(new ExceptionResponse(e.getCode(), e.getMessage()));
