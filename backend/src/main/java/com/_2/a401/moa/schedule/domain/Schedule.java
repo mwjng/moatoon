@@ -20,7 +20,7 @@ public class Schedule {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Day day;
+    private Day dayWeek;
 
     @Column(nullable = false)
     private LocalDateTime sessionTime;

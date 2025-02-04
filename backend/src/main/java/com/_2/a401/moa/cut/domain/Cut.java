@@ -24,7 +24,13 @@ public class Cut extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    private int order;
+    private int cutOrder;
+
+    private int randomOrder;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CutState status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
