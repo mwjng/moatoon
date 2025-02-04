@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import DrawPage from './pages/drawPage';
-import Navigation from './components/Navigation';
+import BookGeneratorPage from './pages/BookGeneratorPage
+import Navigation from './components/navigation';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -15,7 +16,7 @@ root.render(
             <Route path="/session">
                 <Route path="draw" element={<DrawPage />} />
                 <Route path="search" />
-                <Route path="create" />
+                <Route path="create" element={<BookGeneratorPage />}/>
             </Route>
             <Route path="library">
                 <Route index />
