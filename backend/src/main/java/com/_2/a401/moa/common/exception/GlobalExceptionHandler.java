@@ -1,11 +1,13 @@
 package com._2.a401.moa.common.exception;
 
+import com._2.a401.moa.member.controller.MemberController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -16,7 +18,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_REQUEST;
 import static com._2.a401.moa.common.exception.ExceptionCode.SERVER_ERROR;
 
 @Slf4j
-@RestControllerAdvice
+//@RestControllerAdvice(annotations = {RestController.class}, basePackageClasses = {MemberController.class})
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
