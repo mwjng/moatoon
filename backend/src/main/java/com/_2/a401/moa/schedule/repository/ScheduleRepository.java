@@ -10,17 +10,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+    // FORMATDATETIME(s.session_time, 'yyyy-MM-dd HH:mm:ss') AS sessionTime - (H2용)
+    // DATE_FORMAT(s.session_time, '%Y-%m-%dT%H:%i:%s') AS sessionTime - (MySql용)
     @Query(value = """
         SELECT s.id AS scheduleId,
                p.book_title AS bookTitle,
-               s.session_time AS sessionTime
+               DATE_FORMAT(s.session_time, '%Y-%m-%dT%H:%i:%s') AS sessionTime
         FROM party_member pm
-        JOIN party p ON pm.party_id = p.party_id
-        JOIN schedule s ON p.party_id = s.party_id
+        JOIN party p ON pm.party_id = p.id
+        JOIN schedule s ON p.id = s.party_id
         WHERE pm.member_id = :memberId
         AND YEAR(s.session_time) = :year
         AND MONTH(s.session_time) = :month
-        ORDER BY s.session_time DESC
+        ORDER BY s.session_time
         """, nativeQuery = true)
     List<ScheduleResponse> findSchedulesByMemberIdAndYearAndMonth(@Param("memberId") Long memberId,
                                                                   @Param("year") int year,
