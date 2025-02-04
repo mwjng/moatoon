@@ -31,7 +31,6 @@ root.render(
             <Route path="user">
                 <Route index />
             </Route>
-            <Route path="/nav" element={<Navigation />} />
         </Routes>
     </BrowserRouter>,
 );
