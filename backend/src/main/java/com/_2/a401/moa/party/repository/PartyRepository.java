@@ -14,7 +14,8 @@ public interface PartyRepository extends JpaRepository<Party, Long> {
         FROM schedule s
         JOIN party p ON s.party_id = p.id
         WHERE p.id = :partyId
-        AND DATE(s.session_time) = CURRENT_DATE
+        AND s.session_time >= CURRENT_DATE
+        AND s.session_time < DATEADD('DAY', 1, CURRENT_DATE)
         LIMIT 1
     """, nativeQuery = true)
     Optional<Object[]> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
