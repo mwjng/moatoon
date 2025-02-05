@@ -18,7 +18,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_REQUEST;
 import static com._2.a401.moa.common.exception.ExceptionCode.SERVER_ERROR;
 
 @Slf4j
-//@RestControllerAdvice(annotations = {RestController.class}, basePackageClasses = {MemberController.class})
+@RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
