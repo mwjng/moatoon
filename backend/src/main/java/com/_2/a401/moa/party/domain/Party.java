@@ -34,12 +34,16 @@ public class Party extends BaseEntity {
 
     private int episodeCount;
 
+    private int progressCount;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PartyState status;
 
     @Column(nullable = false)
     private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private boolean isPublic;
 }
