@@ -5,7 +5,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### STS ###
+# Querydsl
+/src/main/generated/
+
+### STS ###:::wq
+
 .apt_generated
 .classpath
 .factorypath
