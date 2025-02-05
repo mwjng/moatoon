@@ -16,10 +16,10 @@ INSERT INTO MEMBER (id, manager_id, role, name, login_id, nickname, password, st
 (4, null, 'MANAGER', '앨리스 쿠퍼', 'alicecooper', 'alice', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- PARTY 테이블에 더미 데이터 추가
-INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, status, start_date, is_public, created_at, modified_at) VALUES
-('이것은 샘플 파티입니다', '1234', 'cover_url_1.jpg', '책 1', 1, 10, 'BEFORE', '2025-02-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('또 다른 흥미진진한 파티', '5678', 'cover_url_2.jpg', '책 2', 2, 15, 'BEFORE', '2025-03-01', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('최종 파티', '9012', 'cover_url_3.jpg', '책 3', 3, 20, 'BEFORE', '2025-04-01', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, progress_count, status, start_date, is_public, end_date, created_at, modified_at) VALUES
+('이것은 샘플 파티입니다', '1234', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '5678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('최종 파티', '9012', 'cover_url_3.jpg', '책 3', 3, 20, 1, 'BEFORE', '2025-04-01', 0, '2025-04-30', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- PARTY_KEYWORD 테이블에 더미 데이터 추가
 INSERT INTO PARTY_KEYWORD (party_id, keyword_id) VALUES
