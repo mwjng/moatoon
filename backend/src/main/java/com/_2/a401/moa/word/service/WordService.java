@@ -3,21 +3,15 @@ package com._2.a401.moa.word.service;
 import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
-import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
-import com._2.a401.moa.word.dto.QuizResponse;
-import com._2.a401.moa.word.dto.QuizSentence;
-import com._2.a401.moa.word.dto.QuizWord;
+import com._2.a401.moa.word.dto.*;
 import com._2.a401.moa.word.repository.WordExampleRepository;
 import com._2.a401.moa.word.repository.WordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +80,29 @@ public class WordService {
                 .builder()
                 .words(quizWords)
                 .sentences(quizSentences)
+                .build();
+    }
+
+    public LearningWordsResponse getLearningWords(Long partyId) {
+        // party_id에 해당하는 예문 목록 가져오기
+        List<WordExample> wordExamples = wordExampleRepository.findExamplesByPartyIdAndEpisodeNumber(partyId);
+
+        List<WordWithExamples> wordWithExamples = new ArrayList<>();
+        for (int i = 0; i < 8; i += 2) {
+            List<String> examples = new ArrayList<>();
+            examples.add(wordExamples.get(i).getExample());
+            examples.add(wordExamples.get(i + 1).getExample());
+            wordWithExamples.add(WordWithExamples
+                    .builder()
+                    .wordId(wordExamples.get(i).getId())
+                    .word(wordExamples.get(i).getWord().getWord())
+                    .examples(examples)
+                    .build());
+        }
+
+        return LearningWordsResponse
+                .builder()
+                .words(wordWithExamples)
                 .build();
     }
 }
