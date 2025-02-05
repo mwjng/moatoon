@@ -27,6 +27,10 @@ public class Schedule {
 
     private int episodeNumber;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ScheduleState status;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "party_id")
     private Party party;
