@@ -8,7 +8,8 @@ build/
 # Querydsl
 /src/main/generated/
 
-### STS ###
+### STS ###:::wq
+
 .apt_generated
 .classpath
 .factorypath
