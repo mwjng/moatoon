@@ -14,7 +14,8 @@ public enum ExceptionCode {
     CONNECTION_CREATION_FAILED(2002, "연결 생성에 실패했습니다."),
     SESSION_NOT_FOUND(2003, "세션을 찾을 수 없습니다."),
 
-    SERVER_ERROR(9000, "서버 에러가 발생하였습니다.");
+    SERVER_ERROR(9000, "서버 에러가 발생하였습니다."),
+    DATA_NOT_FOUND(3000, "데이터를 찾을 수 없습니다.");
 
     private final int code;
     private final String message;
