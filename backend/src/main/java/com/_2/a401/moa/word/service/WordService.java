@@ -1,9 +1,14 @@
 package com._2.a401.moa.word.service;
 
 import com._2.a401.moa.party.repository.PartyRepository;
+import com._2.a401.moa.word.domain.MyWord;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
 import com._2.a401.moa.word.dto.*;
+import com._2.a401.moa.word.dto.response.LearningWordsResponse;
+import com._2.a401.moa.word.dto.response.MyWordsResponse;
+import com._2.a401.moa.word.dto.response.QuizResponse;
+import com._2.a401.moa.word.repository.MyWordRepository;
 import com._2.a401.moa.word.repository.WordExampleRepository;
 import com._2.a401.moa.word.repository.WordRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +25,7 @@ public class WordService {
     private final PartyRepository partyRepository;
     private final WordExampleRepository wordExampleRepository;
     private final WordRepository wordRepository;
+    private final MyWordRepository myWordRepository;
 
     public QuizResponse generateQuiz(Long partyId) {
         // 현재 날짜에 해당하는 episode_number 조회
@@ -84,11 +91,17 @@ public class WordService {
     }
 
     public LearningWordsResponse getLearningWords(Long partyId) {
+        // 현재 날짜에 해당하는 episode_number 조회
+        EpisodeNumberAndLevel episodeNumberAndLevel = partyRepository.findEpisodeNumberAndLevelByPartyIdAndToday(partyId)
+                .orElseThrow(() -> new EntityNotFoundException("No episode found for today's schedule"));
+
+        int episodeNumber = episodeNumberAndLevel.episodeNumber();
+
         // party_id에 해당하는 예문 목록 가져오기
         List<WordExample> wordExamples = wordExampleRepository.findExamplesByPartyIdAndEpisodeNumber(partyId);
 
         List<WordWithExamples> wordWithExamples = new ArrayList<>();
-        for (int i = 0; i < 8; i += 2) {
+        for (int i = (episodeNumber - 1) * 8; i < episodeNumber * 8; i += 2) {
             List<String> examples = new ArrayList<>();
             examples.add(wordExamples.get(i).getExample());
             examples.add(wordExamples.get(i + 1).getExample());
@@ -103,6 +116,35 @@ public class WordService {
         return LearningWordsResponse
                 .builder()
                 .words(wordWithExamples)
+                .build();
+    }
+
+    public MyWordsResponse getMyWords(Long memberId, int page) {
+        List<MyWordExample> myWordExamples = myWordRepository.findAllWithId(memberId, page - 1);
+
+        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
+        if (myWordExamples.isEmpty()) {
+            return MyWordsResponse.builder()
+                    .myWordWithExamples(myWordWithExamples)
+                    .build();
+        }
+
+        for (int i = 0; i < myWordExamples.size(); i += 2) {
+            List<String> examples = new ArrayList<>();
+            examples.add(myWordExamples.get(i).getExample());
+            examples.add(myWordExamples.get(i + 1).getExample());
+            myWordWithExamples.add(MyWordWithExamples
+                    .builder()
+                    .id(myWordExamples.get(i).getId())
+                    .word(myWordExamples.get(i).getWord())
+                    .meaning(myWordExamples.get(i).getMeaning())
+                    .failCount(myWordExamples.get(i).getFailCount())
+                    .examples(examples)
+                    .build());
+        }
+
+        return MyWordsResponse.builder()
+                .myWordWithExamples(myWordWithExamples)
                 .build();
     }
 }
