@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 function RendingPage() {
     return (
         <>
-            <div className="flex items-center w-full h-screen">
+            <div className="flex items-center w-full h-screen" style={{ backgroundColor: '#FEFBEB' }}>
                 <div
                     style={{
                         display: 'flex',

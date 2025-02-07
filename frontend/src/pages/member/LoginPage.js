@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Background from '../../components/member/Backround';
-import Info from '../../components/member/Info';
 import AuthModal from '../../components/member/AuthModal';
 import Input from '../../components/member/Input';
 import { login } from '../../api/member';

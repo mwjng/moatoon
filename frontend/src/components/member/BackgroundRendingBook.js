@@ -16,15 +16,15 @@ export default function BackgroundRendingBook() {
             style={{ transform: 'rotate(-25deg)', height: '400px', backgroundColor: '#FEFBEB' }}
         >
             {/* 첫 번째 줄 (왼쪽 → 오른쪽) */}
-            <div className="absolute top-0 w-full flex gap-4  w-[200%]">
-                {[...bookImages, ...bookImages, ...bookImages].map((src, index) => (
+            <div className="absolute top-0 w-full flex gap-4  w-[200%] left-20">
+                {[...bookImages, ...bookImages].map((src, index) => (
                     <img key={index} src={src} className="w-40 h-48 object-cover shrink-0" alt="book" />
                 ))}
             </div>
 
             {/* 두 번째 줄 (오른쪽 → 왼쪽) */}
-            <div className="absolute bottom-0 w-full flex gap-4  w-[200%]">
-                {[...bookImages, ...bookImages, ...bookImages].map((src, index) => (
+            <div className="absolute bottom-0 w-full flex gap-4  w-[200%] right-[50%]">
+                {[...bookImages, ...bookImages].map((src, index) => (
                     <img key={index} src={src} className="w-40 h-48 object-cover shrink-0" alt="book" />
                 ))}
             </div>
