@@ -1,39 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
-import BookDetail from "./BookDetail";
 
+// OpenAI API 객체 생성 (FE에서 직접 호출)
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
 const BookStoryGenerator = ({
-  story,
-  onClose,
+  // 추가 정보
+  startDate,
+  level,
+  episodeLength,  // 챕터 수 (에피소드 분량)
+  time,
+  dayOfWeek,      // 배열
+  publicStatus,
+  participatingChildren,
+  // 기존 정보
   mood,
   theme,
   genre,
   difficulty,
-  length, // 챕터 수
+  onClose,
 }) => {
-  const [currentStory, setCurrentStory] = useState(story);
+  // 전달받은 정보들을 콘솔에 출력 (마운트 시)
+  useEffect(() => {
+    console.log("Received props:", {
+      startDate,
+      level,
+      episodeLength,
+      time,
+      dayOfWeek,
+      publicStatus,
+      participatingChildren,
+      mood,
+      theme,
+      genre,
+      difficulty,
+    });
+  }, [startDate, level, episodeLength, time, dayOfWeek, publicStatus, participatingChildren, mood, theme, genre, difficulty]);
+
+  // 내부 스토리 상태 (JSON 객체)
+  const [currentStory, setCurrentStory] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showBookDetail, setShowBookDetail] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
-  // 선택 정보를 태그 형태로 보여주기 위한 info 객체
+  // info 객체 (선택 항목 제외)
   const info = {
-    분위기: mood,
-    테마: theme,
-    장르: genre,
-    난이도: difficulty,
-    "챕터 수": length,
+    "방 시작일": startDate,
+    "레벨": level,
+    "에피소드 분량": episodeLength,
+    "시간": time,
+    "요일": dayOfWeek.join(", "),
+    "공개 여부": publicStatus,
+    "분위기": mood,
+    "테마": theme,
+    "장르": genre,
+    "참여할 아동": participatingChildren,
   };
 
-  // 선택 정보를 바탕으로 재생성 프롬프트 구성
-  const handleRegenerateStory = async () => {
-    setIsGenerating(true);
+  // 스토리 생성을 위한 프롬프트 생성 함수 (동화책 제목 포함, 상세 버전)
+  const generateStoryPrompt = () => {
     const ageGroup =
       difficulty === 1
         ? "4~6세"
@@ -46,61 +74,104 @@ const BookStoryGenerator = ({
         : difficulty === 5
         ? "10세"
         : "11세";
-    const regeneratePrompt = `
+    return `
+동화책 제목: 창의적인 동화책 제목을 지어주세요.
 역할: ${mood} 분위기의 ${theme} 테마 ${genre} 동화를 작성하는 동화 작가.
 - 난이도: (${ageGroup}) 수준.
-- 구성:
-  - 개요: 5줄 내외.
-  - 챕터: 총 ${length}개, 각 챕터마다 4문장으로 구성.
-- 사용 단어:
-  - 각 챕터마다 4개의 단어(동사는 원형 사용; 문장 내에서는 변형 가능)를 "<사용 단어: ...>" 형식으로 제공.
-  - 각 문장에는 해당 단어를 볼드체로 포함 (단어들은 중복 없이 각 문장마다 한 개씩).
-- *출력 예시 (각 섹션을 "---" 구분자로 나누어 주세요):*
+- 제목 : 내용을 함축하고, 아이들이 흥미를 가질만한 제목.
+- 개요: 아래와 같이 5줄 내외의 동화 개요를 작성.
+- 챕터: 총 ${episodeLength}개, 각 챕터마다 4문장으로 구성.
+- 사용 단어: 각 챕터에 4개의 단어를 "<사용 단어: ...>" 형식으로 제공하며, 각 문장에는 해당 단어를 **볼드체**로 포함해 주세요.
+- JSON 형식으로 반환:
 
-1. 개요  
-한 소년이 마법의 숲에 들어갔어요.  
-숲에서 동물 친구들을 만났어요.  
-모험이 시작되었어요.  
-새로운 우정을 쌓아갈 수 있을까요?  
+- 다음은 예시로 이런 식의 JSON으로 글을 생성해주되, 이 글과 내용이 같으면 안돼.
+{
+  "title": "마법 숲에 들어간 공주",
+  "overview": [
+    "옛날 어느 왕국에 작은 공주가 살고 있었어요.",
+    "그녀는 마법의 정원에서 특별한 꽃을 키웠어요.",
+    "어느 날, 신비한 나비를 만났어요.",
+    "나비는 공주에게 숨겨진 비밀을 알려주었어요.",
+    "공주는 모험을 떠나기로 결심했어요."
+  ],
+  "chapters": [
+    {
+      "title": "CH1",
+      "words": ["마법", "꽃", "꿈", "발견하다"],
+      "sentences": [
+        "공주는 **마법**의 힘을 믿었어요.",
+        "정원의 **꽃**을 소중히 돌보았어요.",
+        "밤마다 **꿈** 속에서 미래를 보았어요.",
+        "어느 날, 숨겨진 열쇠를 **발견했어요.**"
+      ]
+    },
+    {
+      "title": "CH2",
+      "words": ["나비", "여행", "우정", "밝히다"],
+      "sentences": [
+        "신비한 **나비**가 나타났어요.",
+        "공주는 나비와 함께 **여행**을 시작했어요.",
+        "그 과정에서 새로운 **우정**을 쌓았어요.",
+        "나비가 숨겨진 비밀을 **밝혀주었어요**."
+      ]
+    }
+    // 에피소드 분량에 따라 추가 챕터 생성...
+  ]
+}`;
+  };
 
----  
-
-2. CH1  
-<사용 단어: "마법", "노란색", "부르다", "돌아가다">  
-(1) 소년은 **마법**의 숲에 들어갔어요.  
-(2) 숲에서 **노란색** 토끼를 만났어요.  
-(3) 소년은 토끼를 **불렀어요**.  
-(4) 모두와 함께 집으로 **돌아갔어요**.  
-
----  
-
-3. CH2  
-<사용 단어: "친구", "함께", "약속", "모이다">  
-(1) 다음날, 소년은 **친구**에게 이야기를 전해줬어요.  
-(2) 친구는 **함께** 가고 싶다고 했어요.  
-(3) 소년은 친구에게 함께 가자고 **약속**했어요.  
-(4) 그리고 다음날 아침에 둘은 숲 앞에 **모였어요**.
-    `;
-
+  // 최초 스토리 생성 (컴포넌트 마운트 시)
+  const handleGenerateInitialStory = async () => {
+    setIsGenerating(true);
+    const prompt = generateStoryPrompt();
     try {
       const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: regeneratePrompt }],
+        messages: [{ role: "user", content: prompt }],
       });
-      setCurrentStory(response.choices[0]?.message?.content || "재생성 실패");
+      const generated = response.choices[0]?.message?.content || "";
+      const newStory = JSON.parse(generated);
+      setCurrentStory(newStory);
     } catch (error) {
-      console.error("이야기 재생성 오류:", error);
+      console.error("초기 스토리 생성 오류:", error);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleGenerateBookCover = async () => {
+  useEffect(() => {
+    handleGenerateInitialStory();
+  }, []);
+
+  // 재생성 버튼 클릭 시
+  const handleRegenerateStory = async () => {
+    setIsGenerating(true);
+    const prompt = generateStoryPrompt();
+    try {
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+      });
+      const generated = response.choices[0]?.message?.content || "";
+      const newStory = JSON.parse(generated);
+      setCurrentStory(newStory);
+    } catch (error) {
+      console.error("재생성 오류:", error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // 결정하기 버튼 클릭 시: 표지 생성 후 최종 payload 구성하여 백엔드 전송
+  const handleDecide = async () => {
     setIsGeneratingImage(true);
-    // 현재 스토리의 첫 번째 섹션(개요)만 사용
-    const storySections = currentStory.split("---").map((section) => section.trim());
-    const storySummary = storySections.length > 0 ? storySections[0] : "";
-    const coverPrompt = `이 이야기를 바탕으로 동화책의 표지 일러스트를 글 없이 만들어줘: ${storySummary}`;
+    let overviewText = "";
+    try {
+      overviewText = currentStory.overview.join(" ");
+    } catch (error) {
+      console.error("overview 추출 오류:", error);
+    }
+    const coverPrompt = `이 이야기를 바탕으로 표지를 만들어줘: ${overviewText}`;
     try {
       const response = await openai.images.generate({
         model: "dall-e-3",
@@ -108,24 +179,43 @@ const BookStoryGenerator = ({
         n: 1,
         size: "1024x1024",
       });
-      setCoverImage(response.data[0]?.url || "이미지 생성 실패");
-      setShowBookDetail(true);
+      // DALL-E 3가 URL(다운로드 링크)을 반환한다고 가정
+      const generatedCover = response.data[0]?.url || "";
+      setCoverImage(generatedCover);
+
+      // 최종 payload 구성
+      const payload = {
+        startDate,
+        level,
+        episodeLength,
+        time,
+        dayOfWeek,  // 배열 그대로 전송
+        publicStatus,
+        mood,
+        theme,
+        genre,
+        participatingChildren,
+        story: currentStory,
+        coverImage: generatedCover
+      };
+
+      // 백엔드 최종 제출
+      const submitResponse = await fetch("http://localhost:8080/api/parties", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!submitResponse.ok) throw new Error("스토리 전송 실패");
+      console.log("스토리 전송 성공");
+      onClose();
     } catch (error) {
-      console.error("표지 생성 오류:", error);
+      console.error("최종 결정 오류:", error);
     } finally {
       setIsGeneratingImage(false);
     }
   };
 
-  // '---' 구분자로 스토리 섹션 분리 (개요, 챕터 등)
-  const storySections = currentStory.split("---").map((section) => section.trim());
-
-  return showBookDetail ? (
-    <BookDetail
-      coverImage={coverImage}
-      storySummary={currentStory.split("\n").slice(0, 5).join(" ")}
-    />
-  ) : (
+  return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
       <div
         className="p-6 rounded-lg shadow-lg w-2/3 relative max-h-screen overflow-y-auto"
@@ -133,69 +223,75 @@ const BookStoryGenerator = ({
       >
         <h2 className="text-xl font-bold mb-4 text-center">📖 생성된 이야기</h2>
 
-        {/* 선택된 키워드 정보 태그 영역 */}
+        {/* 선택 및 추가 정보 태그 영역 */}
         <div className="mb-4 flex flex-wrap gap-2">
           {Object.entries(info).map(([key, value]) => (
             <span
               key={key}
               className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
             >
-              {key}: {value}
+              {key}: {typeof value === "string" ? value : Array.isArray(value) ? value.join(", ") : value}
             </span>
           ))}
         </div>
 
-        {/* 각 섹션(개요, 챕터 등)을 별도의 컨테이너로 렌더링 */}
-        {storySections.map((section, index) => (
-          <div
-            key={index}
-            className="mb-4 p-4 border border-gray-300 rounded"
-            style={{ backgroundColor: "#EBF4FF" }}
-          >
-            {section.split("\n").map((line, i) => (
-              <p
-                key={i}
-                className="mb-2"
-                dangerouslySetInnerHTML={{
-                  __html: line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                }}
-              ></p>
+        {/* 로딩 메시지 */}
+        {isGenerating && <p className="mb-4 text-center">스토리 생성 중...</p>}
+
+        {/* 스토리 출력: 제목 및 개요 */}
+        {currentStory && (
+          <div className="mb-4 p-4 border border-gray-300 rounded" style={{ backgroundColor: "#EBF4FF" }}>
+            <h3 className="font-bold mb-2">동화책 제목: {currentStory.title}</h3>
+            <h4 className="font-bold mb-2">개요</h4>
+            {currentStory.overview.map((line, idx) => (
+              <p key={idx} className="mb-1">{line}</p>
             ))}
           </div>
-        ))}
+        )}
+
+        {/* 스토리 출력: 각 챕터 */}
+        {currentStory && currentStory.chapters &&
+          currentStory.chapters.map((chapter, index) => (
+            <div
+              key={index}
+              className="mb-4 p-4 border border-gray-300 rounded"
+              style={{ backgroundColor: "#EBF4FF" }}
+            >
+              <h3 className="font-bold mb-2">{chapter.title}</h3>
+              <div className="mb-2">
+                <strong>사용 단어:</strong> {chapter.words.join(", ")}
+              </div>
+              {chapter.sentences.map((sentence, idx) => (
+                <p
+                  key={idx}
+                  className="mb-1"
+                  dangerouslySetInnerHTML={{
+                    __html: sentence.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+                  }}
+                ></p>
+              ))}
+            </div>
+          ))}
 
         {/* 버튼 영역 */}
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-4">
           <button
             onClick={handleRegenerateStory}
-            disabled={isGenerating || isGeneratingImage}
-            className={`px-4 py-2 rounded-lg font-bold ${
-              isGenerating ? "bg-gray-400" : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            disabled={isGenerating}
+            className={`px-4 py-2 rounded-lg font-bold ${isGenerating ? "bg-gray-400" : "bg-blue-500 text-white hover:bg-blue-600"}`}
           >
             {isGenerating ? "재생성 중..." : "재생성"}
           </button>
           <button
-            onClick={handleGenerateBookCover}
-            disabled={isGenerating || isGeneratingImage}
-            className={`px-4 py-2 rounded-lg font-bold ${
-              isGeneratingImage ? "bg-gray-400" : "bg-green-500 text-white hover:bg-green-600"
-            }`}
+            onClick={handleDecide}
+            disabled={isGeneratingImage}
+            className={`px-4 py-2 rounded-lg font-bold ${isGeneratingImage ? "bg-gray-400" : "bg-green-700 text-white hover:bg-green-800"}`}
           >
-            {isGeneratingImage ? "그림책 생성 중..." : "결정하기"}
+            결정하기
           </button>
         </div>
 
-        {isGeneratingImage && (
-          <div className="absolute inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50">
-            <p className="text-white text-lg font-bold">📖 그림책 생성 중...</p>
-          </div>
-        )}
-
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 px-3 py-1 bg-gray-500 text-white rounded-full"
-        >
+        <button onClick={onClose} className="absolute top-2 right-2 px-3 py-1 bg-gray-500 text-white rounded-full">
           X
         </button>
       </div>
