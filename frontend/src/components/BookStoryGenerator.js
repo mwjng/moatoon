@@ -171,7 +171,7 @@ const BookStoryGenerator = ({
     } catch (error) {
       console.error("overview 추출 오류:", error);
     }
-    const coverPrompt = `이 이야기를 바탕으로 표지를 만들어줘: ${overviewText}`;
+    const coverPrompt = `이 이야기를 바탕으로 아이들의 흥미를 끌만한 동화책 표지에 들어갈 일러스트를 글 없이 만들어줘: ${overviewText}`;
     try {
       const response = await openai.images.generate({
         model: "dall-e-3",
