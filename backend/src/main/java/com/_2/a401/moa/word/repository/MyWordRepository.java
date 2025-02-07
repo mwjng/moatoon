@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MyWordRepository extends JpaRepository<MyWord, Long> {
 
@@ -19,4 +20,12 @@ public interface MyWordRepository extends JpaRepository<MyWord, Long> {
         LIMIT :page, 8
     """, nativeQuery = true)
     List<MyWordExample> findAllWithId(Long memberId, int page);
+
+    @Query(value = """
+        SELECT mw.*
+        FROM my_word mw
+        WHERE mw.word_id = :wordId
+        AND mw.member_id = :memberId
+    """, nativeQuery = true)
+    Optional<MyWord> findByIdAndMemberId(Long memberId, Long wordId);
 }

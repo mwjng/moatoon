@@ -15,6 +15,13 @@ public class WordController {
     private final WordService wordService;
     private final JwtUtil jwtUtil;
 
+    @PostMapping("/words/saved-words")
+    public ResponseEntity<Object> addMyWords(@RequestHeader("Authorization") String token, @RequestParam("wordId") long wordId) {
+        long memberId = jwtUtil.getMemberId(token);
+        wordService.addMyWords(memberId, wordId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/parties/{partyId}/quiz")
     public ResponseEntity<QuizResponse> getQuiz(@PathVariable Long partyId) {
         QuizResponse response = wordService.generateQuiz(partyId);
