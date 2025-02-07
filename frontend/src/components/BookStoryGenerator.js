@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
 
+//사전에 필요한 정보
+// 스토리 생성에 필요한 레벨 단어set을 가져올 API
+
+
+
 // OpenAI API 객체 생성 (FE에서 직접 호출)
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,

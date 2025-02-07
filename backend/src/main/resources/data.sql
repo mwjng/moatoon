@@ -1,31 +1,115 @@
--- KEYWORD 테이블에 더미 데이터 추가
+-- KEYWORD 테이블에 데이터 입력 완료
 INSERT INTO `KEYWORD` (`keyword`, `option`) VALUES
-    ('행복', 'MOOD'),
-    ('슬픔', 'MOOD'),
-    ('로맨틱', 'GENRE'),
+    ('신비로운', 'MOOD'),
+    ('따뜻한', 'MOOD'),
+    ('평화로운', 'MOOD'),
+    ('호기심', 'MOOD'),
+    ('모험적인', 'MOOD'),
+    ('놀라운', 'MOOD'),
+    ('유쾌한', 'MOOD'),
+    ('시끌벅적', 'MOOD'),
+
+    ('공주/왕자', 'THEME'),
+    ('공룡', 'THEME'),
+    ('동물', 'THEME'),
+    ('마법', 'THEME'),
+    ('요정', 'THEME'),
+    ('우주', 'THEME'),
+    ('바다', 'THEME'),
+    ('사막', 'THEME'),
+    ('하늘', 'THEME'),
+    ('용기', 'THEME'),
+    ('민속', 'THEME'),
+    ('중세', 'THEME'),
+    ('요리', 'THEME'),
+    ('역할극', 'THEME'),
+    ('영웅', 'THEME'),
+    ('로봇', 'THEME'),
+    ('자동차', 'THEME'),
+
+    ('모험', 'GENRE'),
+    ('판타지', 'GENRE'),
+    ('로맨스', 'GENRE'),
+    ('신화', 'GENRE'),
+    ('역사', 'GENRE'),
+    ('일상', 'GENRE'),
+    ('코믹', 'GENRE'),
     ('액션', 'GENRE'),
-    ('모험', 'THEME'),
-    ('코미디', 'GENRE'),
-    ('공포', 'GENRE');
+    ('드라마', 'GENRE'),
+    ('스포츠', 'GENRE');
+
 
 -- MEMBER 테이블에 더미 데이터 추가
+-- 부모 (MANAGER) 데이터 추가
 INSERT INTO MEMBER (id, manager_id, role, name, login_id, nickname, password, status, created_at, modified_at) VALUES
-(1, null, 'MANAGER', '존 도우', 'johndoe', 'johnny', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 1, 'CHILD', '제인 스미스', 'janesmith', 'jane', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(3, 1, 'CHILD', '마이크 존슨', 'mikej', 'mike', 'password123', 'INACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(4, null, 'MANAGER', '앨리스 쿠퍼', 'alicecooper', 'alice', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(1, NULL, 'MANAGER', '황미정', 'hwangmj', '미정', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, NULL, 'MANAGER', '김아빠', 'kimdad', '아빠', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 황미정의 자녀 (CHILD) 데이터 추가
+INSERT INTO MEMBER (id, manager_id, role, name, login_id, nickname, password, status, created_at, modified_at) VALUES
+(3, 1, 'CHILD', '배현수', 'baehs', '현수', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4, 1, 'CHILD', '배현지', 'baehj1', '현지', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(5, 1, 'CHILD', '배현우', 'baehw', '현우', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(6, 1, 'CHILD', '배현아', 'baehya', '현아', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(7, 1, 'CHILD', '배익명', 'unknown', '익멍멍', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 김아빠의 자녀 (CHILD) 데이터 추가
+INSERT INTO MEMBER (id, manager_id, role, name, login_id, nickname, password, status, created_at, modified_at) VALUES
+(8, 2, 'CHILD', '김일일', 'kim11', '일일', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(9, 2, 'CHILD', '김이이', 'kim22', '이이', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(10, 2, 'CHILD', '김삼삼', 'kim33', '삼삼', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(11, 2, 'CHILD', '김넷넷', 'kim44', '넷넷', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(12, 2, 'CHILD', '김오오', 'kim55', '오오', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
 
 -- PARTY 테이블에 더미 데이터 추가
 INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, progress_count, status, start_date, is_public, end_date, created_at, modified_at) VALUES
-('이것은 샘플 파티입니다', '1234', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('또 다른 흥미진진한 파티', '5678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('최종 파티', '9012', 'cover_url_3.jpg', '책 3', 3, 20, 1, 'BEFORE', '2025-04-01', 0, '2025-04-30', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 📌 시작일이 미래인 파티 (현재 기준으로 아직 시작 전)
+('미래 모험의 시작, 용감한 기사 이야기', '1001', 'https://s3.example.com/covers/knight_adventure.jpg', '용감한 기사', 1, 12, 0, 'BEFORE', '2025-12-01 08:00:00', 1, '2026-01-15 23:59:59', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('마법사들의 비밀과 예언', '1002', 'https://s3.example.com/covers/wizard_secret.jpg', '마법사들의 예언', 2, 15, 0, 'BEFORE', '2025-12-10 14:30:00', 1, '2026-01-30 18:45:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('전설의 바다 괴물과 해적', '1003', 'https://s3.example.com/covers/sea_monster.jpg', '바다의 전설', 3, 18, 0, 'BEFORE', '2026-01-01 09:00:00', 0, '2026-02-10 20:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('우주 탐험대의 신비한 여정', '1004', 'https://s3.example.com/covers/space_exploration.jpg', '우주 탐험대', 4, 20, 0, 'BEFORE', '2026-02-01 10:30:00', 1, '2026-03-05 22:30:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('고대 왕국의 잃어버린 보물', '1005', 'https://s3.example.com/covers/ancient_kingdom.jpg', '고대 왕국의 보물', 5, 16, 0, 'BEFORE', '2026-03-01 07:45:00', 1, '2026-04-10 21:15:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+-- 📌 현재 진행 중인 파티 (시작일이 현재보다 과거, 종료일이 미래)
+('현재 진행 중! 공주의 용감한 모험', '2001', 'https://s3.example.com/covers/brave_princess.jpg', '용감한 공주', 1, 10, 5, 'ING', '2024-12-01 08:00:00', 1, '2025-12-30 23:59:59', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('요정의 숲을 지키는 전설', '2002', 'https://s3.example.com/covers/fairy_forest.jpg', '요정의 숲', 2, 14, 7, 'ING', '2025-01-10 14:30:00', 1, '2025-12-25 18:45:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('전사와 드래곤의 대결', '2003', 'https://s3.example.com/covers/warrior_dragon.jpg', '전사와 드래곤', 3, 16, 6, 'ING', '2024-10-01 09:00:00', 0, '2025-10-20 20:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('로봇들의 미래 전쟁', '2004', 'https://s3.example.com/covers/robot_war.jpg', '로봇 전쟁', 4, 22, 9, 'ING', '2024-11-01 10:30:00', 1, '2025-11-15 22:30:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('비밀 요원의 모험', '2005', 'https://s3.example.com/covers/secret_agent.jpg', '비밀 요원', 5, 18, 8, 'ING', '2024-09-01 07:45:00', 1, '2025-09-30 21:15:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+-- 📌 종료된 파티 (종료일이 현재보다 과거)
+('완료! 전설의 마법서 찾기', '3001', 'https://s3.example.com/covers/legendary_spellbook.jpg', '전설의 마법서', 1, 12, 12, 'DONE', '2023-01-01 08:00:00', 1, '2023-12-30 23:59:59', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('완료! 중세 왕국의 모험', '3002', 'https://s3.example.com/covers/medieval_kingdom.jpg', '중세 왕국', 2, 14, 14, 'DONE', '2023-03-10 14:30:00', 1, '2023-11-25 18:45:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('완료! 공룡 시대를 탐험하다', '3003', 'https://s3.example.com/covers/dinosaur_exploration.jpg', '공룡 탐험', 3, 16, 16, 'DONE', '2022-10-01 09:00:00', 0, '2023-07-20 20:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('완료! 신화 속 신들의 전쟁', '3004', 'https://s3.example.com/covers/god_war.jpg', '신들의 전쟁', 4, 22, 22, 'DONE', '2021-11-01 10:30:00', 1, '2022-10-15 22:30:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('완료! 영웅의 대서사시', '3005', 'https://s3.example.com/covers/hero_epic.jpg', '영웅의 대서사', 5, 18, 18, 'DONE', '2020-09-01 07:45:00', 1, '2021-09-30 21:15:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- PARTY_KEYWORD 테이블에 더미 데이터 추가
-INSERT INTO PARTY_KEYWORD (party_id, keyword_id) VALUES
-(1, 1), -- '행복' 키워드를 파티 1에
-(2, 2), -- '슬픔' 키워드를 파티 2에
-(3, 3); -- '로맨틱' 키워드를 파티 3에
+-- 위 파티 1개 당 키워드 3개(분위기, 장르, 테마)의 키워드_ID 할당
+INSERT INTO PARTY_KEYWORD (party_id, keyword) VALUES
+-- 시작일이 미래인 파티 (BEFORE)
+(1, '신비로운'), (1, '모험'), (1, '용기'),
+(2, '호기심'), (2, '판타지'), (2, '마법'),
+(3, '놀라운'), (3, '모험'), (3, '바다'),
+(4, '유쾌한'), (4, '신화'), (4, '우주'),
+(5, '평화로운'), (5, '역사'), (5, '중세'),
+
+-- 현재 진행 중인 파티 (ING)
+(6, '모험적인'), (6, '모험'), (6, '공주/왕자'),
+(7, '따뜻한'), (7, '판타지'), (7, '요정'),
+(8, '시끌벅적'), (8, '액션'), (8, '용기'),
+(9, '신비로운'), (9, '로맨스'), (9, '로봇'),
+(10, '호기심'), (10, '드라마'), (10, '역할극'),
+
+-- 종료된 파티 (DONE)
+(11, '놀라운'), (11, '신화'), (11, '마법'),
+(12, '유쾌한'), (12, '역사'), (12, '중세'),
+(13, '모험적인'), (13, '모험'), (13, '공룡'),
+(14, '따뜻한'), (14, '판타지'), (14, '하늘'),
+(15, '평화로운'), (15, '일상'), (15, '동물');
 
 -- WORD 테이블에 더미 데이터 추가
 INSERT INTO WORD (id, level, word, meaning) VALUES

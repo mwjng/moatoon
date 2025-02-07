@@ -18,6 +18,8 @@ import java.util.List;
 public class BookService {
     private final PartyRepository partyRepository;
 
+    //방 생성
+
     public BookListResponse getAllBooks(Long memberId, PartyState status){
         List<BookInfoResponse> books = partyRepository.findAllByMemberAndStatus(memberId, status);
         System.out.println(books);
@@ -45,4 +47,6 @@ public class BookService {
 
         return ebook;
     }
+
+
 }
