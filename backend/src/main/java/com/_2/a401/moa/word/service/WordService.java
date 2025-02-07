@@ -1,5 +1,9 @@
 package com._2.a401.moa.word.service;
 
+import com._2.a401.moa.common.exception.ExceptionCode;
+import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.member.domain.Member;
+import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.word.domain.MyWord;
 import com._2.a401.moa.word.domain.Word;
@@ -14,6 +18,7 @@ import com._2.a401.moa.word.repository.WordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +26,32 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class WordService {
     private final PartyRepository partyRepository;
     private final WordExampleRepository wordExampleRepository;
     private final WordRepository wordRepository;
     private final MyWordRepository myWordRepository;
+    private final MemberRepository memberRepository;
+
+    @Transactional
+    public void addMyWords(Long memberId, Long wordId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
+
+        Optional<MyWord> myWord = myWordRepository.findByIdAndMemberId(memberId, wordId);
+
+        if (myWord.isPresent()) {
+            myWord.get().countFail();
+        } else {
+            Word word = wordRepository.findById(wordId)
+                    .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
+
+            MyWord newMyWord = new MyWord(1, false, word, member);
+
+            myWordRepository.save(newMyWord);
+        }
+    }
 
     public QuizResponse generateQuiz(Long partyId) {
         // 현재 날짜에 해당하는 episode_number 조회
