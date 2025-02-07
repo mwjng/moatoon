@@ -28,8 +28,9 @@ public class RedisConfig {
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
-        // 이메일 인증 위한 설정
+
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         redisTemplate.setConnectionFactory(redisConnectionFactory());

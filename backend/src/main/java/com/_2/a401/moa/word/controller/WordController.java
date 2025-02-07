@@ -1,6 +1,7 @@
 package com._2.a401.moa.word.controller;
 
-import com._2.a401.moa.utils.JwtUtil;
+//import com._2.a401.moa.utils.JwtUtil;
+import com._2.a401.moa.common.jwt.JwtUtil;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
