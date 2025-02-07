@@ -4,6 +4,7 @@ import com._2.a401.moa.common.auditing.BaseEntity;
 import com._2.a401.moa.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,20 @@ public class MyWord extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public MyWord(int failCount, boolean isDeleted, Word word, Member member) {
+        this.failCount = failCount;
+        this.isDeleted = isDeleted;
+        this.word = word;
+        this.member = member;
+    }
+
+    public void countFail() {
+        this.failCount++;
+        this.isDeleted = false;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
