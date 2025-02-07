@@ -8,6 +8,7 @@ import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
 import com._2.a401.moa.word.dto.*;
+import com._2.a401.moa.word.dto.request.WordIdRequest;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
@@ -32,6 +33,19 @@ public class WordService {
     private final WordRepository wordRepository;
     private final MyWordRepository myWordRepository;
     private final MemberRepository memberRepository;
+
+    @Transactional
+    public void removeWord(long memberId, WordIdRequest wordIdRequest) {
+        long wordId = wordIdRequest.getWordId();
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
+
+        MyWord myWord = myWordRepository.findByIdAndMemberId(memberId, wordId)
+                .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
+
+        myWord.delete();
+    }
 
     @Transactional
     public void addMyWords(Long memberId, Long wordId) {
