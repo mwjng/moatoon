@@ -17,8 +17,8 @@ public class CutController {
 
     @Operation(summary="임시 저장", description="그림 데이터를 임시저장합니다.")
     @PostMapping("/save-temp")
-    public ResponseEntity<Void> saveTempCanvas(@Valid @RequestBody CanvasRedisRequest canvasCacheDto) {
-        cutService.saveTempCanvasData(canvasCacheDto);
+    public ResponseEntity<Void> saveTempCanvas(@Valid @RequestBody CanvasRedisRequest canvasRedisRequest) {
+        cutService.saveTempCanvasData(canvasRedisRequest);
         return ResponseEntity.ok().build();
     }
 

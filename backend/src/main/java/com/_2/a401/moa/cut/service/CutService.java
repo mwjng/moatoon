@@ -20,17 +20,17 @@ public class CutService {
 
     private static final String CACHE_PREFIX = "canvas:";   //canvas라는 것을 표시
 
-    public void saveTempCanvasData(CanvasRedisRequest canvasCacheDto) {
+    public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
         try {
             //현재 시간으로 업데이트
-            CanvasRedisRequest updatedCanvasCacheDto=canvasCacheDto.toBuilder()
+            CanvasRedisRequest updatedCanvasRedisRequest=canvasRedisRequest.toBuilder()
                     .timestamp(LocalDateTime.now())
                     .build();
 
-            String key = CACHE_PREFIX + canvasCacheDto.getCutId();
+            String key = CACHE_PREFIX + canvasRedisRequest.getCutId();
 
             //객체를 JSON 문자열로 변환
-            String value = objectMapper.writeValueAsString(updatedCanvasCacheDto);
+            String value = objectMapper.writeValueAsString(updatedCanvasRedisRequest);
             redisTemplate.opsForValue().set(key, value);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON 변환 실패", e);

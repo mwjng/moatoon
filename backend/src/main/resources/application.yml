@@ -44,6 +44,11 @@ openvidu:
   url: ${OPENVIDU_URL}
   secret: ${OPENVIDU_SECRET}
 
+jwt:
+  secret: ${JWT_KEY}
+  access-token-expiration: 3600000
+  refresh-token-expiration: 1209600000
+
 ---
 spring:
   config:

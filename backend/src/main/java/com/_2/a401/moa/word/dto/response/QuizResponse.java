@@ -1,5 +1,7 @@
-package com._2.a401.moa.word.dto;
+package com._2.a401.moa.word.dto.response;
 
+import com._2.a401.moa.word.dto.QuizSentence;
+import com._2.a401.moa.word.dto.QuizWord;
 import lombok.Builder;
 import lombok.Getter;
 
