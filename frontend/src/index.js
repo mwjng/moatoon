@@ -4,10 +4,6 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import DrawPage from './pages/drawPage';
-<<<<<<< HEAD
-
-=======
->>>>>>> 1cdc1fb78f9fbd49bb1dd937d97af04f5eba0049
 import BookGeneratorPage from './pages/BookGeneratorPage'
 import LoginPage from './pages/member/LoginPage'
 import './index.css';
