@@ -41,4 +41,8 @@ public class MyWord extends BaseEntity {
         this.failCount++;
         this.isDeleted = false;
     }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
