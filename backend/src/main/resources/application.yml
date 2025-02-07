@@ -51,7 +51,7 @@ openvidu:
   secret: ${OPENVIDU_SECRET}
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_KEY}
   access-token-expiration: 3600000
   refresh-token-expiration: 1209600000
 
@@ -93,6 +93,18 @@ spring:
   sql:
     init:
       mode: never
+
+  cloud:
+    aws:
+          credentials:
+            accessKey: ${S3_ACCESS}
+            secretKey: ${S3_SECRET}
+          region:
+            static: ${S3_REGION}
+          s3:
+            bucket: ${S3_BUCKET}
+
+
 
 logging:
   level:

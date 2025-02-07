@@ -2,13 +2,17 @@ package com._2.a401.moa.cut.service;
 
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
+import com._2.a401.moa.cut.repository.CutRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -17,8 +21,11 @@ import java.time.LocalDateTime;
 public class CutService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final S3Service s3Sevice;
 
     private static final String CACHE_PREFIX = "canvas:";   //canvas라는 것을 표시
+    private final S3Service s3Service;
+    private final CutRepository cutRepository;
 
     public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
         try {
@@ -54,5 +61,14 @@ public class CutService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON 파싱 실패", e);
         }
+    }
+
+    @Transactional
+    public String savePicture(Long cutId, MultipartFile file) {
+        String cutFileUrl = s3Service.upload(file);
+
+        cutRepository.savePictureByCutId(cutFileUrl, cutId);
+
+        return cutFileUrl;
     }
 }

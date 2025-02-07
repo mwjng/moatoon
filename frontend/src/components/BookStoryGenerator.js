@@ -173,6 +173,7 @@ const BookStoryGenerator = ({
     }
     const coverPrompt = `${overviewText} : 이 이야기의 감성을 살린 동화 일러스트를 생성해줘. 
 오직 그림만 포함되며, 어떠한 텍스트나 숫자, 문자는 절대 포함하지 말아줘. 그리고 프레임을 제외한 순수한 일러스트여야해.`;
+
     try {
       const response = await openai.images.generate({
         model: "dall-e-3",
