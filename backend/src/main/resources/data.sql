@@ -151,16 +151,16 @@ INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) 
 (1, '2025-07-05 12:00:00', 'WEDNESDAY', 78, 'DONE');
 
 -- CUT 테이블에 더미 데이터 추가 (created_at, modified_at 포함)
-INSERT INTO CUT (image_url, content, cut_order, word_id, party_id, random_order, created_at, modified_at) VALUES
-('cut1.jpg', '첫 번째 컷 내용입니다.', 1, 1, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut2.jpg', '두 번째 컷 내용입니다.', 2, 2, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '세 번째 컷 내용입니다.', 3, 3, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '네 번째 컷 내용입니다.', 4, 4, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut1.jpg', '첫 번째 컷 내용입니다.2', 5, 2, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut2.jpg', '두 번째 컷 내용입니다.2', 6, 3, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '세 번째 컷 내용입니다.2', 7, 4, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '네 번째 컷 내용입니다.2', 8, 1, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut1.jpg', '첫 번째 컷 내용입니다.3', 9, 3, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut2.jpg', '두 번째 컷 내용입니다.3', 10, 4, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '세 번째 컷 내용입니다.3', 11, 1, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('cut3.jpg', '네 번째 컷 내용입니다.3', 12, 2, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO CUT (member_id, image_url, content, cut_order, word_id, party_id, random_order, created_at, modified_at) VALUES
+(1,'cut1.jpg', '첫 번째 컷 내용입니다.', 1, 1, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2,'cut2.jpg', '두 번째 컷 내용입니다.', 2, 2, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3,'cut3.jpg', '세 번째 컷 내용입니다.', 3, 3, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4,'cut3.jpg', '네 번째 컷 내용입니다.', 4, 4, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1,'cut1.jpg', '첫 번째 컷 내용입니다.2', 5, 2, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3,'cut2.jpg', '두 번째 컷 내용입니다.2', 6, 3, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2,'cut3.jpg', '세 번째 컷 내용입니다.2', 7, 4, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4,'cut3.jpg', '네 번째 컷 내용입니다.2', 8, 1, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2,'cut1.jpg', '첫 번째 컷 내용입니다.3', 9, 3, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1,'cut2.jpg', '두 번째 컷 내용입니다.3', 10, 4, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3,'cut3.jpg', '세 번째 컷 내용입니다.3', 11, 1, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4,'cut3.jpg', '네 번째 컷 내용입니다.3', 12, 2, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
