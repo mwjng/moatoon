@@ -1,5 +1,6 @@
-package com._2.a401.moa.word.dto;
+package com._2.a401.moa.word.dto.response;
 
+import com._2.a401.moa.word.dto.WordWithExamples;
 import lombok.Builder;
 import lombok.Getter;
 

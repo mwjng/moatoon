@@ -4,7 +4,11 @@
   "private": true,
   "dependencies": {
     "autoprefixer": "^10.4.20",
+<<<<<<< HEAD
     "axios": "^1.7.9",
+=======
+    "axios": "^1.6.2",
+>>>>>>> 1cdc1fb78f9fbd49bb1dd937d97af04f5eba0049
     "cra-template": "1.2.0",
     "konva": "^9.3.18",
     "openai": "^4.82.0",
