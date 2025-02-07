@@ -4,6 +4,7 @@ import com._2.a401.moa.utils.JwtUtil;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
+import com._2.a401.moa.word.dto.response.RandomWordsResponse;
 import com._2.a401.moa.word.service.WordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,12 @@ public class WordController {
     public ResponseEntity<MyWordsResponse> getMyWords(@RequestHeader("Authorization") String token, @RequestParam("page") int page) {
         long memberId = jwtUtil.getMemberId(token);
         return ResponseEntity.ok(wordService.getMyWords(memberId, page));
+    }
+
+    @GetMapping("/words/random")
+    public ResponseEntity<RandomWordsResponse> getRandomWords(
+            @RequestParam("level") int level,
+            @RequestParam("episodeCount") int episodeCount) {
+        return ResponseEntity.ok(wordService.getRandomWords(level, episodeCount));
     }
 }

@@ -5,13 +5,13 @@ import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
-import com._2.a401.moa.word.domain.MyWord;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
 import com._2.a401.moa.word.dto.*;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
+import com._2.a401.moa.word.dto.response.RandomWordsResponse;
 import com._2.a401.moa.word.repository.MyWordRepository;
 import com._2.a401.moa.word.repository.WordExampleRepository;
 import com._2.a401.moa.word.repository.WordRepository;
@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +52,24 @@ public class WordService {
         }
     }
 
+    public RandomWordsResponse getRandomWords(int level, int episodeCount) {
+        // level에 해당하는 단어 (episodeCount * 4)개 무작위 선택
+        List<Word> randomWords = wordRepository.findRandomWordsByLevel(level, episodeCount * 4);
+
+        List<QuizWord> quizWords = new ArrayList<>();
+        for (Word word : randomWords) {
+            quizWords.add(QuizWord
+                    .builder()
+                    .wordId(word.getId())
+                    .word(word.getWord())
+                    .build());
+        }
+
+        return RandomWordsResponse.builder()
+                .words(quizWords)
+                .build();
+    }
+
     public QuizResponse generateQuiz(Long partyId) {
         // 현재 날짜에 해당하는 episode_number 조회
         EpisodeNumberAndLevel episodeNumberAndLevel = partyRepository.findEpisodeNumberAndLevelByPartyIdAndToday(partyId)
@@ -80,7 +97,7 @@ public class WordService {
         }
 
         // level + 1에 해당하는 단어 4개 무작위 선택
-        List<Word> randomWords = wordRepository.findRandomWordsByLevel(level == 6 ? level - 1 : level + 1);
+        List<Word> randomWords = wordRepository.findRandomWordsByLevel(level == 6 ? level - 1 : level + 1, 4);
 
         // 예문을 퀴즈 형태로 분할 및 리스트 생성
         // 단어 선택지 리스트 생성
@@ -111,7 +128,7 @@ public class WordService {
 
         return QuizResponse
                 .builder()
-                .words(quizWords)
+                .quizWords(quizWords)
                 .sentences(quizSentences)
                 .build();
     }
