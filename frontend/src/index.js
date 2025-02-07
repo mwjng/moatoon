@@ -4,12 +4,13 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import DrawPage from './pages/drawPage';
-
-import BookGeneratorPage from './pages/BookGeneratorPage';
-import LoginPage from './pages/member/LoginPage';
+import BookGeneratorPage from './pages/BookGeneratorPage'
+import LoginPage from './pages/member/LoginPage'
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
+import ManagerMainPage from './pages/ManagerMainPage';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -34,6 +35,7 @@ root.render(
             <Route path="waiting" element={<WaitingRoom />}></Route>
             <Route path="main">
                 <Route path="child" element={<ChildMainPage />} />
+                <Route path="manager" element={<ManagerMainPage />} />
             </Route>
         </Routes>
     </BrowserRouter>,
