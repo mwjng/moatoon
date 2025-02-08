@@ -21,7 +21,6 @@ public class MemberController {
 
     @PostMapping("")
     public ResponseEntity<Void> createMember(@Valid @RequestBody final MemberCreate memberCreate) {
-        System.out.println("???");
         memberService.createMember(memberCreate);
         return ResponseEntity.status(CREATED).build();
     }

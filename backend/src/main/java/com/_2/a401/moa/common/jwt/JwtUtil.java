@@ -45,8 +45,6 @@ public class JwtUtil {
 
     @PostConstruct
     private void init() {
-//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-//        this.key =  Keys.hmacShaKeyFor(keyBytes);
         this.key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
     }
