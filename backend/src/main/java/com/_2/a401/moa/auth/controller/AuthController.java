@@ -1,5 +1,6 @@
 package com._2.a401.moa.auth.controller;
 
+import com._2.a401.moa.auth.dto.AuthToken;
 import com._2.a401.moa.auth.dto.LoginInfo;
 import com._2.a401.moa.auth.exception.InvalidTokenException;
 import com._2.a401.moa.auth.service.AuthService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
+import static java.time.LocalDateTime.now;
 
 @RequiredArgsConstructor
 @RestController
@@ -48,23 +50,20 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginInfo loginInfo, HttpServletResponse response) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginInfo.getLoginId(), loginInfo.getPassword())
-        );
 
-        String accessToken = jwtUtil.createAccessToken(authentication);
-        String refreshToken = jwtUtil.createRefreshToken(authentication);
+        final AuthToken authToken = authService.login(loginInfo);
 
-        redisRefreshTokenService.save(loginInfo.getLoginId(), refreshToken);
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        redisRefreshTokenService.save(loginInfo.getLoginId(), authToken.getRefreshToken());
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", authToken.getRefreshToken());
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
         refreshTokenCookie.setMaxAge(refreshExpirationTime); // 7일 동안 유지
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity.ok(Map.of("accessToken", accessToken));
+        return ResponseEntity.ok(Map.of("accessToken", authToken.getAccessToken()));
     }
 
     @PostMapping("/refresh")

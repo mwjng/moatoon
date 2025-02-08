@@ -1,9 +1,22 @@
 package com._2.a401.moa.auth.service;
 
+import com._2.a401.moa.auth.dto.AuthToken;
+import com._2.a401.moa.auth.dto.LoginInfo;
+import com._2.a401.moa.auth.exception.AuthException;
+import com._2.a401.moa.common.jwt.JwtUtil;
+import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+import static com._2.a401.moa.common.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -11,9 +24,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final AuthenticationManager authenticationManager;
+    private final RedisRefreshTokenService redisRefreshTokenService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public boolean checkEmailDup(String email) {
 //        return memberRepository.findEmailExist(email)>0;
         return false;
     }
+
+    @Transactional
+    public AuthToken login(final LoginInfo loginInfo) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginInfo.getLoginId(), loginInfo.getPassword())
+        );
+        final Member member = memberRepository
+                .findByLoginId(loginInfo.getLoginId())
+                .orElseThrow(() -> new AuthException(INVALID_USER_ID));
+
+        final AuthToken authToken = jwtUtil.createAccessAndRefreshToken(authentication);
+        redisRefreshTokenService.save(loginInfo.getLoginId(), authToken.getRefreshToken());
+        return authToken;
+
+    }
+
+
+
 }
