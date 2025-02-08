@@ -34,6 +34,39 @@ public class WordService {
     private final MyWordRepository myWordRepository;
     private final MemberRepository memberRepository;
 
+    public MyWordsResponse getMyWords(Long memberId, int page, String keyword) {
+        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, page - 1, keyword);
+
+        Long totalCount = myWordRepository.countAll(memberId, keyword);
+        int totalPage = (int) (totalCount / 4) + 1;
+
+        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
+        if (myWordExamples.isEmpty()) {
+            return MyWordsResponse.builder()
+                    .myWordWithExamples(myWordWithExamples)
+                    .build();
+        }
+
+        for (int i = 0; i < myWordExamples.size(); i += 2) {
+            List<String> examples = new ArrayList<>();
+            examples.add(myWordExamples.get(i).getExample());
+            examples.add(myWordExamples.get(i + 1).getExample());
+            myWordWithExamples.add(MyWordWithExamples
+                    .builder()
+                    .id(myWordExamples.get(i).getId())
+                    .word(myWordExamples.get(i).getWord())
+                    .meaning(myWordExamples.get(i).getMeaning())
+                    .failCount(myWordExamples.get(i).getFailCount())
+                    .examples(examples)
+                    .build());
+        }
+
+        return MyWordsResponse.builder()
+                .myWordWithExamples(myWordWithExamples)
+                .totalPage(totalPage)
+                .build();
+    }
+
     @Transactional
     public void removeWord(long memberId, WordIdRequest wordIdRequest) {
         long wordId = wordIdRequest.getWordId();
@@ -173,35 +206,6 @@ public class WordService {
         return LearningWordsResponse
                 .builder()
                 .words(wordWithExamples)
-                .build();
-    }
-
-    public MyWordsResponse getMyWords(Long memberId, int page) {
-        List<MyWordExample> myWordExamples = myWordRepository.findAllWithId(memberId, page - 1);
-
-        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
-        if (myWordExamples.isEmpty()) {
-            return MyWordsResponse.builder()
-                    .myWordWithExamples(myWordWithExamples)
-                    .build();
-        }
-
-        for (int i = 0; i < myWordExamples.size(); i += 2) {
-            List<String> examples = new ArrayList<>();
-            examples.add(myWordExamples.get(i).getExample());
-            examples.add(myWordExamples.get(i + 1).getExample());
-            myWordWithExamples.add(MyWordWithExamples
-                    .builder()
-                    .id(myWordExamples.get(i).getId())
-                    .word(myWordExamples.get(i).getWord())
-                    .meaning(myWordExamples.get(i).getMeaning())
-                    .failCount(myWordExamples.get(i).getFailCount())
-                    .examples(examples)
-                    .build());
-        }
-
-        return MyWordsResponse.builder()
-                .myWordWithExamples(myWordWithExamples)
                 .build();
     }
 }
