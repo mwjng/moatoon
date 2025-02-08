@@ -5,10 +5,12 @@ import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
+import com._2.a401.moa.word.domain.MyWord;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
 import com._2.a401.moa.word.dto.*;
 import com._2.a401.moa.word.dto.request.WordIdRequest;
+import com._2.a401.moa.word.dto.request.AddWordsRequest;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -81,21 +84,25 @@ public class WordService {
     }
 
     @Transactional
-    public void addMyWords(Long memberId, Long wordId) {
+    public void addMyWords(Long memberId, AddWordsRequest addWordsRequest) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
 
-        Optional<MyWord> myWord = myWordRepository.findByIdAndMemberId(memberId, wordId);
+        List<Long> wordIds = addWordsRequest.getWordIds();
 
-        if (myWord.isPresent()) {
-            myWord.get().countFail();
-        } else {
-            Word word = wordRepository.findById(wordId)
-                    .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
+        for (long wordId : wordIds) {
+            Optional<MyWord> myWord = myWordRepository.findByIdAndMemberId(memberId, wordId);
 
-            MyWord newMyWord = new MyWord(1, false, word, member);
+            if (myWord.isPresent()) {
+                myWord.get().countFail();
+            } else {
+                Word word = wordRepository.findById(wordId)
+                        .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
 
-            myWordRepository.save(newMyWord);
+                MyWord newMyWord = new MyWord(1, false, word, member);
+
+                myWordRepository.save(newMyWord);
+            }
         }
     }
 

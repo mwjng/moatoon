@@ -2,6 +2,7 @@ package com._2.a401.moa.word.controller;
 
 import com._2.a401.moa.word.dto.request.WordIdRequest;
 import com._2.a401.moa.common.jwt.JwtUtil;
+import com._2.a401.moa.word.dto.request.AddWordsRequest;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
@@ -29,9 +30,9 @@ public class WordController {
     }
 
     @PostMapping("/words/saved-words")
-    public ResponseEntity<Object> addMyWords(@RequestHeader("Authorization") String token, @RequestParam("wordId") long wordId) {
+    public ResponseEntity<Object> addMyWords(@RequestHeader("Authorization") String token, @RequestBody AddWordsRequest addWordsRequest) {
         long memberId = jwtUtil.getMemberId(token);
-        wordService.addMyWords(memberId, wordId);
+        wordService.addMyWords(memberId, addWordsRequest);
         return ResponseEntity.ok().build();
     }
 
