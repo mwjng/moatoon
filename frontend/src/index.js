@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
-import DrawPage from './pages/drawPage';
 
 import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
+import DrawPage from './pages/DrawPage';
+import LibraryPage from './pages/LibraryPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -22,9 +23,7 @@ root.render(
                 <Route path="search" />
                 <Route path="create" element={<BookGeneratorPage />} />
             </Route>
-            <Route path="library">
-                <Route index />
-            </Route>
+            <Route path="library" element={<LibraryPage />} />
             <Route path="word">
                 <Route index />
             </Route>
