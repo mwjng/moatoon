@@ -29,6 +29,7 @@ public enum ExceptionCode {
     EXPIRED_REFRESH_TOKEN(4009,  "만료된 RefreshToken 입니다."),
     INVALID_MEMBER_ROLE(4010,  "유효하지 않은 권한 정보 입니다."),
     FAIL_OAUTH_USERINFO_RETRIEVAL(4011,  "회원 정보를 가져오는데 실패했습니다."),
+    INVALID_MEMBER_STATUS(4012, "유효하지 않은 회원 상태입니다."),
 
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),

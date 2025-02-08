@@ -3,8 +3,11 @@ package com._2.a401.moa.member.domain;
 import com._2.a401.moa.common.auditing.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com._2.a401.moa.member.domain.MemberState.ACTIVE;
 
 @Table(name = "member")
 @Getter
@@ -44,4 +47,25 @@ public class Member extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id")
     private Member manager;
+
+    @Builder
+    public Member(
+            final String nickname,
+            final String name,
+            final String email,
+            final String password,
+            final String loginId,
+            final String imageUrl,
+            final MemberRole role,
+            final MemberState status
+    ) {
+        this.nickname = nickname;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.loginId = loginId;
+        this.imageUrl = imageUrl;
+        this.role = role;
+        this.status = ACTIVE;
+    }
 }

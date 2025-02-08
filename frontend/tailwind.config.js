@@ -23,7 +23,9 @@ module.exports = {
                 'light-cream': '#FDFFE9', // 아동 메인 배경색
                 'butter-cream' : '#FFF8CF',
                 'lime-cream' : '#F3F8C0',
-                'gray1' : '#444444'
+                'gray1' : '#444444',
+                'blue1' : '#D9F0FE',
+                'light-blue1' : '#EDF7FF'
             },
         },
     },
