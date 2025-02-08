@@ -2,9 +2,9 @@ package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
-import com._2.a401.moa.schedule.dto.response.MemberCalendarSchedulesResponse;
+import com._2.a401.moa.schedule.dto.response.MemberCalendarSchedules;
 import com._2.a401.moa.schedule.dto.response.MonthlyChildrenSchedulesResponse;
-import com._2.a401.moa.schedule.dto.response.CalendarScheduleResponse;
+import com._2.a401.moa.schedule.dto.response.CalendarSchedule;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,12 +23,12 @@ public class ScheduleService {
         List<Member> children = memberRepository.findByManagerId(1L);// TODO: 추후 jwt에서 가지고와야함.
 
         // 각 아동의 스케줄을 조회하여 MemberSchedulesResponse를 만들고, 리스트로 만든다.
-        List<MemberCalendarSchedulesResponse> childrenSchedules = children.stream()
+        List<MemberCalendarSchedules> childrenSchedules = children.stream()
                 .map(child -> {
                     // 해당 아동이 요구하는 년도, 월에 가지고 있는 스케줄을 조회
-                    List<CalendarScheduleResponse> schedules = scheduleRepository.findSchedulesByMemberIdAndYearAndMonth(child.getId(), year, month);
+                    List<CalendarSchedule> schedules = scheduleRepository.findSchedulesByMemberIdAndYearAndMonth(child.getId(), year, month);
 
-                    return new MemberCalendarSchedulesResponse(
+                    return new MemberCalendarSchedules(
                             child.getId(), // 아동의 ID
                             child.getName(), // 아동의 이름
                             schedules

@@ -1,7 +1,7 @@
 package com._2.a401.moa.schedule.repository;
 
 import com._2.a401.moa.schedule.domain.Schedule;
-import com._2.a401.moa.schedule.dto.response.CalendarScheduleResponse;
+import com._2.a401.moa.schedule.dto.response.CalendarSchedule;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,9 +23,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         AND MONTH(s.session_time) = :month
         ORDER BY s.session_time
         """, nativeQuery = true)
-    List<CalendarScheduleResponse> findSchedulesByMemberIdAndYearAndMonth(@Param("memberId") Long memberId,
-                                                                          @Param("year") int year,
-                                                                          @Param("month") int month);
+    List<CalendarSchedule> findSchedulesByMemberIdAndYearAndMonth(@Param("memberId") Long memberId,
+                                                                  @Param("year") int year,
+                                                                  @Param("month") int month);
 
 //    public interface ScheduleProjection {
 //        int getScheduleId();
