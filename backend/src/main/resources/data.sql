@@ -71,6 +71,7 @@ INSERT INTO PARTY_MEMBER (member_id, party_id, created_at, modified_at) VALUES
 
 -- SCHEDULE 테이블에 더미 데이터 추가
 INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) VALUES
+(2, '2025-02-08 12:00:00', 'MONDAY', 1, 'DONE'),
 (1, '2025-02-01 12:00:00', 'MONDAY', 1, 'DONE'),
 (1, '2025-02-03 12:00:00', 'WEDNESDAY', 2, 'DONE'),
 (1, '2025-02-05 12:00:00', 'MONDAY', 3, 'DONE'),
@@ -152,6 +153,10 @@ INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) 
 
 -- CUT 테이블에 더미 데이터 추가 (created_at, modified_at 포함)
 INSERT INTO CUT (member_id, image_url, content, cut_order, word_id, party_id, random_order, created_at, modified_at) VALUES
+(1,'cut1.jpg', '첫 번째 컷 내용입니다.', 1, 1, 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2,'cut2.jpg', '두 번째 컷 내용입니다.', 2, 2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3,'cut3.jpg', '세 번째 컷 내용입니다.', 3, 3, 2, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4,'cut3.jpg', '네 번째 컷 내용입니다.', 4, 4, 2, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1,'cut1.jpg', '첫 번째 컷 내용입니다.', 1, 1, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (2,'cut2.jpg', '두 번째 컷 내용입니다.', 2, 2, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (3,'cut3.jpg', '세 번째 컷 내용입니다.', 3, 3, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
