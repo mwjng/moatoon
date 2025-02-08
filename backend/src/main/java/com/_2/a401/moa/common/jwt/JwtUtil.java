@@ -17,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.*;
@@ -44,6 +46,8 @@ public class JwtUtil {
     private void init() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key =  Keys.hmacShaKeyFor(keyBytes);
+//        this.key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
+//                Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
     public String createAccessToken(Authentication authentication){

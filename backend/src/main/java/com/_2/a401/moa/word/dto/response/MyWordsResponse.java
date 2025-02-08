@@ -9,5 +9,6 @@ import java.util.List;
 @Getter
 @Builder
 public class MyWordsResponse {
+    int totalPage;
     List<MyWordWithExamples> myWordWithExamples;
 }
