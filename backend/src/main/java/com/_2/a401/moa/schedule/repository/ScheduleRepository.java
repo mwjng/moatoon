@@ -1,5 +1,6 @@
 package com._2.a401.moa.schedule.repository;
 
+import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.ScheduleState;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static com._2.a401.moa.common.exception.ExceptionCode.SCHEDULE_NOT_FOUND;
+
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+
+    default void validateExistsById(Long id) {
+        if (!existsById(id)) {
+            throw new MoaException(SCHEDULE_NOT_FOUND);
+        }
+    }
+
+    default Schedule fetchById(Long id) {
+        return findById(id)
+            .orElseThrow(() -> new MoaException(SCHEDULE_NOT_FOUND));
+    }
 
     List<Schedule> findBySessionTimeBetweenAndStatus(LocalDateTime now,
                                                      LocalDateTime thirtyMinutesLater,
@@ -23,6 +37,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "SET schedule.status = :scheduleState " +
             "WHERE schedule.id IN :scheduleIds")
     void bulkUpdateScheduleStatus(Set<Long> scheduleIds, ScheduleState scheduleState);
+
+    @Modifying
+    @Query("UPDATE Schedule schedule " +
+            "SET schedule.status = 'DONE' " +
+            "WHERE schedule.id = :scheduleId")
+    void completeScheduleById(@Param("scheduleId") Long scheduleId);
 
     // FORMATDATETIME(s.session_time, 'yyyy-MM-dd HH:mm:ss') AS sessionTime - (H2용)
     // DATE_FORMAT(s.session_time, '%Y-%m-%dT%H:%i:%s') AS sessionTime - (MySql용)

@@ -8,13 +8,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com._2.a401.moa.schedule.domain.ScheduleState.BEFORE;
-import static com._2.a401.moa.schedule.domain.ScheduleState.DONE;
+import static com._2.a401.moa.schedule.domain.ScheduleState.*;
 import static java.time.LocalDateTime.now;
 
 @Service
@@ -22,6 +22,7 @@ import static java.time.LocalDateTime.now;
 public class SessionScheduler {
 
     private static final String SESSION_KEY_PREFIX = "session:";
+    private static final Duration SESSION_TTL = Duration.ofMinutes(90L);
 
     private final VideoConferenceManager videoConferenceManager;
     private final ScheduleRepository scheduleRepository;
@@ -35,11 +36,11 @@ public class SessionScheduler {
 
         for (Schedule schedule : schedules) {
             final String sessionId = videoConferenceManager.createSession();
-            redisTemplate.opsForValue().set(SESSION_KEY_PREFIX + schedule.getId(), sessionId);
+            redisTemplate.opsForValue().set(SESSION_KEY_PREFIX + schedule.getId(), sessionId, SESSION_TTL);
         }
         final Set<Long> scheduleIds = schedules.stream()
             .map(Schedule::getId)
             .collect(Collectors.toSet());
-        scheduleRepository.bulkUpdateScheduleStatus(scheduleIds, DONE);
+        scheduleRepository.bulkUpdateScheduleStatus(scheduleIds, ONGOING);
     }
 }

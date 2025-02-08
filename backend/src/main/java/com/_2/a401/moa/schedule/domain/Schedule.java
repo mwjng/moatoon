@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com._2.a401.moa.schedule.domain.ScheduleState.ONGOING;
+
 @Table(name = "schedule")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -34,4 +36,8 @@ public class Schedule {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "party_id")
     private Party party;
+
+    public boolean isActive() {
+        return ONGOING.equals(status);
+    }
 }

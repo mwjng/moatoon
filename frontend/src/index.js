@@ -4,10 +4,6 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 import DrawPage from './pages/drawPage';
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
 import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 import './index.css';
