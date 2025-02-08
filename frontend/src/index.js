@@ -10,6 +10,7 @@ import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
 import ManagerMainPage from './pages/ManagerMainPage';
+import WordLearning from "./pages/WordLearning";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -19,6 +20,7 @@ root.render(
             <Route index element={<App />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="/session">
+                <Route path="learning" element={<WordLearning/>} />
                 <Route path="draw" element={<DrawPage />} />
                 <Route path="search" />
                 <Route path="create" element={<BookGeneratorPage />} />
