@@ -5,8 +5,11 @@ import Input from '../../components/member/Input';
 import { login } from '../../api/member';
 import { Link } from 'react-router';
 import Btn from '../../components/member/Btn';
+import { useNavigate } from 'react-router';
 
 export default function LoginPage() {
+    const navigate = useNavigate();
+
     const inputs = [
         { id: 'loginId', value: '아이디', type: 'text', color: '#fff', require: true },
         { id: 'password', value: '비밀번호', type: 'password', color: '#fff', require: true },
@@ -24,8 +27,12 @@ export default function LoginPage() {
         }));
     };
 
-    const loginHandler = () => {
-        login(loginState);
+    const loginHandler = async () => {
+        try {
+            await login(loginState, navigate);
+        } catch (error) {
+            console.error('로그인 중 에러 발생:', error);
+        }
     };
 
     return (
