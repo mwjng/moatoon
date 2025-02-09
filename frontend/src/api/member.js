@@ -30,9 +30,7 @@ export const uploadImage = async file => {
 export const childRegist = async (registInfo, navigate) => {
     try {
         const res = await axios.post(MEMBERS_API_URL, registInfo);
-        if (res.status === 201) {
-            navigate('/login');
-        }
+        return res;
     } catch (err) {
         console.error(err);
         throw err;

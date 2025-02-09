@@ -13,6 +13,7 @@ export default function ChildRegistPage() {
     const [imgFile, setImgFile] = useState('');
     const [canRegist, setCanRegist] = useState(false);
     const [modalState, setModalState] = useState(false);
+    const [registModalState, setRegistModalState] = useState(false);
     const imgRef = useRef();
     const [registState, setRegistState] = useState([
         {
@@ -180,7 +181,10 @@ export default function ChildRegistPage() {
                 { role: 'CHILD', imgUrl: imgFile },
             );
 
-            await childRegist(registInfo, navigate);
+            const res = await childRegist(registInfo, navigate);
+            if (res.status === 201) {
+                setRegistModalState(true);
+            }
         } else {
             setModalState(true);
         }
@@ -188,6 +192,10 @@ export default function ChildRegistPage() {
 
     const closeModal = () => {
         setModalState(false);
+    };
+    const closeRegistModal = () => {
+        setRegistModalState(false);
+        navigate('/login');
     };
 
     return (
@@ -233,6 +241,11 @@ export default function ChildRegistPage() {
                 <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
             </AuthModal>
             <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
+            <AlertModal
+                text="회원가입이 완료되었습니다."
+                modalState={registModalState}
+                closeHandler={closeRegistModal}
+            />
         </div>
     );
 }
