@@ -1,6 +1,7 @@
 package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.common.redis.SessionRedisService;
+import com._2.a401.moa.common.redis.dto.SessionStage;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
@@ -62,7 +63,7 @@ public class ScheduleService {
 
     private TodayAndUpcomingScheduleResponse createResponseWithTodaySchedule(List<ScheduleInfo> schedules) {
         ScheduleInfo todaySchedule = schedules.get(0);
-        String sessionStage = getSessionStage(todaySchedule); // 오늘의 일정의 세션 진행단계 구하기
+        SessionStage sessionStage = getSessionStage(todaySchedule); // 오늘의 일정의 세션 진행단계 구하기
         return TodayAndUpcomingScheduleResponse.of(
                 TodaySchedule.of(todaySchedule, sessionStage),
                 createUpcomingSchedules(schedules, 1)
@@ -84,12 +85,12 @@ public class ScheduleService {
                 .toList();
     }
 
-    private String getSessionStage(ScheduleInfo schedule) {
+    private SessionStage getSessionStage(ScheduleInfo schedule) {
         if (schedule.status().equals("BEFORE")) {
             // 만약 DB에 Schedule status가 BEFORE라면 redis에 올라가지 않은 상태!
-            return "BEFORE";
+            return SessionStage.BEFORE;
         }
-        return sessionRedisService.getSessionStage(schedule.scheduleId());
+        return sessionRedisService.getSessionInfo(schedule.scheduleId()).sessionStage();
     }
 
 

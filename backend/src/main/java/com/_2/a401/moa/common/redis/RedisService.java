@@ -1,6 +1,7 @@
 package com._2.a401.moa.common.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,13 +22,13 @@ public class RedisService {
         }
     }
 
-    public <T> T get(String key, Class<T> classType) {
+    public <T> T get(String key, TypeReference<T> typeReference) {
         try {
             String jsonValue = (String) redisTemplate.opsForValue().get(key);
             if (jsonValue == null) {
                 return null;
             }
-            return objectMapper.readValue(jsonValue, classType);
+            return objectMapper.readValue(jsonValue, typeReference);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to convert JSON to object", e);
         }
