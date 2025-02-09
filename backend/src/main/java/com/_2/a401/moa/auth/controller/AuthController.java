@@ -26,6 +26,7 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthService authService;
@@ -36,12 +37,19 @@ public class AuthController {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private int refreshExpirationTime;
 
+    @GetMapping("/id/check?loginId={loginId}")
+    public ResponseEntity<String> checkLoginId(@RequestParam String loginId){
+        authService.checkLoginId(loginId);
+        return new ResponseEntity<>("사용가능 한 아이디", HttpStatus.OK);
+
+
+    }
+
     @PostMapping("/email/check")
     public ResponseEntity<String> checkEmailInRegist(@RequestBody Map<String, String> request){
         String email = request.get("email").trim();
-        if(authService.checkEmailDup(email)){
-            return new ResponseEntity<>("이미 존재하는 이메일", HttpStatus.CONFLICT);
-        }
+        authService.checkEmailDup(email);
+
         if(mailService.sendCodeMail(email)){
             return new ResponseEntity<>("이메일 코드 전송 성공", HttpStatus.OK);
         }

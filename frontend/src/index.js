@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
+// import DrawPage from './pages/drawPage';
 
 import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
