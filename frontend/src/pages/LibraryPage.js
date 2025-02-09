@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback } from 'react';
 import Navigation from '../components/Navigation';
 import LibraryBookCard from '../components/library/LibraryBookCard';
 import cado from '../assets/cado.svg';
-import useFetchBooks from '../api/useLibraryBooks.js'; // 서버 페이징 적용된 훅
+import useFetchBooks from '../hooks/useLibraryBooks.js'; // 서버 페이징 적용된 훅
 import { debounce } from 'lodash';
 
 function LibraryPage() {
@@ -47,10 +47,7 @@ function LibraryPage() {
             </div>
             {loading && <div className="mt-4 text-gray-500">Loading...</div>}
             {/*!hasMore && <div className="mt-4 text-gray-500"></div>*/}
-            <div ref={observerRef} className="h-10">
-                더 이상 불러올 책이 없습니다.
-            </div>{' '}
-            {/* 스크롤할 영역 */}
+            <div ref={observerRef} className="h-10"></div>
         </div>
     );
 }
