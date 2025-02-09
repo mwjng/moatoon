@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import React, { useEffect, useRef, useState } from 'react';
 import cameraOnImg from '../assets/icon-video-camera.png';
 import cameraOffImg from '../assets/icon-video-off.png';
@@ -8,16 +7,10 @@ import guideOnImg from '../assets/icon-switch-on.png';
 import guideOffImg from '../assets/icon-switch-off.png';
 
 function CameraMicControls({ publisher }) {
-=======
-import React, { useState } from 'react';
-
-function CameraMicControls() {
->>>>>>> Stashed changes
     const [cameraOn, setCameraOn] = useState(true);
     const [micOn, setMicOn] = useState(true);
     const [guideOn, setGuideOn] = useState(true);
 
-<<<<<<< Updated upstream
     const streamRef = useRef(null);
 
     useEffect(() => {
@@ -74,45 +67,18 @@ function CameraMicControls() {
         >
             <button onClick={toggleCamera} className="flex flex-col items-center justify-center p-1 text-black">
                 <img src={cameraIcon} alt="camera-icon" className="w-8 h-8" />
-=======
-    const cameraIcon = cameraOn ? '📷' : '🚫📷';
-    const cameraText = cameraOn ? 'on' : 'off';
-
-    const micIcon = micOn ? '🎤' : '🚫🎤';
-    const micText = micOn ? 'on' : 'off';
-
-    const guideIcon = '📘';
-    const guideText = guideOn ? 'on' : 'off';
-
-    return (
-        <div className="shadow-md rounded-lg p-2" style={{ backgroundColor: '#FDFCDC' }}>
-            <button
-                onClick={() => setCameraOn(!cameraOn)}
-                className="flex flex-col items-center justify-center p-2 text-black"
-            >
-                <span className="text-1xl">{cameraIcon}</span>
->>>>>>> Stashed changes
                 <span className="mt-1 text-sm">카메라</span>
                 <span className="mt-1 text-sm">{cameraText}</span>
             </button>
 
-<<<<<<< Updated upstream
             <button onClick={toggleMic} className="flex flex-col items-center justify-center text-black p-1">
                 <img src={micIcon} alt="mic-icon" className="w-8 h-8" />
-=======
-            <button
-                onClick={() => setMicOn(!micOn)}
-                className="flex flex-col items-center justify-center text-black p-2"
-            >
-                <span className="text-1xl">{micIcon}</span>
->>>>>>> Stashed changes
                 <span className="mt-1 text-sm">마이크</span>
                 <span className="mt-1 text-sm">{micText}</span>
             </button>
 
             <button
                 onClick={() => setGuideOn(!guideOn)}
-<<<<<<< Updated upstream
                 className="flex flex-col items-center justify-center text-black p-1"
             >
                 <img src={guideIcon} alt="guide-icon" className="w-8 h-8" />
@@ -120,13 +86,6 @@ function CameraMicControls() {
                     사용
                     <br />
                     가이드
-=======
-                className="flex flex-col items-center justify-center text-black p-2"
-            >
-                <span className="text-1xl">{guideIcon}</span>
-                <span className="mt-1 text-sm">
-                    사용<br></br> 가이드
->>>>>>> Stashed changes
                 </span>
                 <span className="mt-1 text-sm">{guideText}</span>
             </button>

@@ -1,17 +1,12 @@
-<<<<<<< Updated upstream
 import React, { useEffect, useState } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-=======
-import React from 'react';
->>>>>>> Stashed changes
 import Navigation from '../components/Navigation';
 import MyCamera from '../components/MyCamera';
 import OtherCameras from '../components/OtherCameras';
 import CameraMicControls from '../components/CameraMicControls';
 import BookDisplay from '../components/BookDisplay';
 import FooterNotice from '../components/FooterNotice';
-<<<<<<< Updated upstream
 import base64 from 'base-64';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/';
@@ -121,26 +116,6 @@ function WaitingRoom() {
                     <FooterNotice />
                 </div>
             </div>
-=======
-
-function WaitingRoom() {
-    return (
-        <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
-            <Navigation />
-            <div className="flex flex-none flex-row w-full justify-center gap-4">
-                <div className="flex flex-col bg-white rounded-3xl p-4 shadow-md w-3/4">
-                    <div className="flex flex-row gap-4 justify-center">
-                        <MyCamera />
-                        <CameraMicControls />
-                    </div>
-                    <OtherCameras />
-                </div>
-                <div className="flex w-1/4 justify-center">
-                    <BookDisplay />
-                </div>
-            </div>
-            <FooterNotice />
->>>>>>> Stashed changes
         </div>
     );
 }
