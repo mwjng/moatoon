@@ -110,6 +110,12 @@ public class JwtUtil {
     }
 
     public long getMemberId(String token) {
+        if (token == null || token.isEmpty()) {
+            System.out.println("토큰이 없습니다!");
+            return 0;
+        }else{
+            System.out.println(token);
+        }
         Claims payload = getClaims(token).getPayload();
         return payload.get("memberId", Long.class);
     }
