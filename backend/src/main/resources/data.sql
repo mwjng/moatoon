@@ -100,4 +100,8 @@ INSERT INTO CUT (member_id, image_url, content, cut_order, word_id, party_id, ra
 (2,'cut1.jpg', '첫 번째 컷 내용입니다.3', 9, 3, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (1,'cut2.jpg', '두 번째 컷 내용입니다.3', 10, 4, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (3,'cut3.jpg', '세 번째 컷 내용입니다.3', 11, 1, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(4,'cut3.jpg', '네 번째 컷 내용입니다.3', 12, 2, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+(4,'cut3.jpg', '네 번째 컷 내용입니다.3', 12, 2, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1,'cut1.jpg', '첫 번째 컷 내용입니다.', 1, 1, 2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2,'cut2.jpg', '두 번째 컷 내용입니다.', 2, 2, 2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(3,'cut3.jpg', '세 번째 컷 내용입니다.', 3, 3, 2, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(4,'cut3.jpg', '네 번째 컷 내용입니다.', 4, 4, 2, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

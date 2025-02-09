@@ -3,11 +3,13 @@ package com._2.a401.moa.schedule.repository;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
 import com._2.a401.moa.schedule.dto.response.CalendarSchedule;
+import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     // FORMATDATETIME(s.session_time, 'yyyy-MM-dd HH:mm:ss') AS sessionTime - (H2용)
@@ -44,4 +46,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             LIMIT 4
     """, nativeQuery = true)
     List<ScheduleInfo> findBeforeAndOngoingSchedules(@Param("memberId") Long memberId);
+
+    @Query(value = "SELECT s.party_id, s.episode_number " +
+            "FROM Schedule s " +
+            "WHERE s.id = :scheduleId", nativeQuery = true)
+    Optional<ScheduleInfoResponse> getScheduleInfo(@Param("scheduleId") Long scheduleId);
+
 }

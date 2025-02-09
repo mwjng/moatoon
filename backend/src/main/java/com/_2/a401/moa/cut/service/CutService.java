@@ -3,11 +3,17 @@ package com._2.a401.moa.cut.service;
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.common.s3.S3Service;
+import com._2.a401.moa.cut.domain.Cut;
 import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
+import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
+import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
+import com._2.a401.moa.schedule.repository.ScheduleRepository;
+import com._2.a401.moa.schedule.service.ScheduleService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,17 +21,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class CutService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
-    private final S3Service s3Sevice;
 
     private static final String CACHE_PREFIX = "canvas:";   //canvas라는 것을 표시
+
     private final S3Service s3Service;
     private final CutRepository cutRepository;
+    private final ScheduleService scheduleService;
+    private final ScheduleRepository scheduleRepository;
 
     public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
         try {
@@ -70,5 +80,24 @@ public class CutService {
         cutRepository.savePictureByCutId(cutFileUrl, cutId);
 
         return cutFileUrl;
+    }
+
+    public List<PictureResponse> getPictureData(Long scheduleId) {
+        ScheduleInfoResponse scheduleInfo = scheduleRepository.getScheduleInfo(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));;
+
+        int startRange = scheduleInfo.getEpisodeNumber() * 4 - 3;
+        int endRange = scheduleInfo.getEpisodeNumber() * 4;
+
+        List<Cut> cuts=cutRepository.getCutsByRange(scheduleInfo.getPartyId(), startRange, endRange);
+
+        return cuts.stream()
+                .map(cut -> PictureResponse.builder()
+                        .id(cut.getId())
+                        .cutOrder(cut.getCutOrder())
+                        .content(cut.getContent())
+                        .imageUrl(cut.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
