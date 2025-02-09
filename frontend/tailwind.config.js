@@ -28,7 +28,8 @@ module.exports = {
                 'blue1' : '#D9F0FE',
                 'light-blue1': '#EDF7FF',
                 'light-yellow': '#FBEF9D',
-            },
+                'burnt-sienna': "#F07167",
+            }
         },
     },
     plugins: [require('daisyui')],
