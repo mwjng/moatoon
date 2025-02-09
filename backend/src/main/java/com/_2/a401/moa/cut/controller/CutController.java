@@ -2,6 +2,7 @@ package com._2.a401.moa.cut.controller;
 
 import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
+import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.service.CutService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -45,5 +48,11 @@ public class CutController {
         String cutImageUrl=cutService.savePicture(cutId, file);
 
         return ResponseEntity.ok(cutImageUrl);
+    }
+
+    @Operation(summary="완성 그림 조회", description="완성된 그림 데이터를 조회합니다.")
+    @GetMapping("/final/{scheduledId}")
+    public ResponseEntity<List<PictureResponse>> getFinalPicture(@PathVariable Long scheduledId) {
+        return ResponseEntity.ok().body(cutService.getPictureData(scheduledId));
     }
 }
