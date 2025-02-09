@@ -36,11 +36,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-<<<<<<< HEAD
-                        .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/members").permitAll()
-=======
-                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/email/check", "/members", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
->>>>>>> 0857f5e9c66554ef06612c40bb4ad333ac0c205a
+                        .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/members", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

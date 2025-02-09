@@ -15,11 +15,8 @@ public class ChildInfo {
     private String nickname;
     private String imageUrl;
 
-<<<<<<< HEAD
+
     public static ChildInfo from(Member child) {
-=======
-    public static ChildInfo of(Member child) {
->>>>>>> 0857f5e9c66554ef06612c40bb4ad333ac0c205a
         return ChildInfo.builder()
                 .id(child.getId())
                 .name(child.getName())
