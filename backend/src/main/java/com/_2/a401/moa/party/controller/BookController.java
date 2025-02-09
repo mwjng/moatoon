@@ -5,6 +5,7 @@ import com._2.a401.moa.party.dto.response.BookListResponse;
 import com._2.a401.moa.party.dto.response.EBookResponse;
 import com._2.a401.moa.party.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +20,10 @@ public class BookController {
     @GetMapping("/books/{memberId}")
     public ResponseEntity<BookListResponse> getBookList(
             @PathVariable Long memberId,
-            @RequestParam(required = false, defaultValue = "BEFORE") PartyState status
+            @RequestParam(required = false, defaultValue = "BEFORE") PartyState status,
+            Pageable pageable
     ) {
-        return ResponseEntity.ok().body(bookService.getAllBooks(memberId, status));
+        return ResponseEntity.ok().body(bookService.getAllBooks(memberId, status, pageable));
     }
 
     @GetMapping("/books/ebook/{partyId}")

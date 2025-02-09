@@ -10,7 +10,6 @@ import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
 import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
-import com._2.a401.moa.schedule.service.ScheduleService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,10 +30,8 @@ public class CutService {
     private final ObjectMapper objectMapper;
 
     private static final String CACHE_PREFIX = "canvas:";   //canvas라는 것을 표시
-
     private final S3Service s3Service;
     private final CutRepository cutRepository;
-    private final ScheduleService scheduleService;
     private final ScheduleRepository scheduleRepository;
 
     public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
