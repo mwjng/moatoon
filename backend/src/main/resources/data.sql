@@ -19,6 +19,18 @@ INSERT INTO MEMBER ( manager_id, role, name, login_id, nickname, password, statu
 INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, progress_count, status, start_date, is_public, end_date, created_at, modified_at) VALUES
 ('이것은 샘플 파티입니다', '1234', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ('또 다른 흥미진진한 파티', '5678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '1235', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '5674', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '1231', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '5628', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '1134', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '1678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '1132', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '1670', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '1334', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '6678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('이것은 샘플 파티입니다', '5134', 'cover_url_1.jpg', '책 1', 1, 10, 1, 'BEFORE', '2025-02-01', 1, '2025-03-15', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('또 다른 흥미진진한 파티', '2678', 'cover_url_2.jpg', '책 2', 2, 15, 1, 'BEFORE', '2025-03-01', 1, '2025-04-10', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 ('최종 파티', '9012', 'cover_url_3.jpg', '책 3', 3, 20, 1, 'BEFORE', '2025-04-01', 0, '2025-04-30', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- PARTY_KEYWORD 테이블에 더미 데이터 추가
@@ -67,6 +79,16 @@ INSERT INTO MY_WORD (member_id, word_id, is_deleted, fail_count, created_at, mod
 INSERT INTO PARTY_MEMBER (member_id, party_id, created_at, modified_at) VALUES
 (2, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (2, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 7, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 9, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 10, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(2, 12, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (3, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- SCHEDULE 테이블에 더미 데이터 추가

@@ -8,13 +8,21 @@ import accountCircle from '../assets/account-circle.svg';
 import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router';
+import { NavLink, useNavigate } from 'react-router';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, targetTime, schedule }) {
+function Navigation({ stage, leaveSession, targetTime, schedule }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
+
+    const navigate = useNavigate();
+    const handleBackClick = () => {
+        if (stage === 'waiting') {
+            leaveSession(); // 세션에서 나가기
+            navigate('/'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+        }
+    };
 
     //단계 정보, 삭제 필요 (대기방, 단어 학습, 뽑기, 그림 그리기, 그림 보기, 퀴즈)
     // stage = 'quiz';
@@ -100,14 +108,14 @@ function Navigation({ stage, targetTime, schedule }) {
     };
 
     return (
-        <header className="shadow-lg rounded-full bg-white">
+        <header className="shadow-lg rounded-full bg-white w-full">
             {stage ? (
                 <div className="flex flew-row justify-between py-4 px-10 items-center">
                     {stage === 'waiting' ? (
                         <>
-                            <NavLink to="/">
+                            <button onClick={handleBackClick}>
                                 <img src={`${arrowBack}`} alt="back" width="50"></img>
-                            </NavLink>
+                            </button>
                             <div className="flex flex-col text-center gap-4">
                                 <span className="text-2xl font-bold">{scheduleDummy.bookTitle}</span>
                                 <span>
