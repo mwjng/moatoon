@@ -18,8 +18,8 @@ module.exports = {
             },
             colors: {
                 'custom-blue': '#CAE0F4', // 여기에 커스텀 색상을 추가
-                'orange1': '#FE9134',
-                'orange2': '#FC852B', // 좀 더 진한 오렌지
+                orange1: '#FE9134',
+                orange2: '#FC852B', // 좀 더 진한 오렌지
                 'light-cream': '#FDFFE9', // 아동 메인 배경색
                 'seashell': '#F8EDEB', // 단어 학습 페이지 배경
                 'butter-cream' : '#FFF8CF',
@@ -29,7 +29,7 @@ module.exports = {
                 'light-blue1': '#EDF7FF',
                 'light-yellow': '#FBEF9D',
                 'burnt-sienna': "#F07167",
-            }
+            },
         },
     },
     plugins: [require('daisyui')],

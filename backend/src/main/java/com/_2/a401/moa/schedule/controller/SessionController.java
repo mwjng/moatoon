@@ -1,33 +1,42 @@
 package com._2.a401.moa.schedule.controller;
 
+import com._2.a401.moa.auth.dto.MemberDetails;
+import com._2.a401.moa.schedule.dto.response.SessionTokenResponse;
 import com._2.a401.moa.schedule.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
+@RequestMapping("/schedules")
 @RestController
 public class SessionController {
 
     private final SessionService sessionService;
 
-    @PostMapping("/sessions")
-    public ResponseEntity<String> initializeSession(
-        @RequestBody(required = false) Map<String, Object> params
+    @PostMapping("/{scheduleId}/session/join")
+    public ResponseEntity<SessionTokenResponse> joinSession(
+        @AuthenticationPrincipal MemberDetails memberDetails,
+        @PathVariable("scheduleId") Long scheduleId
     ) {
-        return ResponseEntity.ok().body(sessionService.initializeSession(params));
+        return ResponseEntity.ok(sessionService.join(memberDetails.getMember(), scheduleId));
     }
 
-    @PostMapping("/sessions/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(
-        @PathVariable("sessionId") String sessionId,
-        @RequestBody(required = false) Map<String, Object> params
+    @DeleteMapping("/{scheduleId}/session/leave")
+    public ResponseEntity<Void> leaveSession(
+        @AuthenticationPrincipal MemberDetails memberDetails,
+        @PathVariable("scheduleId") Long scheduleId
     ) {
-        return ResponseEntity.ok().body(sessionService.createConnection(sessionId, params));
+        sessionService.leave(memberDetails.getMember(), scheduleId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{scheduleId}/session/close")
+    public ResponseEntity<Void> closeSession(
+        @PathVariable("scheduleId") Long scheduleId
+    ) {
+        sessionService.close(scheduleId);
+        return ResponseEntity.noContent().build();
     }
 }
