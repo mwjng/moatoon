@@ -5,6 +5,7 @@ export default function Input(props) {
         <>
             {props.inputs.map(input => (
                 <input
+                    key={input.id}
                     type={input.type}
                     id={input.id}
                     placeholder={input.value}

@@ -29,6 +29,7 @@ public enum ExceptionCode {
     INVALID_MEMBER_ROLE(4010,  "유효하지 않은 권한 정보 입니다."),
     FAIL_OAUTH_USERINFO_RETRIEVAL(4011,  "회원 정보를 가져오는데 실패했습니다."),
     INVALID_MEMBER_STATUS(4012, "유효하지 않은 회원 상태입니다."),
+    INVALID_MEMBER(4012, "존재하지 않는 회원입니다."),
     SERVER_ERROR(9000, "서버 에러가 발생하였습니다.");
 
     private final int code;
