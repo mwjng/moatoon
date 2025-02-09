@@ -11,4 +11,7 @@ import java.util.List;
 public class BookListResponse {
     private Long memberId;
     private List<BookInfoResponse> bookList;
+    private long totalBooks;
+    private int totalPages;
+    private int currentPage;
 }
