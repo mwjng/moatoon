@@ -35,7 +35,7 @@ public class SessionService {
     private final SessionRepository sessionRepository;
     private final SessionMemberRepository sessionMemberRepository;
 
-    public SessionTokenResponse join(final Member member, final Long scheduleId) {
+    public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
         validateSessionJoin(member, scheduleId);
         final String sessionId = sessionRepository.fetchByScheduleId(scheduleId).getSessionId();
         final String token = videoConferenceManager.createConnection(sessionId);
@@ -45,12 +45,12 @@ public class SessionService {
         return new SessionTokenResponse(token);
     }
 
-    public void leave(final Member member, final Long scheduleId) {
+    public synchronized void leave(final Member member, final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
         sessionMember.removeMember(member.getId());
     }
 
-    public void close(final Long scheduleId) {
+    public synchronized void close(final Long scheduleId) {
         scheduleRepository.validateExistsById(scheduleId);
         scheduleRepository.completeScheduleById(scheduleId);
 
@@ -76,14 +76,14 @@ public class SessionService {
         }
     }
 
-    private synchronized void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
+    private void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
         if (sessionMember.isMemberExists(member.getId())) {
             throw new MoaException(INVALID_REQUEST);
         }
     }
 
-    private synchronized void validateSessionCapacity(final Long scheduleId) {
+    private void validateSessionCapacity(final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
         final int memberCount = sessionMember.getMemberCount();
         if(memberCount >= MAX_SESSION_CAPACITY) {
