@@ -31,7 +31,11 @@ public class MemberInfoResponse {
                 .imageUrl(manager.getImageUrl())
                 .email(manager.getEmail())
                 .role(manager.getRole())
+<<<<<<< HEAD
                 .childrenList(children.stream().map(ChildInfo::from).collect(Collectors.toList()))
+=======
+                .childrenList(children.stream().map(ChildInfo::of).collect(Collectors.toList()))
+>>>>>>> 0857f5e9c66554ef06612c40bb4ad333ac0c205a
                 .build();
     }
 

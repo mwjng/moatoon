@@ -31,8 +31,11 @@ public enum ExceptionCode {
     FAIL_OAUTH_USERINFO_RETRIEVAL(4011,  "회원 정보를 가져오는데 실패했습니다."),
     INVALID_MEMBER_STATUS(4012, "유효하지 않은 회원 상태입니다."),
     INVALID_MEMBER(4013, "존재하지 않는 회원입니다."),
+<<<<<<< HEAD
     DUPLICATED_USER_ID(4014, "중복된 아이디입니다."),
     DUPLICATED_EMAIL(4015, "중복된 이메일입니다."),
+=======
+>>>>>>> 0857f5e9c66554ef06612c40bb4ad333ac0c205a
 
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),
