@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface PartyRepository extends JpaRepository<Party, Long>, CustomPartyRepository {
+public interface    PartyRepository extends JpaRepository<Party, Long>, CustomPartyRepository {
     Optional<Party> findById(Long partyId);
 
     @Query(value = """
