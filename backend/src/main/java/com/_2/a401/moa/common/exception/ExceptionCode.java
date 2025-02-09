@@ -14,6 +14,7 @@ public enum ExceptionCode {
     CONNECTION_CREATION_FAILED(2002, "연결 생성에 실패했습니다."),
     SESSION_NOT_FOUND(2003, "세션을 찾을 수 없습니다."),
     SESSION_CAPACITY_EXCEEDED(2004, "세션에 인원이 모두 찼습니다"),
+    SESSION_MEMBER_NOT_FOUND(2005, "회원이 세션에 참여하고 있지 않습니다."),
 
     DATA_NOT_FOUND(3000, "데이터를 찾을 수 없습니다."),
     WORD_NOT_FOUND(3404, "단어를 찾을 수 없습니다."),
