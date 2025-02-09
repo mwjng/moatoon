@@ -6,6 +6,7 @@ import { login } from '../../api/member';
 import { Link } from 'react-router';
 import Btn from '../../components/member/Btn';
 import { useNavigate } from 'react-router';
+import AlertModal from '../../components/common/AlertModal';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -20,6 +21,8 @@ export default function LoginPage() {
         password: '',
     });
 
+    const [alertModal, setAlertModal] = useState(false);
+
     const changeValue = (key, value) => {
         setLoginState(prevState => ({
             ...prevState,
@@ -31,8 +34,13 @@ export default function LoginPage() {
         try {
             await login(loginState, navigate);
         } catch (error) {
+            setAlertModal(true);
             console.error('로그인 중 에러 발생:', error);
         }
+    };
+
+    const closeAlertModal = () => {
+        setAlertModal(false);
     };
 
     return (
@@ -51,6 +59,11 @@ export default function LoginPage() {
                     </Link>
                 </div>
             </AuthModal>
+            <AlertModal
+                text="아이디 또는 비밀번호가 일치하지 않습니다."
+                modalState={alertModal}
+                closeHandler={closeAlertModal}
+            />
         </div>
     );
 }
