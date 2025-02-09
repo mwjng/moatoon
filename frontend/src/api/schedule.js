@@ -1,11 +1,11 @@
 // api/scheduleApi.js
-import axios from 'axios';
+import { authInstance } from './axios';
 
 const SCHEDULE_API_URL = '/schedules';
 
 export const getMonthlySchedule = async (year, month) => {
     try {
-        const response = await axios.get(`${SCHEDULE_API_URL}/manager`, {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/manager`, {
             params: {
                 year: year,
                 month: month
