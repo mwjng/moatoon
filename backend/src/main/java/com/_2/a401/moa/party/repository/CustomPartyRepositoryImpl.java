@@ -10,6 +10,9 @@ import com._2.a401.moa.party.dto.response.CutResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -45,11 +48,11 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
     }
 
     @Override
-    public List<BookInfoResponse> findAllByMemberAndStatus(Long memberId, PartyState status) {
+    public Page<BookInfoResponse> findAllByMemberAndStatus(Long memberId, PartyState status, Pageable pageable) {
         QParty party=QParty.party;
         QPartyMember partyMember=QPartyMember.partyMember;
 
-        return queryFactory
+        List<BookInfoResponse> books = queryFactory
                 .select(Projections.constructor(BookInfoResponse.class,
                         party.id,
                         party.bookCover,
@@ -63,6 +66,21 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
                         partyMember.member.id.eq(memberId),
                         party.status.eq(status)
                 )
+                .offset(pageable.getOffset()) //페이지 번호 * 페이지 크기
+                .limit(pageable.getPageSize()) //페이지 크기
                 .fetch();
+
+        //전체 데이터 개수
+        long totalBooks = queryFactory
+                .select(party.count())
+                .from(party)
+                .join(partyMember).on(party.id.eq(partyMember.party.id))
+                .where(
+                        partyMember.member.id.eq(memberId),
+                        party.status.eq(status)
+                )
+                .fetchOne();
+
+        return new PageImpl<>(books, pageable, totalBooks);
     }
 }
