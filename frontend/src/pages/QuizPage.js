@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
-import QuizWordItem from '../components/quiz/QuizWordItem';
 import quizBook from '../assets/quiz-book.png';
 import quizTitle from '../assets/quiz-title.png';
+import QuizWordItem from '../components/quiz/QuizWordItem';
 import QuizItem from '../components/quiz/QuizItem';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -71,6 +71,7 @@ const QuizPage = () => {
     const [correctList, setCorrectList] = useState([false, false, false, false]);
     const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
     const [correctCount, setCorrectCount] = useState(0);
+    const [isEnd, setIsEnd] = useState(true);
 
     const handleCorrect = (quizIndex, wordIndex) => {
         setCorrectCount(correctCount + 1);
@@ -109,6 +110,7 @@ const QuizPage = () => {
                                     quiz={quiz}
                                     onCorrect={handleCorrect}
                                     isCorrect={correctList[index]}
+                                    isEnd={isEnd}
                                 />
                             ))}
                         </div>
