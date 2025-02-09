@@ -4,17 +4,15 @@ import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
 
+// import DrawPage from './pages/drawPage';
 
-import DrawPage from './pages/drawPage';
-
-import BookGeneratorPage from './pages/BookGeneratorPage'
-import LoginPage from './pages/member/LoginPage'
-
+import BookGeneratorPage from './pages/BookGeneratorPage';
+import LoginPage from './pages/member/LoginPage';
 
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
-import DrawPage from './pages/DrawingPage';
+// import DrawPage from './pages/DrawingPage';
 import LibraryPage from './pages/LibraryPage';
 import ManagerMainPage from './pages/ManagerMainPage';
 import RegistPage from './pages/member/RegistPage';
@@ -41,9 +39,9 @@ root.render(
                 <Route path="pw" element={<FindPWPage />} />
             </Route>
             <Route path="/session">
-                <Route path="draw" element={<DrawPage />} />
+                {/* <Route path="draw" element={<DrawPage />} /> */}
                 <Route path="search" />
-                <Route path="create" element={<BookGeneratorPage />}/>
+                <Route path="create" element={<BookGeneratorPage />} />
             </Route>
             <Route path="library" element={<LibraryPage />} />
             <Route path="word">
