@@ -12,6 +12,7 @@ import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
 import LibraryPage from './pages/LibraryPage';
 import ManagerMainPage from './pages/ManagerMainPage';
+import WordLearning from './pages/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
 import ChildRegistPage from './pages/member/ChildRegistPage';
@@ -40,6 +41,7 @@ root.render(
                 <Route path="search" />
                 <Route path="create" element={<BookGeneratorPage />} />
                 <Route path="quiz" element={<QuizPage />} />
+                <Route path="learning" element={<WordLearning />} />
             </Route>
             <Route path="library" element={<LibraryPage />} />
             <Route path="word">
