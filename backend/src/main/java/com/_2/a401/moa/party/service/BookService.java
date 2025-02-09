@@ -20,8 +20,7 @@ import java.util.List;
 public class BookService {
     private final PartyRepository partyRepository;
 
-    //방 생성
-
+    //모든 방 조회
     public BookListResponse getAllBooks(Long memberId, PartyState status){
         List<BookInfoResponse> books = partyRepository.findAllByMemberAndStatus(memberId, status);
         System.out.println(books);
@@ -37,6 +36,7 @@ public class BookService {
         return response;
     }
 
+    //하나의 방 정보 조회
     public EBookResponse getEBook(Long partyId){
         List<CutResponse> cuts = partyRepository.getAllCuts(partyId);
 
