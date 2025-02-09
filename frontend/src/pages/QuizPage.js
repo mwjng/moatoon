@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
+import QuizWordItem from '../components/quiz/QuizWordItem';
 import quizBook from '../assets/quiz-book.png';
 import quizTitle from '../assets/quiz-title.png';
+import QuizItem from '../components/quiz/QuizItem';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const QuizPage = () => {
     const [quizs, setQuizs] = useState([
@@ -64,35 +68,58 @@ const QuizPage = () => {
             word: '형태',
         },
     ]);
+    const [correctList, setCorrectList] = useState([false, false, false, false]);
+    const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
+    const [correctCount, setCorrectCount] = useState(0);
+
+    const handleCorrect = (quizIndex, wordIndex) => {
+        setCorrectCount(correctCount + 1);
+        setCorrectList(prevList => {
+            const newCorrectList = [...prevList];
+            newCorrectList[quizIndex] = true;
+            return newCorrectList;
+        });
+        setUseList(prevList => {
+            const newUseList = [...prevList];
+            newUseList[wordIndex] = true;
+            return newUseList;
+        });
+    };
+
+    useEffect(() => {
+        if (correctCount === 4) {
+        }
+    }, [correctCount]);
 
     return (
         <div className="bg-[#ACDB33] bg-opacity-30 h-screen">
             <Navigation stage={'quiz'} />
-            <div className="flex items-center justify-center px-20 gap-20">
-                <div
-                    className="flex h-[850px] w-[1400px] bg-no-repeat bg-center bg-contain relative justify-center items-center"
-                    style={{ backgroundImage: `url(${quizBook})` }}
-                >
-                    <img src={quizTitle} alt="" className="absolute top-20 left-40" />
-                    <div className="flex flex-col gap-12 w-full px-40">
-                        {quizs.map((quiz, index) => (
-                            <div className="flex gap-4 text-[36px] bg-[#D9D9D9] bg-opacity-40 rounded-full p-4 bg-opacity-40">
-                                <p>{index + 1}.</p>
-                                <p>{quiz.front}</p>
-                                <div className="w-[80px] bg-white rounded-full"></div>
-                                <p>{quiz.back}</p>
-                            </div>
+            <DndProvider backend={HTML5Backend}>
+                <div className="flex items-center justify-center px-20 gap-20">
+                    <div
+                        className="flex h-[850px] w-[1400px] bg-no-repeat bg-center bg-contain relative justify-center items-center"
+                        style={{ backgroundImage: `url(${quizBook})` }}
+                    >
+                        <img src={quizTitle} alt="" className="absolute top-20 left-40" />
+                        <div className="flex flex-col gap-12 w-full px-40">
+                            {quizs.map((quiz, index) => (
+                                <QuizItem
+                                    key={index}
+                                    index={index}
+                                    quiz={quiz}
+                                    onCorrect={handleCorrect}
+                                    isCorrect={correctList[index]}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 w-[500px] h-[600px] bg-white bg-opacity-70 rounded-3xl px-4 py-8 justify-center items-center content-between">
+                        {words.map((word, index) => (
+                            <QuizWordItem key={index} word={word} isUsed={useList[index]} index={index} />
                         ))}
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 w-[500px] h-[600px] bg-white bg-opacity-70 rounded-3xl px-4 py-8 justify-center items-center content-between">
-                    {words.map((word, index) => (
-                        <div className="flex justify-center items-center bg-[#8EBF5D] rounded-3xl h-[80px] text-white text-[24px]">
-                            {word.word}
-                        </div>
-                    ))}
-                </div>
-            </div>
+            </DndProvider>
         </div>
     );
 };
