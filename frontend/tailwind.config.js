@@ -2,6 +2,7 @@ module.exports = {
     content: ['./src/**/*.{html,js,jsx,ts,tsx}'],
     theme: {
         extend: {
+<<<<<<< Updated upstream
             animation: {
                 scrollLeft: 'scrollLeft 50s linear infinite',
                 scrollRight: 'scrollRight 50s linear infinite',
@@ -26,6 +27,10 @@ module.exports = {
                 gray1: '#444444',
                 blue1: '#D9F0FE',
                 'light-blue1': '#EDF7FF',
+=======
+            colors: {
+                'custom-blue': '#CAE0F4', // 여기에 커스텀 색상을 추가
+>>>>>>> Stashed changes
             },
         },
     },
