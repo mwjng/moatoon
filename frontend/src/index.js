@@ -3,8 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { BrowserRouter, Routes, Route } from 'react-router';
-import BookGeneratorPage from './pages/BookGeneratorPage';
-import LoginPage from './pages/member/LoginPage';
+
+
+import DrawPage from './pages/drawPage';
+
+import BookGeneratorPage from './pages/BookGeneratorPage'
+import LoginPage from './pages/member/LoginPage'
+
+
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
@@ -37,7 +43,7 @@ root.render(
             <Route path="/session">
                 <Route path="learning" element={<WordLearning />} />
                 <Route path="search" />
-                <Route path="create" element={<BookGeneratorPage />} />
+                <Route path="create" element={<BookGeneratorPage />}/>
             </Route>
             <Route path="library" element={<LibraryPage />} />
             <Route path="word">
