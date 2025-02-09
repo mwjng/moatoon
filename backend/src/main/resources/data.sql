@@ -9,11 +9,11 @@ INSERT INTO `KEYWORD` (`keyword`, `option`) VALUES
     ('공포', 'GENRE');
 
 -- MEMBER 테이블에 더미 데이터 추가
-INSERT INTO MEMBER (id, manager_id, role, name, login_id, nickname, password, status, created_at, modified_at) VALUES
-(1, null, 'MANAGER', '존 도우', 'johndoe', 'johnny', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(2, 1, 'CHILD', '제인 스미스', 'janesmith', 'jane', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(3, 1, 'CHILD', '마이크 존슨', 'mikej', 'mike', 'password123', 'INACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-(4, null, 'MANAGER', '앨리스 쿠퍼', 'alicecooper', 'alice', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO MEMBER ( manager_id, role, name, login_id, nickname, password, status, created_at, modified_at) VALUES
+(null, 'MANAGER', '존 도우', 'johndoe', 'johnny', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(1, 'CHILD', '제인 스미스', 'janesmith', 'jane', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+( 1, 'CHILD', '마이크 존슨', 'mikej', 'mike', 'password123', 'INACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+(null, 'MANAGER', '앨리스 쿠퍼', 'alicecooper', 'alice', 'password123', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- PARTY 테이블에 더미 데이터 추가
 INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, progress_count, status, start_date, is_public, end_date, created_at, modified_at) VALUES
@@ -40,34 +40,34 @@ INSERT INTO PARTY_KEYWORD (party_id, keyword_id) VALUES
 (3, 3); -- '로맨틱' 키워드를 파티 3에
 
 -- WORD 테이블에 더미 데이터 추가
-INSERT INTO WORD (id, level, word, meaning) VALUES
-(1, 1, '그림', '선이나 색채를 써서 사물의 형상이나 이미지를 평면 위에 나타낸 것.\n아름다운 경치를 비유적으로 이르는 말.'),
-(2, 1, '그만', '그 정도까지.\n그대로 곧.\n자신도 모르는 사이에.'),
-(3, 1, '글씨', '쓴 글자의 모양.'),
-(4, 1, '글자', '말을 적는 일정한 체계의 부호.'),
-(5, 2, '그림22', '선이나 색채를 써서 사물의 형상이나 이미지를 평면 위에 나타낸 것.\n아름다운 경치를 비유적으로 이르는 말.22'),
-(6, 2, '그만22', '그 정도까지.\n그대로 곧.\n자신도 모르는 사이에.22'),
-(7, 2, '글씨22', '쓴 글자의 모양.22'),
-(8, 2, '글자22', '말을 적는 일정한 체계의 부호.22');
+INSERT INTO WORD (level, word, meaning) VALUES
+(1, '그림', '선이나 색채를 써서 사물의 형상이나 이미지를 평면 위에 나타낸 것.\n아름다운 경치를 비유적으로 이르는 말.'),
+(1, '그만', '그 정도까지.\n그대로 곧.\n자신도 모르는 사이에.'),
+(1, '글씨', '쓴 글자의 모양.'),
+(1, '글자', '말을 적는 일정한 체계의 부호.'),
+(2, '그림22', '선이나 색채를 써서 사물의 형상이나 이미지를 평면 위에 나타낸 것.\n아름다운 경치를 비유적으로 이르는 말.22'),
+(2, '그만22', '그 정도까지.\n그대로 곧.\n자신도 모르는 사이에.22'),
+(2, '글씨22', '쓴 글자의 모양.22'),
+(2, '글자22', '말을 적는 일정한 체계의 부호.22');
 
 -- WORD_EXAMPLE 테이블에 더미 데이터 추가
-INSERT INTO WORD_EXAMPLE (id, example, word_id) VALUES
-(1, '나는 색연필로 *그림*을 그렸다.', 1),
-(2, '벽에 예쁜 *그림*이 걸려 있어.', 1),
-(3, '이제 *그만* 싸우자!', 2),
-(4, '장난은 *그만*하세요.', 2),
-(5, '*글씨*를 또박또박 쓰세요.', 3),
-(6, '내 이름을 *글씨*로 써 보세요.', 3),
-(7, '한글은 소중한 *글자*예요.', 4),
-(8, '*글자*를 바르게 배워야 해.', 4),
-(9, '나는 색연필로 *그림*을 그렸다.22', 5),
-(10, '벽에 예쁜 *그림*이 걸려 있어.22', 5),
-(11, '이제 *그만* 싸우자!22', 6),
-(12, '장난은 *그만*하세요.22', 6),
-(13, '*글씨*를 또박또박 쓰세요.22', 7),
-(14, '내 이름을 *글씨*로 써 보세요.22', 7),
-(15, '한글은 소중한 *글자*예요.22', 8),
-(16, '*글자*를 바르게 배워야 해.22', 8);
+INSERT INTO WORD_EXAMPLE (example, word_id) VALUES
+('나는 색연필로 *그림*을 그렸다.', 1),
+('벽에 예쁜 *그림*이 걸려 있어.', 1),
+('이제 *그만* 싸우자!', 2),
+('장난은 *그만*하세요.', 2),
+('*글씨*를 또박또박 쓰세요.', 3),
+('내 이름을 *글씨*로 써 보세요.', 3),
+('한글은 소중한 *글자*예요.', 4),
+('*글자*를 바르게 배워야 해.', 4),
+('나는 색연필로 *그림*을 그렸다.22', 5),
+('벽에 예쁜 *그림*이 걸려 있어.22', 5),
+('이제 *그만* 싸우자!22', 6),
+('장난은 *그만*하세요.22', 6),
+('*글씨*를 또박또박 쓰세요.22', 7),
+('내 이름을 *글씨*로 써 보세요.22', 7),
+('한글은 소중한 *글자*예요.22', 8),
+('*글자*를 바르게 배워야 해.22', 8);
 
 -- MY_WORD 테이블에 더미 데이터 추가
 INSERT INTO MY_WORD (member_id, word_id, is_deleted, fail_count, created_at, modified_at) VALUES

@@ -5,9 +5,12 @@ import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
+import com._2.a401.moa.word.domain.MyWord;
 import com._2.a401.moa.word.domain.Word;
 import com._2.a401.moa.word.domain.WordExample;
 import com._2.a401.moa.word.dto.*;
+import com._2.a401.moa.word.dto.request.WordIdRequest;
+import com._2.a401.moa.word.dto.request.AddWordsRequest;
 import com._2.a401.moa.word.dto.response.LearningWordsResponse;
 import com._2.a401.moa.word.dto.response.MyWordsResponse;
 import com._2.a401.moa.word.dto.response.QuizResponse;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,22 +37,72 @@ public class WordService {
     private final MyWordRepository myWordRepository;
     private final MemberRepository memberRepository;
 
+    public MyWordsResponse getMyWords(Long memberId, int page, String keyword) {
+        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, page - 1, keyword);
+
+        Long totalCount = myWordRepository.countAll(memberId, keyword);
+        int totalPage = (int) (totalCount / 4) + 1;
+
+        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
+        if (myWordExamples.isEmpty()) {
+            return MyWordsResponse.builder()
+                    .myWordWithExamples(myWordWithExamples)
+                    .build();
+        }
+
+        for (int i = 0; i < myWordExamples.size(); i += 2) {
+            List<String> examples = new ArrayList<>();
+            examples.add(myWordExamples.get(i).getExample());
+            examples.add(myWordExamples.get(i + 1).getExample());
+            myWordWithExamples.add(MyWordWithExamples
+                    .builder()
+                    .id(myWordExamples.get(i).getId())
+                    .word(myWordExamples.get(i).getWord())
+                    .meaning(myWordExamples.get(i).getMeaning())
+                    .failCount(myWordExamples.get(i).getFailCount())
+                    .examples(examples)
+                    .build());
+        }
+
+        return MyWordsResponse.builder()
+                .myWordWithExamples(myWordWithExamples)
+                .totalPage(totalPage)
+                .build();
+    }
+
     @Transactional
-    public void addMyWords(Long memberId, Long wordId) {
+    public void removeWord(long memberId, WordIdRequest wordIdRequest) {
+        long wordId = wordIdRequest.getWordId();
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
 
-        Optional<MyWord> myWord = myWordRepository.findByIdAndMemberId(memberId, wordId);
+        MyWord myWord = myWordRepository.findByIdAndMemberId(memberId, wordId)
+                .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
 
-        if (myWord.isPresent()) {
-            myWord.get().countFail();
-        } else {
-            Word word = wordRepository.findById(wordId)
-                    .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
+        myWord.delete();
+    }
 
-            MyWord newMyWord = new MyWord(1, false, word, member);
+    @Transactional
+    public void addMyWords(Long memberId, AddWordsRequest addWordsRequest) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
 
-            myWordRepository.save(newMyWord);
+        List<Long> wordIds = addWordsRequest.getWordIds();
+
+        for (long wordId : wordIds) {
+            Optional<MyWord> myWord = myWordRepository.findByIdAndMemberId(memberId, wordId);
+
+            if (myWord.isPresent()) {
+                myWord.get().countFail();
+            } else {
+                Word word = wordRepository.findById(wordId)
+                        .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
+
+                MyWord newMyWord = new MyWord(1, false, word, member);
+
+                myWordRepository.save(newMyWord);
+            }
         }
     }
 
@@ -159,35 +213,6 @@ public class WordService {
         return LearningWordsResponse
                 .builder()
                 .words(wordWithExamples)
-                .build();
-    }
-
-    public MyWordsResponse getMyWords(Long memberId, int page) {
-        List<MyWordExample> myWordExamples = myWordRepository.findAllWithId(memberId, page - 1);
-
-        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
-        if (myWordExamples.isEmpty()) {
-            return MyWordsResponse.builder()
-                    .myWordWithExamples(myWordWithExamples)
-                    .build();
-        }
-
-        for (int i = 0; i < myWordExamples.size(); i += 2) {
-            List<String> examples = new ArrayList<>();
-            examples.add(myWordExamples.get(i).getExample());
-            examples.add(myWordExamples.get(i + 1).getExample());
-            myWordWithExamples.add(MyWordWithExamples
-                    .builder()
-                    .id(myWordExamples.get(i).getId())
-                    .word(myWordExamples.get(i).getWord())
-                    .meaning(myWordExamples.get(i).getMeaning())
-                    .failCount(myWordExamples.get(i).getFailCount())
-                    .examples(examples)
-                    .build());
-        }
-
-        return MyWordsResponse.builder()
-                .myWordWithExamples(myWordWithExamples)
                 .build();
     }
 }
