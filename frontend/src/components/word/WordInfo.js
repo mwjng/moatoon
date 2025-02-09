@@ -17,10 +17,10 @@ const WordInfo = ({ word, isChecked, onCheck }) => {
                 </div>
                 <ul className="mt-20 text-left space-y-8 list-disc">
                     {word.examples.map((example, index) => (
-                        <li key={index}>
+                        <li key={index} className="text-[28px]">
                             {example.split(/(\*.*?\*)/).map((part, index) =>
                                 part.startsWith('*') && part.endsWith('*') ? (
-                                    <strong key={index} className="font-bold">
+                                    <strong key={index} className="font-bold text-[28px]">
                                         {part.slice(1, -1)}
                                     </strong>
                                 ) : (
@@ -35,7 +35,7 @@ const WordInfo = ({ word, isChecked, onCheck }) => {
             <div className="text-center">
                 <button
                     onClick={onCheck}
-                    className={`px-5 py-2 text-lg font-bold rounded-md transition-all 
+                    className={`p-4 text-lg font-bold rounded-md transition-all !text-[32px]
                         ${isChecked ? 'bg-green-500 text-white' : 'bg-light-yellow'}`}
                 >
                     {isChecked ? '완료!' : '이해했어요!'}
