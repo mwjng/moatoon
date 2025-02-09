@@ -21,11 +21,14 @@ module.exports = {
                 orange1: '#FE9134',
                 orange2: '#FC852B', // 좀 더 진한 오렌지
                 'light-cream': '#FDFFE9', // 아동 메인 배경색
-                'butter-cream': '#FFF8CF',
-                'lime-cream': '#F3F8C0',
-                gray1: '#444444',
-                blue1: '#D9F0FE',
+                'seashell': '#F8EDEB', // 단어 학습 페이지 배경
+                'butter-cream' : '#FFF8CF',
+                'lime-cream' : '#F3F8C0',
+                'gray1' : '#444444',
+                'blue1' : '#D9F0FE',
                 'light-blue1': '#EDF7FF',
+                'light-yellow': '#FBEF9D',
+                'burnt-sienna': "#F07167",
             },
         },
     },
