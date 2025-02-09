@@ -3,7 +3,7 @@ import Background from '../../components/member/Backround';
 import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
 
-export default function MenagerRegistPage() {
+export default function ManagerRegistPage() {
     return (
         <div style={{ position: 'relative' }}>
             <Background />
