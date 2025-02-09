@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
 
+//사전에 필요한 정보
+// 스토리 생성에 필요한 레벨 단어set을 가져올 API
+
+
+
 // OpenAI API 객체 생성 (FE에서 직접 호출)
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -171,7 +176,9 @@ const BookStoryGenerator = ({
     } catch (error) {
       console.error("overview 추출 오류:", error);
     }
-    const coverPrompt = `이 이야기를 바탕으로 아이들의 흥미를 끌만한 동화책 표지에 들어갈 일러스트를 글 없이 만들어줘: ${overviewText}`;
+    const coverPrompt = `${overviewText} : 이 이야기의 감성을 살린 동화 일러스트를 생성해줘. 
+오직 그림만 포함되며, 어떠한 텍스트나 숫자, 문자는 절대 포함하지 말아줘. 그리고 프레임을 제외한 순수한 일러스트여야해.`;
+
     try {
       const response = await openai.images.generate({
         model: "dall-e-3",

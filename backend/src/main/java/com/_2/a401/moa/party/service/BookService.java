@@ -9,6 +9,8 @@ import com._2.a401.moa.party.dto.response.EBookResponse;
 import com._2.a401.moa.party.repository.PartyRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +20,18 @@ import java.util.List;
 public class BookService {
     private final PartyRepository partyRepository;
 
+    //방 생성
+
     public BookListResponse getAllBooks(Long memberId, PartyState status){
         List<BookInfoResponse> books = partyRepository.findAllByMemberAndStatus(memberId, status);
         System.out.println(books);
 
         BookListResponse response = BookListResponse.builder()
                 .memberId(memberId)
-                .bookList(books)
+                .bookList(bookPage.getContent())
+                .totalBooks(bookPage.getTotalElements()) // 총 데이터 수
+                .totalPages(bookPage.getTotalPages()) // 총 페이지 수
+                .currentPage(bookPage.getNumber()) // 현재 페이지
                 .build();
 
         return response;
@@ -45,4 +52,6 @@ public class BookService {
 
         return ebook;
     }
+
+
 }
