@@ -31,7 +31,7 @@ public class MemberInfoResponse {
                 .imageUrl(manager.getImageUrl())
                 .email(manager.getEmail())
                 .role(manager.getRole())
-                .childrenList(children.stream().map(ChildInfo::of).collect(Collectors.toList()))
+                .childrenList(children.stream().map(ChildInfo::from).collect(Collectors.toList()))
                 .build();
     }
 

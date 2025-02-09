@@ -5,6 +5,16 @@ import store from '../store/store';
 const AUTH_API_URL = 'http://localhost:8080/auth';
 const MEMBERS_API_URL = 'http://localhost:8080/members';
 
+export const loginIdCheck = async loginId => {
+    try {
+        const res = await axios.get(`${AUTH_API_URL}/id/check?loginId=${loginId}`);
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
 export const login = async (loginInfo, navigate) => {
     try {
         const res = await axios.post(AUTH_API_URL + '/login', loginInfo);
