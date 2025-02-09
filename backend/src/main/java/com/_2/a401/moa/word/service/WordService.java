@@ -205,6 +205,7 @@ public class WordService {
             wordWithExamples.add(WordWithExamples
                     .builder()
                     .wordId(wordExamples.get(i).getId())
+                    .meaning(wordExamples.get(i).getWord().getMeaning())
                     .word(wordExamples.get(i).getWord().getWord())
                     .examples(examples)
                     .build());

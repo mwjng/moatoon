@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/swagger-ui/**", "/v3/api-docs/**", "/auth/refresh", "/auth/email/check", "/members").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/members").permitAll()
+                        .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -20,9 +20,10 @@ import java.util.List;
 public class BookService {
     private final PartyRepository partyRepository;
 
+    //방 생성
+
     public BookListResponse getAllBooks(Long memberId, PartyState status, Pageable pageable){
         Page<BookInfoResponse> bookPage = partyRepository.findAllByMemberAndStatus(memberId, status, pageable);
-        System.out.println(bookPage);
 
         BookListResponse response = BookListResponse.builder()
                 .memberId(memberId)
@@ -50,4 +51,6 @@ public class BookService {
 
         return ebook;
     }
+
+
 }
