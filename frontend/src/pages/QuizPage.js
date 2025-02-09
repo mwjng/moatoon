@@ -71,7 +71,7 @@ const QuizPage = () => {
     const [correctList, setCorrectList] = useState([false, false, false, false]);
     const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
     const [correctCount, setCorrectCount] = useState(0);
-    const [isEnd, setIsEnd] = useState(true);
+    const [isEnd, setIsEnd] = useState(false);
 
     const handleCorrect = (quizIndex, wordIndex) => {
         setCorrectCount(correctCount + 1);
