@@ -16,7 +16,7 @@ export default function RegistPage() {
                         <img src={bbi_normal} className="w-40" />
                         <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="아동" />
                     </Link>
-                    <Link to="/regist/menager" className="p-3  w-full flex flex-col rounded-2xl hover:bg-[#B4B4B433]">
+                    <Link to="/regist/manager" className="p-3  w-full flex flex-col rounded-2xl hover:bg-[#B4B4B433]">
                         <img src={duck} className="w-40" />
                         <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="보호자" />
                     </Link>
