@@ -5,6 +5,7 @@ import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.ScheduleState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
 import com._2.a401.moa.schedule.dto.response.ScheduleResponse;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.SCHEDULE_NOT_FOUND;
+import java.util.Optional;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
@@ -61,4 +63,15 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<ScheduleResponse> findSchedulesByMemberIdAndYearAndMonth(@Param("memberId") Long memberId,
                                                                   @Param("year") int year,
                                                                   @Param("month") int month);
+
+    @Query(value = "SELECT s.party_id, s.episode_number " +
+            "FROM Schedule s " +
+            "WHERE s.id = :scheduleId", nativeQuery = true)
+    Optional<ScheduleInfoResponse> getScheduleInfo(@Param("scheduleId") Long scheduleId);
+
+//    public interface ScheduleProjection {
+//        int getScheduleId();
+//        String getBookTitle();
+//        LocalDateTime getSessionTime();
+//    }
 }

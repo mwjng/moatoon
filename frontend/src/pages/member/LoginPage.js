@@ -3,6 +3,8 @@ import Background from '../../components/member/Backround';
 import AuthModal from '../../components/member/AuthModal';
 import Input from '../../components/member/Input';
 import { login } from '../../api/member';
+import { Link } from 'react-router';
+import Btn from '../../components/member/Btn';
 
 export default function LoginPage() {
     const inputs = [
@@ -25,33 +27,21 @@ export default function LoginPage() {
     const loginHandler = () => {
         login(loginState);
     };
-    const registandler = () => {};
-    const findInfoHandler = () => {};
+
     return (
         <div style={{ position: 'relative' }}>
             <Background />
             <AuthModal title="로그인">
                 <Input inputs={inputs} width="300px" changeFunction={changeValue} />
-                <button
-                    onClick={loginHandler}
-                    className="bg-[#FFBD73] rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none w-full hover:bg-[#FFB25B]"
-                >
-                    로그인
-                </button>
+                <Btn onClickHandler={loginHandler} bgColor="#FFBD73" bgHoverColor="#FFB25B" text="로그인" />
                 <hr className="w-full border-[1px] border-white shadow-md" />
                 <div className="flex gap-3 w-full">
-                    <button
-                        onClick={registandler}
-                        className="bg-[#FEEE91] rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none w-full hover:bg-[#FFEB74]"
-                    >
-                        회원가입
-                    </button>
-                    <button
-                        onClick={findInfoHandler}
-                        className="bg-[#FEEE91] rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none w-full hover:bg-[#FFEB74]"
-                    >
-                        ID/PW 찾기
-                    </button>
+                    <Link to="/regist" className=" w-full">
+                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="회원가입" />
+                    </Link>
+                    <Link to="/find" className=" w-full">
+                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="ID/PW 찾기" />
+                    </Link>
                 </div>
             </AuthModal>
         </div>
