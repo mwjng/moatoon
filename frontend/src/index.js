@@ -11,7 +11,7 @@ import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
 import ManagerMainPage from './pages/ManagerMainPage';
 import RegistPage from './pages/member/RegistPage';
-import MenagerRegistPage from './pages/member/MenagerRegistPage';
+import ManagerRegistPage from './pages/member/ManagerRegistPage';
 import ChildRegistPage from './pages/member/ChildRegistPage';
 import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
@@ -25,7 +25,7 @@ root.render(
             <Route path="login" element={<LoginPage />} />
             <Route path="regist">
                 <Route index element={<RegistPage />} />
-                <Route path="menager" element={<MenagerRegistPage />} />
+                <Route path="manager" element={<ManagerRegistPage />} />
                 <Route path="child" element={<ChildRegistPage />} />
             </Route>
             <Route path="find">
