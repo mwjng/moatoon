@@ -1,5 +1,6 @@
 package com._2.a401.moa.common.jwt;
 
+import com._2.a401.moa.auth.dto.AuthToken;
 import com._2.a401.moa.auth.dto.MemberDetails;
 import com._2.a401.moa.auth.exception.ExpiredTokenException;
 import com._2.a401.moa.auth.exception.InvalidTokenException;
@@ -44,10 +45,14 @@ public class JwtUtil {
 
     @PostConstruct
     private void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key =  Keys.hmacShaKeyFor(keyBytes);
-//        this.key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
-//                Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.key = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
+                Jwts.SIG.HS256.key().build().getAlgorithm());
+    }
+
+    public AuthToken createAccessAndRefreshToken(Authentication authentication){
+        return new AuthToken(createAccessToken(authentication),
+                createRefreshToken(authentication));
+
     }
 
     public String createAccessToken(Authentication authentication){
@@ -59,10 +64,11 @@ public class JwtUtil {
     }
 
     private String generateToken(final Authentication authentication, final Long expirationTime) {
-        UserDetails userDetails = ((UserDetails) authentication.getPrincipal());
-        String loginId = userDetails.getUsername();
-        Long memberId = ((MemberDetails) userDetails).getMember().getId();
-        String nickname = ((MemberDetails) userDetails).getMember().getNickname();
+        MemberDetails memberDetails = (MemberDetails) authentication.getPrincipal();
+
+        String loginId = memberDetails.getUsername();
+        Long memberId = memberDetails.getMember().getId();
+        String nickname = memberDetails.getMember().getNickname();
         final Date now = new Date();
         final Date expireDate = new Date(now.getTime() + expirationTime);
 
