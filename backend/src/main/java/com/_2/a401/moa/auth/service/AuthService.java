@@ -50,9 +50,8 @@ public class AuthService {
 
     }
 
-    public void checkLoginId(String loginId) {
-        if(memberRepository.findByLoginId(loginId).isPresent()){
-            throw new AuthException(DUPLICATED_USER_ID);
-        }
+    public boolean checkLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId).isPresent();
+
     }
 }

@@ -18,7 +18,10 @@ public class MemberCreate {
     String loginId;
 
     @NotBlank(message = "비밀번호를 입력해주세요.")
-    @Size(min = 5, max = 15, message = "비밀번호는 5자 이상 15자 이하여야 합니다.")
+    @Pattern(
+            regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{8,20}$",
+            message = "비밀번호는 8~20자의 대소문자, 숫자, 특수문자를 포함해야 합니다."
+    )
     String password;
 
     @Size(min = 2, max = 10, message = "이름은 2자 이상 10자 이하여야 합니다.")

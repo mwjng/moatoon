@@ -2,12 +2,48 @@ import axios from 'axios';
 import { setUserInfo } from '../store/userSlice';
 import store from '../store/store';
 
-const AUTH_API_URL = 'http://localhost:8080/auth';
-const MEMBERS_API_URL = 'http://localhost:8080/members';
+const AUTH_API_URL = '/auth';
+const MEMBERS_API_URL = '/members';
+
+export const uploadImage = async file => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/files/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.status != 200) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const img = await response.text();
+        return img;
+    } catch (error) {
+        console.error('이미지 업로드 실패', error);
+        return null;
+    }
+};
+
+export const childRegist = async (registInfo, navigate) => {
+    try {
+        const res = await axios.post(MEMBERS_API_URL, registInfo);
+        if (res.status === 201) {
+            navigate('/login');
+        }
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
 
 export const loginIdCheck = async loginId => {
     try {
-        const res = await axios.get(`${AUTH_API_URL}/id/check?loginId=${loginId}`);
+        const res = await axios.get(`${AUTH_API_URL}/id/check`, {
+            params: { loginId: loginId },
+        });
         return res;
     } catch (err) {
         console.error(err);
