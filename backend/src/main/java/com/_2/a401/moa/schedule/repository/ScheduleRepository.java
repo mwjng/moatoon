@@ -11,6 +11,7 @@ import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
