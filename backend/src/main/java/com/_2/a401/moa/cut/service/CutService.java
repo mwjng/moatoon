@@ -8,9 +8,8 @@ import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
 import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
-import com._2.a401.moa.party.domain.Party;
-import com._2.a401.moa.party.dto.response.CutResponse;
-import com._2.a401.moa.party.dto.response.EBookResponse;
+import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
+import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.ScheduleService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +35,7 @@ public class CutService {
     private final S3Service s3Service;
     private final CutRepository cutRepository;
     private final ScheduleService scheduleService;
+    private final ScheduleRepository scheduleRepository;
 
     public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
         try {
@@ -82,8 +82,14 @@ public class CutService {
         return cutFileUrl;
     }
 
-    public List<PictureResponse> getPictureData(Long scheduledId) {
-        List<Cut> cuts=cutRepository.getCutsByRange(scheduledId);
+    public List<PictureResponse> getPictureData(Long scheduleId) {
+        ScheduleInfoResponse scheduleInfo = scheduleRepository.getScheduleInfo(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));;
+
+        int startRange = scheduleInfo.getEpisodeNumber() * 4 - 3;
+        int endRange = scheduleInfo.getEpisodeNumber() * 4;
+
+        List<Cut> cuts=cutRepository.getCutsByRange(scheduleInfo.getPartyId(), startRange, endRange);
 
         return cuts.stream()
                 .map(cut -> PictureResponse.builder()
