@@ -29,5 +29,4 @@ public class MemberDetails implements UserDetails {
     public String getUsername() {
         return member.getLoginId();
     }
-
 }

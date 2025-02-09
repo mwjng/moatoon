@@ -4,7 +4,11 @@ import java.util.Map;
 
 public interface VideoConferenceManager {
 
-    String createSession(Map<String, Object> params);
+    String createSession();
 
-    String createConnection(String sessionId, Map<String, Object> params);
+    String createSession(Map<String, Object> sessionProperties);
+
+    String createConnection(String sessionId);
+
+    String createConnection(String sessionId, Map<String, Object> connectionProperties);
 }
