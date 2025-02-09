@@ -89,7 +89,7 @@ public class SessionService {
         }
     }
 
-    private void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
+    private synchronized void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
         final SetOperations<String, Object> opsForSet = redisTemplate.opsForSet();
         final String key = getSessionMemberKey(scheduleId);
         if (TRUE.equals(opsForSet.isMember(key, member.getId()))) {
@@ -97,7 +97,7 @@ public class SessionService {
         }
     }
 
-    private void validateSessionCapacity(final Long scheduleId) {
+    private synchronized void validateSessionCapacity(final Long scheduleId) {
         final SetOperations<String, Object> opsForSet = redisTemplate.opsForSet();
         final String key = getSessionMemberKey(scheduleId);
         final Long memberCount = opsForSet.size(key);
