@@ -1,7 +1,9 @@
 package com._2.a401.moa.party.service;
 
+import com._2.a401.moa.common.exception.ExceptionCode;
+import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.Party;
-import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.party.dto.response.BookListResponse;
 import com._2.a401.moa.party.dto.response.BookInfoResponse;
 import com._2.a401.moa.party.dto.response.CutResponse;
@@ -19,11 +21,22 @@ import java.util.List;
 @Service
 public class BookService {
     private final PartyRepository partyRepository;
+    private final MemberRepository memberRepository;
 
     //방 생성
 
-    public BookListResponse getAllBooks(Long memberId, PartyState status, Pageable pageable){
-        Page<BookInfoResponse> bookPage = partyRepository.findAllByMemberAndStatus(memberId, status, pageable);
+    public BookListResponse getAllBooks(Long myId, Long memberId, boolean isCompleted, Pageable pageable){
+
+        // 내 아이디가 보려는 아이디랑 다른 경우, memberId가 내 자녀인지 검증 필요
+        if (!myId.equals(memberId)) {
+            // 자녀 검증 로직
+            boolean isMyChild = memberRepository.existsByIdAndManagerId(memberId, myId);
+            if (!isMyChild) {
+                throw new MoaException(ExceptionCode.INVALID_AUTHORITY);
+            }
+        }
+
+        Page<BookInfoResponse> bookPage = partyRepository.findAllByMemberAndProgressStatus(memberId, isCompleted, pageable);
 
         BookListResponse response = BookListResponse.builder()
                 .memberId(memberId)

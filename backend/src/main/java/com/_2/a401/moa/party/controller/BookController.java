@@ -1,12 +1,14 @@
 package com._2.a401.moa.party.controller;
 
-import com._2.a401.moa.party.domain.PartyState;
+import com._2.a401.moa.auth.dto.MemberDetails;
 import com._2.a401.moa.party.dto.response.BookListResponse;
 import com._2.a401.moa.party.dto.response.EBookResponse;
 import com._2.a401.moa.party.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,13 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
     private final BookService bookService;
 
+    @Operation(summary="책 목록 조회", description="완료 또는 완료 전인 책 목록을 조회합니다.")
     @GetMapping("/books/{memberId}")
     public ResponseEntity<BookListResponse> getBookList(
+            @AuthenticationPrincipal MemberDetails memberDetails,
             @PathVariable Long memberId,
-            @RequestParam(required = false, defaultValue = "BEFORE") PartyState status,
+            @RequestParam(required = false, defaultValue = "BEFORE") boolean isCompleted,
             Pageable pageable
     ) {
-        return ResponseEntity.ok().body(bookService.getAllBooks(memberId, status, pageable));
+        return ResponseEntity.ok().body(bookService.getAllBooks(memberDetails.getMember().getId(), memberId, isCompleted, pageable));
     }
 
     @GetMapping("/books/ebook/{partyId}")

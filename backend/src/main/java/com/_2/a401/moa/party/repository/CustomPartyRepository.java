@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface CustomPartyRepository {
     List<CutResponse> getAllCuts(Long partyId);
-    Page<BookInfoResponse> findAllByMemberAndStatus(Long memberId, PartyState status, Pageable pageable);
+    Page<BookInfoResponse> findAllByMemberAndProgressStatus(Long memberId, boolean isCompleted, Pageable pageable);
 }

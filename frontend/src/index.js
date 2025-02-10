@@ -11,7 +11,7 @@ import LoginPage from './pages/member/LoginPage';
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
 import ChildMainPage from './pages/ChildMainPage';
-import LibraryPage from './pages/LibraryPage';
+import LibraryPage from './pages/ChildLibraryPage';
 import ManagerMainPage from './pages/ManagerMainPage';
 import WordLearning from './pages/WordLearning';
 import RegistPage from './pages/member/RegistPage';
@@ -61,6 +61,6 @@ root.render(
                     <Route path="manager" element={<ManagerMainPage />} />
                 </Route>
             </Routes>
-        </BrowserRouter>,
-    </Provider>,
+        </BrowserRouter>
+    </Provider>
 );
