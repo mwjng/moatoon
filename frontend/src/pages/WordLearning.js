@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import WordInfo from '../components/word/WordInfo';
 import CheckIcon from '../assets/icon-check.png';
+import { getLearningWords } from '../api/word';
 
 const WordLearning = () => {
     const [words, setWords] = useState([
+        {
+            wordId: 5,
+            word: '글씨',
+            meaning: '쓴 글자의 모양.',
+            examples: ['*글씨*를 또박또박 쓰세요.', '내 이름을 *글씨*로 써 보세요.'],
+        },
         {
             wordId: 1,
             word: '그림',
@@ -19,12 +26,6 @@ const WordLearning = () => {
             examples: ['이제 *그만* 싸우자!', '장난은 *그만*하세요.'],
         },
         {
-            wordId: 5,
-            word: '글씨',
-            meaning: '쓴 글자의 모양.',
-            examples: ['*글씨*를 또박또박 쓰세요.', '내 이름을 *글씨*로 써 보세요.'],
-        },
-        {
             wordId: 7,
             word: '글자',
             meaning: '말을 적는 일정한 체계의 부호.',
@@ -34,6 +35,7 @@ const WordLearning = () => {
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
     const [checkedWords, setCheckedWords] = useState(new Set());
+    const [partyId, setPartyId] = useState(1); //더미 값
 
     const handleCheck = wordId => {
         setCheckedWords(prev => {
@@ -43,21 +45,33 @@ const WordLearning = () => {
         });
     };
 
+    useEffect(() => {
+        getLearningWords(partyId).then(response => {
+            setWords(response.data.words);
+        });
+    }, []);
+
+    useEffect(() => {
+        if (checkedWords.size === 4) {
+            // 모든 단어 학습 완료
+        }
+    }, [checkedWords]);
+
     return (
         <div className="bg-seashell h-screen">
             <Navigation stage={'learning'} />
-            <div className="flex m-20 justify-between">
-                <div className="flex w-[400px] justify-center bg-white">Camera</div>
+            <div className="flex m-8 justify-between h-[600px]">
+                <div className="flex w-[400px] justify-center bg-white h-full">Camera</div>
                 <WordInfo
                     word={words[currentWordIdx]}
                     isChecked={checkedWords.has(words[currentWordIdx].wordId)}
                     onCheck={() => handleCheck(words[currentWordIdx].wordId)}
                 />
-                <div className="flex flex-col w-[400px] gap-8 justify-between">
+                <div className="flex flex-col w-[400px] gap-8 justify-between mt-4">
                     {words.map((word, index) => (
                         <div
                             key={index}
-                            className={`p-12 text-center text-[46px] rounded-2xl cursor-pointer transition-all font-bold relative
+                            className={`p-8 text-center text-[46px] rounded-2xl cursor-pointer transition-all font-bold relative
                         ${bgColors[index % bgColors.length]} 
                         ${currentWordIdx === index ? 'border-solid border-4 border-burnt-sienna' : 'border-solid border-4 border-transparent'}`}
                             onClick={() => setCurrentWordIdx(index)}
