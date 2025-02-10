@@ -115,7 +115,7 @@ export default function ManagerRegistPage() {
 
         try {
             const res = await loginIdCheck(loginId);
-            if (res.status == 200) {
+            if (res.status == 204) {
                 setCanRegist(true);
                 setRegistState(prevState =>
                     prevState.map(input =>
@@ -200,7 +200,8 @@ export default function ManagerRegistPage() {
             canRegist &&
             codeCheck &&
             registState.find(input => input.id === 'password').value ===
-                registState.find(input => input.id === 'confirmPassword').value
+                registState.find(input => input.id === 'confirmPassword').value &&
+            registState.find(input => input.id === 'name').comment == ''
         ) {
             const children = addedChildren.map(item => item.id);
             const registInfo = registState.reduce(
@@ -208,7 +209,7 @@ export default function ManagerRegistPage() {
                     acc[input.id] = input.value;
                     return acc;
                 },
-                { role: 'MANAGER', imgUrl: imgFile, children },
+                { role: 'MANAGER', imgUrl: imgFile ? imgFile : null, children },
             );
 
             const res = await regist(registInfo, navigate);
@@ -231,14 +232,19 @@ export default function ManagerRegistPage() {
         navigate('/login');
     };
     const checkEmail = async () => {
+        setCodeCheck(false);
         try {
             const res = await sendEmailCode(registState.find(input => input.id === 'email').value);
-            if (res.status == 200) {
+            if (res.status == 204) {
                 setModalText('인증 메일이 발송되었습니다.');
                 setModalState(true);
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
+            if (error.status == 500) {
+                setModalText('중복된 이메일입니다.');
+                setModalState(true);
+            }
         }
     };
     const checkCode = async () => {
@@ -253,6 +259,14 @@ export default function ManagerRegistPage() {
                 setModalState(true);
             }
         } catch (error) {
+            if (error.status == 400) {
+                setModalText('인증시간이 만료되었습니다.');
+                setModalState(true);
+            }
+            if (error.status == 500) {
+                setModalText('잘못된 코드입니다.');
+                setModalState(true);
+            }
             console.error('아이디 중복 확인 오류:', error);
         }
     };

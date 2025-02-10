@@ -21,13 +21,13 @@ public class MemberController {
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<Void> createMember(@Valid @RequestBody final MemberCreate memberCreate) {
         memberService.createMember(memberCreate);
         return ResponseEntity.status(CREATED).build();
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<MemberInfoResponse> getUserInfo(HttpServletRequest request) {
         String token = jwtUtil.getTokenFromRequest(request);
 

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
+    boolean existsByLoginId(String loginId);
+
     List<Member> findByManagerId(Long managerId);
 
     Optional<Member> findByLoginId(String loginId);

@@ -34,6 +34,7 @@ public class AuthService {
         if(memberRepository.findByEmail(email).isPresent()) {
             throw new AuthException(DUPLICATED_EMAIL);
         }
+        System.out.println("중복 검사*****************");
     }
 
     @Transactional
@@ -51,9 +52,10 @@ public class AuthService {
 
     }
 
-    public boolean checkLoginId(String loginId) {
-        return memberRepository.findByLoginId(loginId).isPresent();
-
+    public void checkLoginId(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new AuthException(DUPLICATED_USER_ID);
+        }
     }
 
     public void checkCode(String email, String code) {

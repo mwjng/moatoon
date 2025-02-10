@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { setUserInfo } from '../store/userSlice';
 import store from '../store/store';
+import { useSelector } from 'react-redux';
 
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
@@ -73,9 +74,7 @@ export const regist = async (registInfo, navigate) => {
 
 export const loginIdCheck = async loginId => {
     try {
-        const res = await axios.get(`${AUTH_API_URL}/id/check`, {
-            params: { loginId: loginId },
-        });
+        const res = await axios.get(`${AUTH_API_URL}/id/check/${loginId}`);
         return res;
     } catch (err) {
         console.error(err);
@@ -92,7 +91,12 @@ export const login = async (loginInfo, navigate) => {
             localStorage.setItem('accessToken', token);
 
             const userInfo = await getUserInfo(token);
+            if (userInfo.role == 'CHILD' && userInfo.managerId == null) {
+                localStorage.setItem('accessToken', null);
+                return null;
+            }
             store.dispatch(setUserInfo(userInfo));
+            console.log(store.getState());
 
             if (userInfo.role == 'MANAGER') {
                 navigate('/main/manager');
