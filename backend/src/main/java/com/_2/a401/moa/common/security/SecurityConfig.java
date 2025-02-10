@@ -37,11 +37,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
-<<<<<<< HEAD
+
                         .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/parties/**", "/words/*").permitAll()
-=======
-                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/members/search", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/files/upload").permitAll()
->>>>>>> 779c5cf7c2cd1ac471b56c6c57a7a25fc22e82e3
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

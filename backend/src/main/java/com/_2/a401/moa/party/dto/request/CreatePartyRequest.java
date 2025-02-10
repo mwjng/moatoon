@@ -1,5 +1,6 @@
 package com._2.a401.moa.party.dto.request;
 
+import com._2.a401.moa.schedule.domain.Day;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class CreatePartyRequest {
     private boolean publicStatus;
     private String time;
     private LocalDate startDate;
-    private List<String> dayOfWeek;
+    private List<Day> dayWeek;
     private int genre;
     private int mood;
     private int theme;

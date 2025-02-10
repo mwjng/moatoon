@@ -7,6 +7,8 @@ import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 import com._2.a401.moa.party.repository.*;
+import com._2.a401.moa.schedule.domain.Day;
+import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com._2.a401.moa.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,17 +30,14 @@ public class PartyService {
     private final PartyMemberRepository partyMemberRepository;
     private final MemberRepository memberRepository; // ✅ 변수명 수정
     private final CutService cutService;
-    private final ScheduleService scheduleService;
+    private final InitialScheduleService initialScheduleService;
     private final S3Service s3Service;
 
     @Transactional
-    public Party createParty(CreatePartyRequest request,  String imageUrl) {
+    public Party createParty(CreatePartyRequest request,  String bookCoverUrl) {
 //        String bookCoverUrl = request.getCoverImage();
-        String bookCoverUrl = s3Service.uploadFromUrl(imageUrl);
+//        String bookCoverUrl = s3Service.uploadFromUrl(imageUrl);
 
-        if(bookCoverUrl == null || bookCoverUrl.trim().isEmpty()){
-            throw new RuntimeException("S3에 이미지 업로드 실패");
-        }
 
 
         String pinNumber = generateUniquePin();
@@ -46,10 +45,10 @@ public class PartyService {
         // 날짜 조정 (가장 가까운 선택 요일로 변경)
         LocalDateTime startDate = adjustStartDate(
                 LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
-                request.getDayOfWeek()
+                request.getDayWeek()
         );
         // 종료 날짜 계산 (startDate, episodeLength, 요일 고려)
-        LocalDateTime endDate = scheduleService.calculateEndDate(startDate, request.getDayOfWeek(), request.getEpisodeLength());
+        LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
 
         //  Party 엔티티 생성 및 저장
         Party party = partyRepository.save(Party.builder()
@@ -75,7 +74,7 @@ public class PartyService {
         cutService.createCuts(party, request);
 
         //  Schedule 저장
-        scheduleService.createSchedules(party, request.getDayOfWeek(), request.getEpisodeLength());
+        initialScheduleService.createSchedules(party, request.getDayWeek(), request.getEpisodeLength());
 
         return party;
     }
@@ -83,11 +82,11 @@ public class PartyService {
     /**
      *  startDate를 선택된 요일 중 가장 가까운 요일로 조정
      */
-    private LocalDateTime adjustStartDate(LocalDateTime startDate, List<String> dayOfWeek) {
+    private LocalDateTime adjustStartDate(LocalDateTime startDate, List<Day> dayWeek) {
         DayOfWeek currentDay = startDate.getDayOfWeek();
 
-        List<DayOfWeek> selectedDays = dayOfWeek.stream()
-                .map(DayOfWeek::valueOf)
+        List<DayOfWeek> selectedDays = dayWeek.stream()
+                .map(day -> DayOfWeek.valueOf(day.name()))
                 .sorted(Comparator.comparingInt(DayOfWeek::getValue))
                 .collect(Collectors.toList());
 

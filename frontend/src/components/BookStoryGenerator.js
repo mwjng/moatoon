@@ -213,7 +213,7 @@ const BookStoryGenerator = ({
         level: parseInt(level.replace("Lv", "").trim()),
         episodeLength,
         time,
-        dayOfWeek: formattedDayOfWeek,
+        dayWeek: formattedDayOfWeek,
         genre: parseInt(genre),
         mood: parseInt(mood),
         theme: parseInt(theme),

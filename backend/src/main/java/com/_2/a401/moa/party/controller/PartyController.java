@@ -29,9 +29,15 @@ public class PartyController {
             @RequestParam("imageUrl") String imageUrl,
             @RequestPart("jsonData") CreatePartyRequest request) throws IOException {
 
-        partyService.createParty(request, imageUrl);
+        String bookCoverUrl = s3Service.uploadFromUrl(imageUrl);
 
-        return ResponseEntity.ok("Party created successfully with cover image.");
+        if(bookCoverUrl == null || bookCoverUrl.trim().isEmpty()){
+            throw new RuntimeException("S3에 이미지 업로드 실패");
+        }
+
+        partyService.createParty(request, bookCoverUrl);
+
+        return ResponseEntity.ok("생성된 이미지 S3 url : "+bookCoverUrl);
     }
 
     @GetMapping("/keyword")
