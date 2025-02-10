@@ -51,17 +51,43 @@ const MyWordPage = () => {
 
     const updateWords = () => {
         //api로 page에 맞는 단어 가져오기
+
+        //테스트용======
         const newWords = [
             {
-                wordListId: 3,
+                wordListId: 8,
                 word: '형태',
                 meaning: '사물의 생김새나 모양',
-                failCount: 3,
+                failCount: 5,
                 example: [
                     '옷 소매의 *형태*가 특이하다.',
                     '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
                 ],
             },
+            {
+                wordListId: 9,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 1,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+            {
+                wordListId: 10,
+                word: '형태',
+                meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
+                failCount: 4,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+
+            {
+                wordListId: 11,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 4,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+        ];
+        const originWords = [
             {
                 wordListId: 1,
                 word: '형태',
@@ -76,7 +102,16 @@ const MyWordPage = () => {
                 failCount: 2,
                 example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
             },
-
+            {
+                wordListId: 3,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 3,
+                example: [
+                    '옷 소매의 *형태*가 특이하다.',
+                    '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
+                ],
+            },
             {
                 wordListId: 4,
                 word: '형태',
@@ -86,7 +121,14 @@ const MyWordPage = () => {
             },
         ];
 
-        setWords(newWords);
+        if (page < 1) {
+            setPage(1);
+            setWords(originWords);
+        } else if (page > 2) {
+            setPage(2);
+            setWords(newWords);
+        }
+        //====테스트용
     };
 
     const handlePrev = async () => {

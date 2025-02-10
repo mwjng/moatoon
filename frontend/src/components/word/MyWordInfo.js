@@ -23,9 +23,7 @@ const MyWordInfo = ({ word, removeMyWord }) => {
                     style={{ backgroundColor: failColor[Math.min(word.failCount, 5)] }}
                     onClick={handleClick}
                 >
-                    <p className="text-lg font-semibold text-[48px] rounded-2xl p-4 bg-white bg-opacity-80">
-                        {word.word}
-                    </p>
+                    <p className="font-semibold rounded-2xl p-4 bg-white bg-opacity-80 text-[48px]">{word.word}</p>
                 </div>
             ) : (
                 <div
