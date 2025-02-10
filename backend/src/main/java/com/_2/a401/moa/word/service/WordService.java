@@ -37,11 +37,18 @@ public class WordService {
     private final MyWordRepository myWordRepository;
     private final MemberRepository memberRepository;
 
-    public MyWordsResponse getMyWords(Long memberId, int page, String keyword) {
-        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, page - 1, keyword);
-
+    public MyWordsResponse getMyWords(Long memberId, Integer page, String keyword) {
         Long totalCount = myWordRepository.countAll(memberId, keyword);
         int totalPage = (int) (totalCount / 4) + 1;
+
+        if (page == null || page < 1) {
+            page = 1;
+        }
+        if (totalPage < page) {
+            page = totalPage;
+        }
+
+        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, page - 1, keyword);
 
         List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
         if (myWordExamples.isEmpty()) {
