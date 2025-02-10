@@ -46,6 +46,39 @@ const Canvas = () => {
         };
     }, [partyId]);
 
+    useEffect(() => {
+        const saveCanvasData = () => {
+            if (!connected || !stompClient.current) return;
+
+            const canvasData = JSON.stringify(lines);
+            const requestData = {
+                cutId: 1, // 적절한 cutId로 변경
+                canvasData: canvasData,
+                timestamp: new Date().toISOString(),
+            };
+
+            fetch('http://localhost:8080/cuts/save-temp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('캔버스 임시 저장 성공');
+                    } else {
+                        console.error('캔버스 임시 저장 실패:', response.status);
+                    }
+                })
+                .catch(error => console.error('캔버스 임시 저장 중 오류 발생:', error));
+        };
+
+        const intervalId = setInterval(saveCanvasData, 60000); // 1분마다 실행
+
+        return () => clearInterval(intervalId);
+    }, [lines, connected]);
+
     const handleMouseDown = e => {
         isDrawing.current = true;
         const pos = e.target.getStage().getPointerPosition();
