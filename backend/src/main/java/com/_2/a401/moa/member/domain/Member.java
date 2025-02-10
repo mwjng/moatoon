@@ -2,15 +2,13 @@ package com._2.a401.moa.member.domain;
 
 import com._2.a401.moa.common.auditing.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import static com._2.a401.moa.member.domain.MemberState.ACTIVE;
 
 @Table(name = "member")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Member extends BaseEntity {
