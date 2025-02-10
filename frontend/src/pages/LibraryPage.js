@@ -6,8 +6,8 @@ import useFetchBooks from '../hooks/useLibraryBooks.js'; // 서버 페이징 적
 import { debounce } from 'lodash';
 
 function LibraryPage() {
-    const memberId = 2;
-    const { bookList, loading, hasMore, observerRef } = useFetchBooks(memberId, 'BEFORE');
+    const memberId = 3;
+    const { bookList, loading, hasMore, observerRef } = useFetchBooks(memberId, true);
     const colsPerRow = 5; // 한 줄당 책 개수
     const backgroundColors = ['bg-light-cream', 'bg-white', 'bg-lime-cream'];
 

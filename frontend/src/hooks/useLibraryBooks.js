@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { authInstance } from '../api/axios';
 
-const useFetchBooks = (memberId, status) => {
+const useFetchBooks = (memberId, isCompleted) => {
     const [bookList, setBookList] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -15,8 +15,8 @@ const useFetchBooks = (memberId, status) => {
         setLoading(true);
 
         try {
-            const response = await axios.get(`http://localhost:8080/books/${memberId}`, {
-                params: { status, page: currentPage, size: pageSize },
+            const response = await authInstance.get(`/books/${memberId}`, {
+                params: { isCompleted: isCompleted, page: currentPage, size: pageSize },
             });
 
             const newBooks = response.data.bookList || [];
