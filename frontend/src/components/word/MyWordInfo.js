@@ -13,7 +13,7 @@ const MyWordInfo = ({ word }) => {
             {isFront ? (
                 <div
                     className="p-4 mt-2 rounded-[30px] shadow-lg flex items-center justify-center w-[500px] h-[250px]
-                    border-[10px] border-solid border-white"
+                    border-[10px] border-solid border-white cursor-pointer"
                     style={{ backgroundColor: failColor[Math.min(word.failCount, 5)] }}
                     onClick={handleClick}
                 >
@@ -24,7 +24,7 @@ const MyWordInfo = ({ word }) => {
             ) : (
                 <div
                     className="px-4 py-4 mt-2 rounded-[30px] shadow-lg flex flex-col items-center justify-center w-[500px] h-[250px]
-                    border-[10px] border-solid border-seashell bg-white gap-4"
+                    border-[10px] border-solid border-seashell bg-white gap-4 cursor-pointer"
                     style={{ borderColor: failColor[Math.min(word.failCount, 5)] }}
                     onClick={handleClick}
                 >
