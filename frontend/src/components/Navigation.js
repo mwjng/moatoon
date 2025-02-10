@@ -9,6 +9,7 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
+import WordButton from './WordButton';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, targetTime, schedule }) {
@@ -162,10 +163,18 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
                             <div className="flex items-center gap-8">
                                 <span className="text-2xl font-bold">오늘의 단어</span>
                                 <div className="flex gap-8">
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어1</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어2</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어3</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어4</button>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어1
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어2
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어3
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어4
+                                    </WordButton>
                                 </div>
                             </div>
                             <div></div>

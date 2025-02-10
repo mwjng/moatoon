@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import { Client } from '@stomp/stompjs';
+import { Link } from 'react-router';
 import SockJS from 'sockjs-client';
 import ToolBar from './ToolBar';
+import WordButton from '../WordButton';
 
 const Canvas = () => {
     const [tool, setTool] = useState('pen');
@@ -139,29 +141,46 @@ const Canvas = () => {
     };
 
     return (
-        <div className="flex" style={{ width: '600px', height: '600px', position: 'relative' }}>
-            <Stage
-                width={600}
-                height={600}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                style={{ border: '2px solid black' }}
-                ref={stageRef}
-            >
-                <Layer>
-                    {lines.map((line, i) => (
-                        <Line
-                            points={line.points}
-                            stroke={line.color}
-                            strokeWidth={line.width}
-                            tension={0.5}
-                            lineCap="round"
-                            globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'}
-                        />
-                    ))}
-                </Layer>
-            </Stage>
+        <div className="flex bg-white" style={{ width: '600px', height: '600px', position: 'relative' }}>
+            <div className="flex flex-col">
+                <Stage
+                    width={600}
+                    height={600}
+                    onMouseDown={handleMouseDown}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    style={{ border: '2px solid black' }}
+                    ref={stageRef}
+                >
+                    <Layer>
+                        {lines.map((line, i) => (
+                            <Line
+                                points={line.points}
+                                stroke={line.color}
+                                strokeWidth={line.width}
+                                tension={0.5}
+                                lineCap="round"
+                                globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'}
+                            />
+                        ))}
+                    </Layer>
+                </Stage>
+                <div className="flex justify-center gap-4 mt-4">
+                    <Link to="/session/cutAll">
+                        <WordButton color="bg-light-orange" textColor="text-white" size="md" textSize="large">
+                            전체 보기
+                        </WordButton>
+                    </Link>
+                    <WordButton
+                        color="bg-light-orange hover:bg-yellow-400"
+                        textColor="text-white"
+                        size="md"
+                        textSize="large"
+                    >
+                        완료
+                    </WordButton>
+                </div>
+            </div>
             <div className="flex flex-col">
                 <ToolBar
                     setPenColor={setPenColor}
