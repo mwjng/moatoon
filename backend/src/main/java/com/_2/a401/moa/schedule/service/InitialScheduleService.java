@@ -21,9 +21,6 @@ public class InitialScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    /**
-     * ✅ 초기 스케줄 생성: 시작일과 요일을 기준으로 일정 저장
-     */
     @Transactional
     public void createSchedules(Party party, List<Day> dayWeek, int episodeLength) {
         LocalDateTime sessionTime = adjustStartDateToNearestDay(party.getStartDate(), dayWeek);
@@ -36,7 +33,7 @@ public class InitialScheduleService {
                     .sessionTime(sessionTime)
                     .episodeNumber(i)
                     .dayWeek(selectedDay)
-                    .status(ScheduleState.BEFORE) // 기본 상태
+                    .status(ScheduleState.BEFORE)
                     .build();
 
             scheduleRepository.save(schedule);
@@ -44,9 +41,6 @@ public class InitialScheduleService {
         }
     }
 
-    /**
-     * ✅ 종료 날짜 계산: startDate부터 요일을 고려하여 마지막 세션 날짜 반환
-     */
     public LocalDateTime calculateEndDate(LocalDateTime startDate, List<Day> dayWeek, int episodeLength) {
         LocalDateTime sessionTime = adjustStartDateToNearestDay(startDate, dayWeek);
 
@@ -56,42 +50,31 @@ public class InitialScheduleService {
         return sessionTime;
     }
 
-    /**
-     * ✅ 시작 날짜를 주어진 요일 중 가장 가까운 날짜로 조정
-     */
     private LocalDateTime adjustStartDateToNearestDay(LocalDateTime startDate, List<Day> days) {
         List<DayOfWeek> selectedDays = convertToDayOfWeek(days);
 
-        // ✅ 가장 가까운 미래 요일 찾기
         for (int i = 0; i < 7; i++) {
             LocalDateTime nextDate = startDate.plusDays(i);
             if (selectedDays.contains(nextDate.getDayOfWeek())) {
                 return nextDate;
             }
         }
-        return startDate; // 기본적으로는 변경 없음 (예외 처리)
+        return startDate;
     }
 
-    /**
-     * ✅ 선택된 요일을 기반으로 다음 세션 날짜를 계산
-     */
     private LocalDateTime getNextSessionDate(LocalDateTime current, List<Day> days) {
         List<DayOfWeek> selectedDays = convertToDayOfWeek(days);
         DayOfWeek currentDay = current.getDayOfWeek();
 
-        // ✅ 현재 날짜 이후의 가장 가까운 요일 찾기
         for (int i = 1; i <= 7; i++) {
             LocalDateTime nextDate = current.plusDays(i);
             if (selectedDays.contains(nextDate.getDayOfWeek())) {
                 return nextDate;
             }
         }
-        return current; // 기본적으로는 변경 없음
+        return current;
     }
 
-    /**
-     * ✅ Day Enum을 Java의 DayOfWeek으로 변환
-     */
     private List<DayOfWeek> convertToDayOfWeek(List<Day> days) {
         return days.stream()
                 .map(day -> DayOfWeek.valueOf(day.name()))

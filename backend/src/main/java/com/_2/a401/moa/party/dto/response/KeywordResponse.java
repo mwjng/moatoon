@@ -17,7 +17,7 @@ public class KeywordResponse {
         return new KeywordResponse(
                 keyword.getId(),
                 keyword.getKeyword(),
-                keyword.getOption().name()  // Enum -> String 변환
+                keyword.getOption().name()
         );
     }
 }

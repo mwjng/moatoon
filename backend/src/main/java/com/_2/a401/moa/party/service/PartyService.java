@@ -28,26 +28,20 @@ public class PartyService {
     private final PartyKeywordRepository partyKeywordRepository;
     private final KeywordRepository keywordRepository;
     private final PartyMemberRepository partyMemberRepository;
-    private final MemberRepository memberRepository; // ✅ 변수명 수정
+    private final MemberRepository memberRepository;
     private final CutService cutService;
     private final InitialScheduleService initialScheduleService;
     private final S3Service s3Service;
 
     @Transactional
     public Party createParty(CreatePartyRequest request,  String bookCoverUrl) {
-//        String bookCoverUrl = request.getCoverImage();
-//        String bookCoverUrl = s3Service.uploadFromUrl(imageUrl);
-
-
-
         String pinNumber = generateUniquePin();
 
-        // 날짜 조정 (가장 가까운 선택 요일로 변경)
         LocalDateTime startDate = adjustStartDate(
                 LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
                 request.getDayWeek()
         );
-        // 종료 날짜 계산 (startDate, episodeLength, 요일 고려)
+
         LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
 
         //  Party 엔티티 생성 및 저장
@@ -61,27 +55,20 @@ public class PartyService {
                 .startDate(startDate)
                 .endDate(endDate)
                 .status(PartyState.BEFORE)
-                .isPublic(request.isPublicStatus())  // boolean 타입으로 저장
+                .isPublic(request.isPublicStatus())
                 .build());
 
-        //  PartyKeyword 저장
         savePartyKeywords(party, request.getGenre(), request.getMood(), request.getTheme());
 
-        //  PartyMember 저장
         savePartyMembers(party, request.getParticipatingChildren());
 
-        //  Cut 저장 (story 기반으로 Cut 테이블에 삽입)
         cutService.createCuts(party, request);
 
-        //  Schedule 저장
         initialScheduleService.createSchedules(party, request.getDayWeek(), request.getEpisodeLength());
 
         return party;
     }
 
-    /**
-     *  startDate를 선택된 요일 중 가장 가까운 요일로 조정
-     */
     private LocalDateTime adjustStartDate(LocalDateTime startDate, List<Day> dayWeek) {
         DayOfWeek currentDay = startDate.getDayOfWeek();
 
@@ -90,25 +77,20 @@ public class PartyService {
                 .sorted(Comparator.comparingInt(DayOfWeek::getValue))
                 .collect(Collectors.toList());
 
-        //  현재 요일이 포함되어 있으면 그대로 유지
         if (selectedDays.contains(currentDay)) {
             return startDate;
         }
 
-        //  현재 요일보다 이후에 있는 선택 요일 찾기
         for (DayOfWeek nextDay : selectedDays) {
             if (nextDay.getValue() > currentDay.getValue()) {
                 return startDate.with(nextDay);
             }
         }
 
-        //  현재보다 이후 요일이 없다면, 다음 주 첫 번째 선택 요일로 이동
         return startDate.plusWeeks(1).with(selectedDays.get(0));
     }
 
-    /**
-     *  PartyKeyword 저장 (장르, 분위기, 테마)
-     */
+
     private void savePartyKeywords(Party party, int genreId, int moodId, int themeId) {
         List<Integer> keywordIds = List.of(genreId, moodId, themeId);
 
@@ -125,15 +107,11 @@ public class PartyService {
         }
     }
 
-    /**
-     * ✅ PartyMember 저장 (참여 아동 등록)
-     */
     private void savePartyMembers(Party party, List<CreatePartyRequest.ParticipatingChild> children) {
         List<Long> memberIds = children.stream()
                 .map(CreatePartyRequest.ParticipatingChild::getId)
                 .collect(Collectors.toList());
 
-        // ✅ 한 번의 쿼리로 모든 Member 가져오기
         List<Member> members = memberRepository.findAllById(memberIds);
 
         if (members.size() != memberIds.size()) {
@@ -150,9 +128,6 @@ public class PartyService {
         partyMemberRepository.saveAll(partyMembers);
     }
 
-    /**
-     * ✅ 고유한 핀번호 생성 (UUID 기반)
-     */
     private String generateUniquePin() {
         return UUID.randomUUID().toString().substring(0, 8);
     }

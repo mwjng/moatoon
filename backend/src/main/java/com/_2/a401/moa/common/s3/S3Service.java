@@ -56,19 +56,15 @@ public class S3Service {
         return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
     }
 
-
     public String uploadFromUrl(String imageUrl) {
         try {
-            // 🔹 URL에서 이미지 다운로드
             BufferedImage image = ImageIO.read(new URL(imageUrl));
 
-            // 🔹 로컬 임시 파일 생성
             String fileName = "cover_" + UUID.randomUUID() + ".png";
             Path tempFile = Files.createTempFile("upload-", ".png");
             File file = tempFile.toFile();
             ImageIO.write(image, "png", file);
 
-            // 🔹 S3에 업로드
             s3Client.putObject(
                     PutObjectRequest.builder()
                             .bucket(bucket)
@@ -78,10 +74,8 @@ public class S3Service {
                     RequestBody.fromFile(file)
             );
 
-            // 🔹 업로드 후 파일 삭제
             Files.delete(tempFile);
 
-            // 🔹 업로드된 이미지의 S3 URL 반환
             return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("DALL-E 이미지 다운로드 및 업로드 실패", e);
