@@ -34,6 +34,7 @@ public enum ExceptionCode {
     DUPLICATED_USER_ID(4014, "중복된 아이디입니다."),
     DUPLICATED_EMAIL(4015, "중복된 이메일입니다."),
     INVALID_CODE(4016, "잘못된 인증번호입니다."),
+    DUPLICATED_CHILD(4017, "이미 등록된 아동입니다."),
 
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),

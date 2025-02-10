@@ -4,19 +4,21 @@ import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
 import duck from '../../assets/duckduck.png';
 import RegistInput from '../../components/member/RegistInput';
-import { regist, loginIdCheck, uploadImage, sendEmailCode, checkEmailCode } from '../../api/member';
+import { regist, loginIdCheck, uploadImage, sendEmailCode, checkEmailCode, searchChildById } from '../../api/member';
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
+import { GiCancel } from 'react-icons/gi';
 
 export default function ManagerRegistPage() {
     const navigate = useNavigate();
     const [imgFile, setImgFile] = useState('');
     const [canRegist, setCanRegist] = useState(false); // 가입 가능 여부(아이디 인증 완)
-    const [modalState, setModalState] = useState(false); // 입력값 확인 모달
+    const [modalState, setModalState] = useState(false); // 안내메세지 상태
+    const [modalText, setModalText] = useState(''); // 안내메세지 내용
     const [codeCheck, setCodeCheck] = useState(false); // 이메일인증 여부
     const [registModalState, setRegistModalState] = useState(false); // 가입완료 확인 모달
-    const [emailModalState, setEmailModalState] = useState(false); // 이메일전송 확인 모달
-    const [codeCheckModalState, setCodeCheckModalState] = useState(false); // 코드 입력 성공 모달
+    const [searchChildId, setSearchChildId] = useState(''); // 아동 ID 검색 상태
+    const [addedChildren, setAddedChildren] = useState([]); // 추가된 아동 목록
     const imgRef = useRef();
     const [registState, setRegistState] = useState([
         {
@@ -25,7 +27,7 @@ export default function ManagerRegistPage() {
             type: 'text',
             required: true,
             comment: '',
-            cmtColor: '#000',
+            cmtColor: '#FF0000',
         },
         {
             id: 'email',
@@ -48,7 +50,7 @@ export default function ManagerRegistPage() {
             value: '비밀번호',
             type: 'password',
             required: true,
-            comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
+            comment: '',
             cmtColor: '#FF0000',
         },
         {
@@ -59,14 +61,13 @@ export default function ManagerRegistPage() {
             comment: '',
             cmtColor: '#000',
         },
-
         {
             id: 'name',
             value: '이름',
             type: 'text',
             required: true,
             comment: '',
-            cmtColor: '#000',
+            cmtColor: '#FF0000',
         },
         {
             id: 'nickname',
@@ -74,35 +75,39 @@ export default function ManagerRegistPage() {
             type: 'text',
             required: true,
             comment: '',
-            cmtColor: '#000',
+            cmtColor: '#FF0000',
         },
     ]);
 
     const changeValue = (key, value) => {
-        setRegistState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
-        if (key === 'loginId') {
-            setRegistState(prevState =>
-                prevState.map(input =>
-                    input.id === 'loginId'
-                        ? {
-                              ...input,
-                              comment: '',
-                          }
-                        : input,
-                ),
-            );
-            setCanRegist(false);
-        }
-        if (key === 'email') {
-            setCodeCheck(false);
-        }
-        if (key === 'password') {
-            validatePassword(value);
-        }
-
-        if (key === 'confirmPassword') {
-            checkPasswordMatch(value);
-        }
+        setRegistState(prevState =>
+            prevState.map(input => {
+                if (input.id === key) {
+                    let comment = '';
+                    let cmtColor = '#FF0000';
+                    if (key === 'loginId' || key === 'nickname') {
+                        if (value.length > 20) {
+                            comment = '20자 이내로 입력해주세요.';
+                        }
+                        if (key == 'loginId') {
+                            setCanRegist(false);
+                        }
+                    } else if (key === 'name') {
+                        if (value.length < 2 || value.length > 10) {
+                            comment = '이름은 2자 이상 10자 이내로 입력해주세요.';
+                        }
+                    } else if (key === 'email') {
+                        setCodeCheck(false);
+                    } else if (key === 'password') {
+                        validatePassword(value);
+                    } else if (key === 'confirmPassword') {
+                        checkPasswordMatch(value);
+                    }
+                    return { ...input, value, comment, cmtColor: comment ? '#FF0000' : '#009951' };
+                }
+                return input;
+            }),
+        );
     };
 
     const checkDuplicate = async loginId => {
@@ -197,12 +202,13 @@ export default function ManagerRegistPage() {
             registState.find(input => input.id === 'password').value ===
                 registState.find(input => input.id === 'confirmPassword').value
         ) {
+            const children = addedChildren.map(item => item.id);
             const registInfo = registState.reduce(
                 (acc, input) => {
                     acc[input.id] = input.value;
                     return acc;
                 },
-                { role: 'MANAGER', imgUrl: imgFile, children: addedChildren },
+                { role: 'MANAGER', imgUrl: imgFile, children },
             );
 
             const res = await regist(registInfo, navigate);
@@ -210,18 +216,16 @@ export default function ManagerRegistPage() {
                 setRegistModalState(true);
             }
         } else {
-            console.log(canRegist);
-            console.log(codeCheck);
+            setModalText('입력값을 확인해주세요.');
             setModalState(true);
         }
     };
 
     const closeModal = () => {
         setModalState(false);
+        setModalText('');
     };
-    const closeEmailModal = () => {
-        setEmailModalState(false);
-    };
+
     const closeRegistModal = () => {
         setRegistModalState(false);
         navigate('/login');
@@ -230,7 +234,8 @@ export default function ManagerRegistPage() {
         try {
             const res = await sendEmailCode(registState.find(input => input.id === 'email').value);
             if (res.status == 200) {
-                setEmailModalState(true);
+                setModalText('인증 메일이 발송되었습니다.');
+                setModalState(true);
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
@@ -244,38 +249,55 @@ export default function ManagerRegistPage() {
             );
             if (res.status == 200) {
                 setCodeCheck(true);
-                setCodeCheckModalState(true);
+                setModalText('인증이 완료되었습니다.');
+                setModalState(true);
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
         }
     };
-    const closeCodeModal = () => {
-        setCodeCheckModalState(false);
-    };
-    const [searchChildId, setSearchChildId] = useState(''); // 아동 ID 검색 상태
-    const [childrenList, setChildrenList] = useState([]); // 아동 목록 상태
-    const [addedChildren, setAddedChildren] = useState([]); // 추가된 아동 목록
 
     // 아동 검색
     const searchChild = async () => {
+        let canAdd = true;
         if (!searchChildId) return;
-
-        try {
-            const res = await searchChildById(searchChildId); // 아이디로 아동 검색 API 호출
-            if (res.status === 200) {
-                setSearchChildId(res.data); // 검색된 아동 목록 저장
+        addedChildren.forEach(child => {
+            console.log(child);
+            if (child['loginId'] == searchChildId) {
+                setModalText('이미 추가된 아동입니다.');
+                setModalState(true);
+                canAdd = false;
+                return;
             }
-        } catch (error) {
-            console.error('아동 검색 오류:', error);
+        });
+        if (canAdd) {
+            try {
+                const res = await searchChildById(searchChildId);
+                if (res.status === 200) {
+                    setSearchChildId('');
+                    setAddedChildren(prev => [...prev, res.data]);
+                }
+            } catch (error) {
+                if (error.response && error.response.data) {
+                    const { code } = error.response.data;
+                    if (code === 4017) {
+                        setModalText('이미 등록된 아동입니다.');
+                    } else if (code === 4013) {
+                        setModalText('존재하지 않는 아동입니다.');
+                    } else {
+                        setModalText('아동 검색 중 오류가 발생했습니다.');
+                    }
+                } else {
+                    setModalText('아동 검색 요청이 실패했습니다.');
+                }
+                setSearchChildId('');
+                setModalState(true);
+            }
         }
     };
 
-    // 아동 추가
-    const addChild = childId => {
-        setAddedChildren(prevChildren => [...prevChildren, childId]);
-        setSearchQuery(''); // 검색창 비우기
-        setChildrenList([]); // 검색 결과 초기화
+    const deleteChild = idx => {
+        setAddedChildren(addedChildren.filter((item, index) => index != idx));
     };
 
     return (
@@ -322,50 +344,29 @@ export default function ManagerRegistPage() {
                     codeState={codeCheck}
                 />
                 <div className="relative  w-full">
-                    <input
-                        type="text"
-                        value={searchChildId}
-                        onChange={e => setSearchChildId(e.target.value)}
-                        placeholder="아동 ID로 등록하기"
-                        className="w-full rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] focus:border-[#FFBD73] bg-white"
-                    />
-                    <button
-                        onClick={searchChild}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#8ECAE6] text-white px-2 py-1 rounded-xl text-xs"
-                    >
-                        검색
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={searchChildId}
+                            onChange={e => setSearchChildId(e.target.value)}
+                            placeholder="아동 ID로 등록하기"
+                            className="flex-1 rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] focus:border-[#FFBD73] bg-white"
+                        />
+                        <button onClick={searchChild} className="bg-[#8ECAE6] text-white px-3 py-2 rounded-2xl text-xs">
+                            검색
+                        </button>
+                    </div>
 
-                    {childrenList.length > 0 && (
-                        <div className="mt-3">
-                            <h4>검색된 아동들</h4>
-                            <ul>
-                                {childrenList.map(child => (
-                                    <li key={child.id} className="flex justify-between items-center mt-2">
-                                        <span>
-                                            {child.name} (ID: {child.id})
-                                        </span>
-                                        <button
-                                            onClick={() => addChild(child.id)}
-                                            className="bg-[#FFBD73] text-white px-2 py-1 rounded-xl text-xs"
-                                        >
-                                            추가
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
-                    {/* 추가된 아동 목록 */}
                     {addedChildren.length > 0 && (
                         <div className="mt-3">
-                            <h4>추가된 아동들</h4>
-                            <ul>
+                            <ul className="w-[300px] flex overflow-x-auto whitespace-nowrap gap-2">
                                 {addedChildren.map((child, index) => (
-                                    <li key={index} className="mt-2">
-                                        {child.name}
-                                    </li>
+                                    <dic className="flex">
+                                        <li key={index} className="mt-1 inline-block">
+                                            {child.name}
+                                        </li>
+                                        <GiCancel className="w-3" onClick={e => deleteChild(index)} />
+                                    </dic>
                                 ))}
                             </ul>
                         </div>
@@ -373,13 +374,8 @@ export default function ManagerRegistPage() {
                 </div>
                 <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
             </AuthModal>
-            <AlertModal
-                text="인증 메일이 발송되었습니다."
-                modalState={emailModalState}
-                closeHandler={closeEmailModal}
-            />
-            <AlertModal text="인증이 완료되었습니다." modalState={codeCheckModalState} closeHandler={closeCodeModal} />
-            <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
+
+            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
             <AlertModal
                 text="회원가입이 완료되었습니다."
                 modalState={registModalState}

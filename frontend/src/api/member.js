@@ -5,6 +5,20 @@ import store from '../store/store';
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
 
+export const searchChildById = async childId => {
+    try {
+        const res = await axios.get(`${MEMBERS_API_URL}/search`, {
+            params: {
+                loginId: childId,
+            },
+        });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
 export const checkEmailCode = async (email, code) => {
     try {
         const res = await axios.post(`${AUTH_API_URL}/email/code`, { email, code });
