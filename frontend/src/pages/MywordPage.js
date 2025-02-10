@@ -49,12 +49,58 @@ const MyWordPage = () => {
         setShowHint(!showHint);
     };
 
+    const updateWords = () => {
+        //api로 page에 맞는 단어 가져오기
+        const newWords = [
+            {
+                wordListId: 3,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 3,
+                example: [
+                    '옷 소매의 *형태*가 특이하다.',
+                    '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
+                ],
+            },
+            {
+                wordListId: 1,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 1,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+            {
+                wordListId: 2,
+                word: '형태',
+                meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
+                failCount: 2,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+
+            {
+                wordListId: 4,
+                word: '형태',
+                meaning: '사물의 생김새나 모양',
+                failCount: 4,
+                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            },
+        ];
+
+        setWords(newWords);
+    };
+
     const handlePrev = async () => {
         setPage(page - 1);
+        updateWords();
     };
 
     const handleNext = () => {
         setPage(page + 1);
+        updateWords();
+    };
+
+    const handleRemoveMyWord = myWordId => {
+        // 단어 삭제시 실행될 부분
     };
 
     return (
@@ -113,7 +159,7 @@ const MyWordPage = () => {
                     <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
                     <div className="relative z-10 p-4 grid grid-cols-2 gap-4">
                         {words.map(word => (
-                            <MyWordInfo word={word} key={word.wordListId} />
+                            <MyWordInfo word={word} key={word.wordListId} removeMyWord={handleRemoveMyWord} />
                         ))}
                     </div>
                     <img src={bracketRight} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handleNext} />
