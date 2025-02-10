@@ -26,6 +26,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final AuthenticationManager authenticationManager;
     private final RedisRefreshTokenService redisRefreshTokenService;
+    private final RedisMailSevice redisMailSevice;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -50,9 +51,15 @@ public class AuthService {
 
     }
 
-    public void checkLoginId(String loginId) {
-        if(memberRepository.findByLoginId(loginId).isPresent()){
-            throw new AuthException(DUPLICATED_USER_ID);
+    public boolean checkLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId).isPresent();
+
+    }
+
+    public void checkCode(String email, String code) {
+        System.out.println(email+" "+ code);
+        if(!code.equals(redisMailSevice.getCode(email))){
+            throw new AuthException(INVALID_CODE);
         }
     }
 }

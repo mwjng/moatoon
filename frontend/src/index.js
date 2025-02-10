@@ -21,6 +21,7 @@ import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
+import QuizPage from './pages/QuizPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -39,9 +40,10 @@ root.render(
                 <Route path="pw" element={<FindPWPage />} />
             </Route>
             <Route path="/session">
-                <Route path="learning" element={<WordLearning />} />
                 <Route path="search" />
                 <Route path="create" element={<BookGeneratorPage />} />
+                <Route path="quiz" element={<QuizPage />} />
+                <Route path="learning" element={<WordLearning />} />
             </Route>
             <Route path="library" element={<LibraryPage />} />
             <Route path="word">

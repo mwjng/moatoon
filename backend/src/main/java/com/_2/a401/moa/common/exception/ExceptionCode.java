@@ -14,6 +14,7 @@ public enum ExceptionCode {
     CONNECTION_CREATION_FAILED(2002, "연결 생성에 실패했습니다."),
     SESSION_NOT_FOUND(2003, "세션을 찾을 수 없습니다."),
     SESSION_CAPACITY_EXCEEDED(2004, "세션에 인원이 모두 찼습니다"),
+    SESSION_MEMBER_NOT_FOUND(2005, "회원이 세션에 참여하고 있지 않습니다."),
 
     DATA_NOT_FOUND(3000, "데이터를 찾을 수 없습니다."),
     WORD_NOT_FOUND(3404, "단어를 찾을 수 없습니다."),
@@ -33,6 +34,8 @@ public enum ExceptionCode {
     INVALID_MEMBER(4013, "존재하지 않는 회원입니다."),
     DUPLICATED_USER_ID(4014, "중복된 아이디입니다."),
     DUPLICATED_EMAIL(4015, "중복된 이메일입니다."),
+    INVALID_CODE(4016, "잘못된 인증번호입니다."),
+    DUPLICATED_CHILD(4017, "이미 등록된 아동입니다."),
 
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),

@@ -8,8 +8,8 @@
     "@fullcalendar/react": "^6.1.15",
     "@reduxjs/toolkit": "^2.5.1",
     "autoprefixer": "^10.4.20",
-    "base-64": "^1.0.0",
     "axios": "^1.7.9",
+    "base-64": "^1.0.0",
     "cra-template": "1.2.0",
     "jwt-decode": "^4.0.0",
     "konva": "^9.3.18",
@@ -17,6 +17,8 @@
     "openvidu-browser": "^2.31.0",
     "postcss": "^8.5.1",
     "react": "^19.0.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
     "react-konva": "^19.0.2",
@@ -48,5 +50,6 @@
     "globals": "^15.14.0",
     "prettier": "^3.4.2",
     "web-vitals": "^4.2.4"
-  }
+  },
+    "proxy": "http://localhost:8080"
 }

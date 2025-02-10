@@ -27,7 +27,7 @@ public class MailService {
             "인증번호 %s";
 
     public boolean sendCodeMail(String email) {
-        redisMailSevice.setCode(setFrom, joinEmail(email));
+        redisMailSevice.setCode(email, joinEmail(email));
         return true;
     }
 
