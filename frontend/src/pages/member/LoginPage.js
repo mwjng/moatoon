@@ -22,6 +22,7 @@ export default function LoginPage() {
     });
 
     const [alertModal, setAlertModal] = useState(false);
+    const [checkModal, setCheckModal] = useState(false);
 
     const changeValue = (key, value) => {
         setLoginState(prevState => ({
@@ -32,7 +33,10 @@ export default function LoginPage() {
 
     const loginHandler = async () => {
         try {
-            await login(loginState, navigate);
+            const res = await login(loginState, navigate);
+            if (res == null) {
+                setCheckModal(true);
+            }
         } catch (error) {
             setAlertModal(true);
             console.error('로그인 중 에러 발생:', error);
@@ -41,6 +45,7 @@ export default function LoginPage() {
 
     const closeAlertModal = () => {
         setAlertModal(false);
+        setCheckModal(false);
     };
 
     return (
@@ -64,6 +69,7 @@ export default function LoginPage() {
                 modalState={alertModal}
                 closeHandler={closeAlertModal}
             />
+            <AlertModal text="보호자 계정에서 등록해주세요" modalState={checkModal} closeHandler={closeAlertModal} />
         </div>
     );
 }

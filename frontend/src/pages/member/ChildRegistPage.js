@@ -60,25 +60,36 @@ export default function ChildRegistPage() {
 
     const changeValue = (key, value) => {
         setRegistState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
+
         if (key === 'loginId') {
             setRegistState(prevState =>
-                prevState.map(input =>
-                    input.id === 'loginId'
-                        ? {
-                              ...input,
-                              comment: '',
-                          }
-                        : input,
-                ),
+                prevState.map(input => (input.id === 'loginId' ? { ...input, comment: '' } : input)),
             );
             setCanRegist(false);
         }
+
         if (key === 'password') {
             validatePassword(value);
         }
 
         if (key === 'confirmPassword') {
             checkPasswordMatch(value);
+        }
+
+        if (key === 'name') {
+            if (value.length < 2 || value.length > 10) {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'name'
+                            ? { ...input, comment: '이름은 2자 이상 10자 이하여야 합니다.', cmtColor: '#FF0000' }
+                            : input,
+                    ),
+                );
+            } else {
+                setRegistState(prevState =>
+                    prevState.map(input => (input.id === 'name' ? { ...input, comment: '', cmtColor: '#000' } : input)),
+                );
+            }
         }
     };
 
@@ -87,7 +98,7 @@ export default function ChildRegistPage() {
 
         try {
             const res = await loginIdCheck(loginId);
-            if (res.status == 200) {
+            if (res.status == 204) {
                 setCanRegist(true);
                 setRegistState(prevState =>
                     prevState.map(input =>
@@ -171,17 +182,19 @@ export default function ChildRegistPage() {
         if (
             canRegist &&
             registState.find(input => input.id === 'password').value ===
-                registState.find(input => input.id === 'confirmPassword').value
+                registState.find(input => input.id === 'confirmPassword').value &&
+            registState.find(input => input.id === 'name').comment == ''
         ) {
             const registInfo = registState.reduce(
                 (acc, input) => {
                     acc[input.id] = input.value;
                     return acc;
                 },
-                { role: 'CHILD', imgUrl: imgFile },
+                { role: 'CHILD', imgUrl: imgFile ? imgFile : null },
             );
 
             const res = await regist(registInfo, navigate);
+
             if (res.status === 201) {
                 setRegistModalState(true);
             }
