@@ -49,6 +49,7 @@ const ScheduleSection = ({ className, scheduleData }) => {
                 {upcomingSchedules.map((schedule) => (
                   <UpcomingScheduleCard 
                     key={schedule.scheduleId}
+                    bookImg={schedule.bookCover}
                     bookTitle={schedule.bookTitle}
                     bookCover={schedule.bookCover}
                     sessionTime={formatSessionTime(schedule.sessionTime)}
