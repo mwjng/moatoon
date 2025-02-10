@@ -15,4 +15,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Object> findByEmail(String email);
 
+    // memberId가 managerId의 자녀인지 확인하는 메서드
+    boolean existsByIdAndManagerId(Long memberId, Long managerId);
 }
