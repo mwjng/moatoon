@@ -17,6 +17,7 @@ import ChildRegistPage from './pages/member/ChildRegistPage';
 import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
+import CutAllPage from './pages/CutAllPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -36,6 +37,7 @@ root.render(
             </Route>
             <Route path="/session">
                 <Route path="draw" element={<DrawPage />} />
+                <Route path="overview" element={<CutAllPage />} />
                 <Route path="search" />
                 <Route path="create" element={<BookGeneratorPage />} />
             </Route>
