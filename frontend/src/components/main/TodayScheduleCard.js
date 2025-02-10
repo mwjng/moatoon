@@ -1,7 +1,36 @@
-import React from 'react';
-import BookImg from '../../assets/images/book2.png';
+import React, { useState, useEffect } from 'react';
 
 const TodayScheduleCard = ({ schedule, sessionTime }) => {
+  const [isWithinTenMinutes, setIsWithinTenMinutes] = useState(false);
+
+  useEffect(() => {
+    const checkTimeWindow = () => {
+      if (!schedule || !schedule.sessionTime) return false;
+      
+      const sessionDateTime = new Date(schedule.sessionTime);
+      const now = new Date();
+      
+      // 세션 시작까지 남은 시간 (밀리초)
+      const timeUntilSession = sessionDateTime.getTime() - now.getTime();
+      
+      // 10분을 밀리초로 변환
+      const tenMinutes = 10 * 60 * 1000;
+      
+      // 10분 이내이고 아직 시작 시간이 지나지 않았으면 true
+      return timeUntilSession <= tenMinutes && timeUntilSession > 0;
+    };
+
+    // 초기 체크
+    setIsWithinTenMinutes(checkTimeWindow());
+
+    // 1초마다 시간 체크
+    const timer = setInterval(() => {
+      setIsWithinTenMinutes(checkTimeWindow());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [schedule]);
+
   // schedule이 없을 경우 표시할 내용
   if (!schedule) {
     return (
@@ -16,21 +45,26 @@ const TodayScheduleCard = ({ schedule, sessionTime }) => {
     );
   }
 
+  // 버튼 활성화 조건:
+  // 1. WAITING 상태가 아니면 항상 활성화
+  // 2. WAITING 상태일 때는 10분 이내일 때만 활성화
+  const isButtonEnabled = schedule.sessionStage !== 'WAITING' || (schedule.sessionStage === 'WAITING' && isWithinTenMinutes);
+
   return (
     <div className="rounded-2xl shadow-md bg-orange1 w-[350px] h-[290px]">
-      {/* Header - 중앙 정렬된 흰색 텍스트 */}
+      {/* Header */}
       <div style={{ fontSize: '25px'}} className="text-lg font-bold pt-4 pb-1 text-white text-center">
         오늘의 일정
       </div>
       
       {/* Main Content Container */}
       <div className="flex items-start p-4 gap-4">
-        {/* Left Side - 책의 이미지와 타이틀이 있는 카드 */}
+        {/* Left Side */}
         <div className="flex flex-col items-center">
           <div className="bg-[#FFF8EA] p-3 rounded-xl shadow-sm">
             <div className="bg-white rounded-lg mb-2">
               <img 
-                src={schedule.bookCover || BookImg}
+                src={schedule.bookCover}
                 alt={`${schedule.bookTitle} 표지`}
                 style={{ width: '280px', height: '130px' }}
                 className='aspect-square object-cover rounded-lg'
@@ -42,9 +76,8 @@ const TodayScheduleCard = ({ schedule, sessionTime }) => {
           </div>
         </div>
         
-        {/* Right Side - 일정 정보와 버튼 */}
+        {/* Right Side */}
         <div className="flex flex-col gap-3 w-full justify-center w-[160px] h-[200px]">
-          {/* 일정 정보 */}
           <div className="bg-orange2 px-3 py-4 rounded-xl shadow-sm flex items-center justify-center w-full h-[130px]"> 
             <div className="text-xs text-center w-full">
               <div style={{ fontSize: '17px', color: '#FFF3C6'}} className="text-base font-bold">
@@ -56,16 +89,15 @@ const TodayScheduleCard = ({ schedule, sessionTime }) => {
             </div>
           </div>
 
-          {/* Button - 세션 상태에 따라 다른 버튼 표시 */}
           <button 
             style={{ fontSize: '17px' }}
             className={`text-lg font-bold px-4 py-2 rounded-full shadow-sm transition-colors w-full
-              ${schedule.sessionStage === 'BEFORE' 
-                ? 'bg-[#E1E2E6] text-[#5B5E65]' 
-                : 'bg-orange2 text-white'}`}
-            disabled={schedule.sessionStage === 'BEFORE'}
+              ${isButtonEnabled 
+                ? 'bg-orange2 text-white hover:bg-orange-600' 
+                : 'bg-[#E1E2E6] text-[#5B5E65]'}`}
+            disabled={!isButtonEnabled}
           >
-            {getButtonText(schedule.sessionStage)}
+            {getButtonText(schedule.sessionStage, isWithinTenMinutes)}
           </button>
         </div>
       </div>
@@ -74,12 +106,10 @@ const TodayScheduleCard = ({ schedule, sessionTime }) => {
 };
 
 // 세션 상태에 따른 버튼 텍스트 반환
-const getButtonText = (stage) => {
+const getButtonText = (stage, isWithinTenMinutes) => {
   switch (stage) {
-    case 'BEFORE':
-      return '10분 전 입장 가능';
     case 'WAITING':
-      return '입장하기';
+      return isWithinTenMinutes ? '입장하기' : '10분 전 입장 가능';
     case 'WORD':
       return '단어 선택하기';
     case 'DRAWING':
