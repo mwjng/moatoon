@@ -51,7 +51,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query(value = """
         SELECT s.id AS scheduleId,
                p.book_title AS bookTitle,
-               DATE_FORMAT(s.session_time, '%Y-%m-%dT%H:%i:%s') AS sessionTime
+               FORMATDATETIME(s.session_time, 'yyyy-MM-dd HH:mm:ss') AS sessionTime
         FROM party_member pm
         JOIN party p ON pm.party_id = p.id
         JOIN schedule s ON p.id = s.party_id
