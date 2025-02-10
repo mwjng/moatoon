@@ -5,6 +5,26 @@ import store from '../store/store';
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
 
+export const checkEmailCode = async (email, code) => {
+    try {
+        const res = await axios.post(`${AUTH_API_URL}/email/code`, { email, code });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const sendEmailCode = async email => {
+    try {
+        const res = await axios.post(`${AUTH_API_URL}/email/check`, { email });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
 export const uploadImage = async file => {
     const formData = new FormData();
     formData.append('file', file);
@@ -27,7 +47,7 @@ export const uploadImage = async file => {
     }
 };
 
-export const childRegist = async (registInfo, navigate) => {
+export const regist = async (registInfo, navigate) => {
     try {
         const res = await axios.post(MEMBERS_API_URL, registInfo);
         return res;

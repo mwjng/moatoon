@@ -56,6 +56,14 @@ public class AuthController {
         return new ResponseEntity<>("이메일 코드 전송 실패", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @PostMapping("/email/code")
+    public ResponseEntity<String> checkEmailCode(@RequestBody Map<String, String> req){
+        String code = req.get("code");
+        String email = req.get("email");
+        authService.checkCode(email, code);
+        return new ResponseEntity<>("인증 성공", HttpStatus.OK);
+    }
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginInfo loginInfo, HttpServletResponse response) {
 

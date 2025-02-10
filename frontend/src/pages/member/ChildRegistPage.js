@@ -4,7 +4,7 @@ import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
 import bbi from '../../assets/bbi.png';
 import RegistInput from '../../components/member/RegistInput';
-import { childRegist, loginIdCheck, uploadImage } from '../../api/member';
+import { regist, loginIdCheck, uploadImage } from '../../api/member';
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
 
@@ -181,7 +181,7 @@ export default function ChildRegistPage() {
                 { role: 'CHILD', imgUrl: imgFile },
             );
 
-            const res = await childRegist(registInfo, navigate);
+            const res = await regist(registInfo, navigate);
             if (res.status === 201) {
                 setRegistModalState(true);
             }
@@ -213,10 +213,10 @@ export default function ChildRegistPage() {
                     <label
                         htmlFor="profileImg"
                         style={{
-                            margin: '5px 0 20px 0',
+                            margin: '5px 0 5px 0',
                             fontWeight: 'bold',
                             fontSize: '13px',
-                            color: '#0095f6',
+                            color: '#8ECAE6',
                             display: 'inline-block',
                             cursor: 'pointer',
                         }}
