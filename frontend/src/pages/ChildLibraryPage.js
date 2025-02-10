@@ -1,13 +1,14 @@
 import React, { useRef, useEffect, useCallback } from 'react';
-import Navigation from '../components/Navigation';
-import LibraryBookCard from '../components/library/LibraryBookCard';
+import Navigation from '../components/Navigation.js';
+import LibraryBookCard from '../components/library/LibraryBookCard.js';
 import cado from '../assets/cado.svg';
 import useFetchBooks from '../hooks/useLibraryBooks.js'; // 서버 페이징 적용된 훅
 import { debounce } from 'lodash';
+import { useSelector } from 'react-redux';
 
-function LibraryPage() {
-    const memberId = 3;
-    const { bookList, loading, hasMore, observerRef } = useFetchBooks(memberId, true);
+function LibraryPage() {	
+    const userInfo = useSelector(state => state.user.userInfo);
+    const { bookList, loading, hasMore, observerRef } = useFetchBooks(3, true); // TODO: userInfo.id 뽑아서 넣어줘야함.
     const colsPerRow = 5; // 한 줄당 책 개수
     const backgroundColors = ['bg-light-cream', 'bg-white', 'bg-lime-cream'];
 
