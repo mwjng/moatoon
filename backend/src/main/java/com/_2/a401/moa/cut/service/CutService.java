@@ -8,8 +8,12 @@ import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
 import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
+import com._2.a401.moa.party.domain.Party;
+import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 import com._2.a401.moa.schedule.dto.response.ScheduleInfoResponse;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
+import com._2.a401.moa.word.domain.Word;
+import com._2.a401.moa.word.repository.WordRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,8 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Service
@@ -33,6 +40,7 @@ public class CutService {
     private final S3Service s3Service;
     private final CutRepository cutRepository;
     private final ScheduleRepository scheduleRepository;
+    private final WordRepository wordRepository;
 
     public void saveTempCanvasData(CanvasRedisRequest canvasRedisRequest) {
         try {
@@ -96,5 +104,36 @@ public class CutService {
                         .imageUrl(cut.getImageUrl())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    public List<Cut> createCuts(Party party, CreatePartyRequest request) {
+        List<Cut> cuts = new ArrayList<>();
+        int cutOrder = 1;
+
+        for (CreatePartyRequest.ChapterRequest chapter : request.getStory().getChapters()) {
+            List<Integer> randomOrderList = generateUniqueRandomNumbers(1, 4, 4);
+
+            for (int i = 0; i < chapter.getSentences().size(); i++) {
+                Cut cut = Cut.builder()
+                        .party(party)
+                        .word(wordRepository.findById(chapter.getWords().get(i).getId())
+                                .orElseThrow(() -> new EntityNotFoundException("Word not found")))
+                        .content(chapter.getSentences().get(i))
+                        .cutOrder(cutOrder++)
+                        .randomOrder(randomOrderList.get(i))
+                        .build();
+                cuts.add(cut);
+            }
+        }
+        return cutRepository.saveAll(cuts);
+    }
+
+
+    private List<Integer> generateUniqueRandomNumbers(int min, int max, int size) {
+        List<Integer> numbers = IntStream.rangeClosed(min, max).boxed().collect(Collectors.toList());
+        Collections.shuffle(numbers);
+        return numbers.subList(0, size);
     }
 }

@@ -2,9 +2,7 @@ package com._2.a401.moa.schedule.domain;
 
 import com._2.a401.moa.party.domain.Party;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +11,8 @@ import static com._2.a401.moa.schedule.domain.ScheduleState.ONGOING;
 @Table(name = "schedule")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 public class Schedule {
 
@@ -31,7 +31,7 @@ public class Schedule {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ScheduleState status;
+    private ScheduleState status = ScheduleState.BEFORE;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "party_id")

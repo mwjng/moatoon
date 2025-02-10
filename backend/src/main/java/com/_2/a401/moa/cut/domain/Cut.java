@@ -6,13 +6,13 @@ import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.schedule.domain.ScheduleState;
 import com._2.a401.moa.word.domain.Word;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Table(name = "cut")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 public class Cut extends BaseEntity {
 
