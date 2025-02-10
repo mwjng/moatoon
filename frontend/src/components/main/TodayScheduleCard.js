@@ -39,11 +39,11 @@ const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
   if (!schedule) {
     return (
       <div className="rounded-2xl shadow-md bg-orange1 w-[350px] h-[290px]">
-        <div className="text-lg font-bold pt-4 pb-1 text-white text-center">
+         <div className="text-2xl font-bold pt-4 pb-1 text-white text-center">
           오늘의 일정
         </div>
-        <div className="flex items-center justify-center h-[200px]">
-          <p className="text-white text-lg break-keep">오늘은 예정된 일정이 없습니다</p>
+        <div className="bg-[#FC852B] h-[200px] flex items-center justify-center rounded-xl px-6 py-4 mx-4 my-4">
+            <p className="text-[#FFF3C6] text-xl break-keep">오늘의 일정이 없습니다.</p>
         </div>
       </div>
     );
