@@ -4,6 +4,8 @@ import UpcomingScheduleCard from "./UpcomingScheduleCard";
 import CharacterKADO from '../../assets/kado.svg';
 
 const ScheduleSection = ({ className, scheduleData }) => {
+  console.log('scheduleData:', scheduleData); // Add this line
+
   const { todaySchedule, upcomingSchedules } = scheduleData || {
     todaySchedule: null,
     upcomingSchedules: []
@@ -39,20 +41,22 @@ const ScheduleSection = ({ className, scheduleData }) => {
             sessionTime={todaySchedule ? formatSessionTime(todaySchedule.sessionTime) : null}
           />
           
-          {/* 다가오는 일정 */}
-          <div className="flex flex-col items-center md:items-start justify-center pl-6 pt-4"> 
-            <h2 className="text-[21px] font-bold pb-2 mt-2">다가오는 일정</h2>
-            <div className="flex pt-2 gap-2 overflow-x-auto no-scrollbar">
-              {upcomingSchedules.map((schedule) => (
-                <UpcomingScheduleCard 
-                  key={schedule.scheduleId}
-                  bookTitle={schedule.bookTitle}
-                  bookCover={schedule.bookCover}
-                  sessionTime={formatSessionTime(schedule.sessionTime)}
-                />
-              ))}
+          {/* 다가오는 일정 - 일정이 있을 때만 표시 */}
+          {upcomingSchedules?.length > 0 && (
+            <div className="flex flex-col items-center md:items-start justify-center pl-6 pt-4"> 
+              <h2 className="text-[21px] font-bold pb-2 mt-2">다가오는 일정</h2>
+              <div className="flex pt-2 gap-2 overflow-x-auto no-scrollbar">
+                {upcomingSchedules.map((schedule) => (
+                  <UpcomingScheduleCard 
+                    key={schedule.scheduleId}
+                    bookTitle={schedule.bookTitle}
+                    bookCover={schedule.bookCover}
+                    sessionTime={formatSessionTime(schedule.sessionTime)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

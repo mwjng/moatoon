@@ -13,8 +13,9 @@ function ChildMainPage() {
    useEffect(() => {
      const fetchScheduleData = async () => {
        try {
-         const data = await getTodayAndUpComingSchedule();
-         setScheduleData(data);
+         const res = await getTodayAndUpComingSchedule();
+         setScheduleData(res.data);
+          console.log(scheduleData);
        } catch (error) {
          console.error('Failed to fetch schedule data:', error);
        }

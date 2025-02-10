@@ -20,7 +20,7 @@ export const getMonthlySchedule = async (year, month) => {
 
 export const getTodayAndUpComingSchedule = async () => {
     try {
-        const response = await authInstance.get(`${SCHEDULE_API_URL}/manager`, {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/upcoming`, {
         });
         return response;
     } catch (error) {
