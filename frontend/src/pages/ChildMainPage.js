@@ -26,7 +26,6 @@ function ChildMainPage() {
 
     return (
         <div className="h-screen bg-light-cream flex flex-col">
-            >>>>>>> develop
             <Navigation />
             <div className="flex-1">
                 <ScheduleSection className="h-full" scheduleData={scheduleData} />
