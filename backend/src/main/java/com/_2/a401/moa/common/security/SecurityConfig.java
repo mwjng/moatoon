@@ -2,9 +2,9 @@ package com._2.a401.moa.common.security;
 
 import com._2.a401.moa.common.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,7 +37,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
+<<<<<<< HEAD
                         .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/parties/**", "/words/*").permitAll()
+=======
+                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/members/search", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/files/upload").permitAll()
+>>>>>>> 779c5cf7c2cd1ac471b56c6c57a7a25fc22e82e3
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

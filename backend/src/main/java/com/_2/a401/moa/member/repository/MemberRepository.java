@@ -7,12 +7,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
+    boolean existsByLoginId(String loginId);
+
     List<Member> findByManagerId(Long managerId);
 
     Optional<Member> findByLoginId(String loginId);
 
     List<Member> findByManager(Member manager);
 
-    Optional<Object> findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
+    // memberId가 managerId의 자녀인지 확인하는 메서드
+    boolean existsByIdAndManagerId(Long memberId, Long managerId);
 }

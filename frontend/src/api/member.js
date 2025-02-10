@@ -1,13 +1,80 @@
 import axios from 'axios';
 import { setUserInfo } from '../store/userSlice';
 import store from '../store/store';
+import { useSelector } from 'react-redux';
 
-const AUTH_API_URL = 'http://localhost:8080/auth';
-const MEMBERS_API_URL = 'http://localhost:8080/members';
+const AUTH_API_URL = '/auth';
+const MEMBERS_API_URL = '/members';
+
+export const searchChildById = async childId => {
+    try {
+        const res = await axios.get(`${MEMBERS_API_URL}/search`, {
+            params: {
+                loginId: childId,
+            },
+        });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const checkEmailCode = async (email, code) => {
+    try {
+        const res = await axios.post(`${AUTH_API_URL}/email/code`, { email, code });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const sendEmailCode = async email => {
+    try {
+        const res = await axios.post(`${AUTH_API_URL}/email/check`, { email });
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const uploadImage = async file => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/files/upload', {
+            method: 'POST',
+            body: formData,
+        });
+
+        if (response.status != 200) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const img = await response.text();
+        return img;
+    } catch (error) {
+        console.error('이미지 업로드 실패', error);
+        return null;
+    }
+};
+
+export const regist = async (registInfo, navigate) => {
+    try {
+        const res = await axios.post(MEMBERS_API_URL, registInfo);
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
 
 export const loginIdCheck = async loginId => {
     try {
-        const res = await axios.get(`${AUTH_API_URL}/id/check?loginId=${loginId}`);
+        const res = await axios.get(`${AUTH_API_URL}/id/check/${loginId}`);
         return res;
     } catch (err) {
         console.error(err);
@@ -24,7 +91,12 @@ export const login = async (loginInfo, navigate) => {
             localStorage.setItem('accessToken', token);
 
             const userInfo = await getUserInfo(token);
+            if (userInfo.role == 'CHILD' && userInfo.managerId == null) {
+                localStorage.setItem('accessToken', null);
+                return null;
+            }
             store.dispatch(setUserInfo(userInfo));
+            console.log(store.getState());
 
             if (userInfo.role == 'MANAGER') {
                 navigate('/main/manager');

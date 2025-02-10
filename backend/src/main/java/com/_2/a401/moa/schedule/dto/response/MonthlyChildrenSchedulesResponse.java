@@ -4,6 +4,6 @@ import java.util.List;
 
 public record MonthlyChildrenSchedulesResponse(
     int month,
-    List<MemberSchedulesResponse> childrenSchedules
+    List<MemberCalendarSchedules> childrenSchedules
 ) {
 }

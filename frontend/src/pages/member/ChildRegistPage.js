@@ -4,10 +4,16 @@ import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
 import bbi from '../../assets/bbi.png';
 import RegistInput from '../../components/member/RegistInput';
-import { loginIdCheck } from '../../api/member';
+import { regist, loginIdCheck, uploadImage } from '../../api/member';
+import { useNavigate } from 'react-router';
+import AlertModal from '../../components/common/AlertModal';
 
 export default function ChildRegistPage() {
+    const navigate = useNavigate();
     const [imgFile, setImgFile] = useState('');
+    const [canRegist, setCanRegist] = useState(false);
+    const [modalState, setModalState] = useState(false);
+    const [registModalState, setRegistModalState] = useState(false);
     const imgRef = useRef();
     const [registState, setRegistState] = useState([
         {
@@ -23,8 +29,8 @@ export default function ChildRegistPage() {
             value: '비밀번호',
             type: 'password',
             required: true,
-            comment: '',
-            cmtColor: '#000',
+            comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
+            cmtColor: '#FF0000',
         },
         {
             id: 'confirmPassword',
@@ -55,12 +61,35 @@ export default function ChildRegistPage() {
     const changeValue = (key, value) => {
         setRegistState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
 
+        if (key === 'loginId') {
+            setRegistState(prevState =>
+                prevState.map(input => (input.id === 'loginId' ? { ...input, comment: '' } : input)),
+            );
+            setCanRegist(false);
+        }
+
         if (key === 'password') {
             validatePassword(value);
         }
 
         if (key === 'confirmPassword') {
             checkPasswordMatch(value);
+        }
+
+        if (key === 'name') {
+            if (value.length < 2 || value.length > 10) {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'name'
+                            ? { ...input, comment: '이름은 2자 이상 10자 이하여야 합니다.', cmtColor: '#FF0000' }
+                            : input,
+                    ),
+                );
+            } else {
+                setRegistState(prevState =>
+                    prevState.map(input => (input.id === 'name' ? { ...input, comment: '', cmtColor: '#000' } : input)),
+                );
+            }
         }
     };
 
@@ -69,20 +98,35 @@ export default function ChildRegistPage() {
 
         try {
             const res = await loginIdCheck(loginId);
-            console.log(res);
-            // setRegistState(prevState =>
-            //     prevState.map(input =>
-            //         input.id === 'loginId'
-            //             ? {
-            //                   ...input,
-            //                   comment: res.data.available ? '사용 가능한 아이디입니다.' : '중복된 아이디입니다.',
-            //                   cmtColor: res.data.available ? '#009951' : '#FF0000',
-            //               }
-            //             : input,
-            //     ),
-            // );
+            if (res.status == 204) {
+                setCanRegist(true);
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'loginId'
+                            ? {
+                                  ...input,
+                                  comment: '사용 가능한 아이디입니다.',
+                                  cmtColor: '#009951',
+                              }
+                            : input,
+                    ),
+                );
+            }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
+            if (error.status == 409) {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'loginId'
+                            ? {
+                                  ...input,
+                                  comment: '중복된 아이디입니다.',
+                                  cmtColor: '#FF0000',
+                              }
+                            : input,
+                    ),
+                );
+            }
         }
     };
 
@@ -126,29 +170,66 @@ export default function ChildRegistPage() {
         );
     };
 
-    const saveImgFile = () => {
+    const saveImgFile = async () => {
         const file = imgRef.current.files[0];
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            setImgFile(reader.result);
-        };
+        if (!file) return;
+        const imgUrl = await uploadImage(file);
+
+        setImgFile(imgUrl);
     };
+
+    const registHandler = async () => {
+        if (
+            canRegist &&
+            registState.find(input => input.id === 'password').value ===
+                registState.find(input => input.id === 'confirmPassword').value &&
+            registState.find(input => input.id === 'name').comment == ''
+        ) {
+            const registInfo = registState.reduce(
+                (acc, input) => {
+                    acc[input.id] = input.value;
+                    return acc;
+                },
+                { role: 'CHILD', imgUrl: imgFile ? imgFile : null },
+            );
+
+            const res = await regist(registInfo, navigate);
+
+            if (res.status === 201) {
+                setRegistModalState(true);
+            }
+        } else {
+            setModalState(true);
+        }
+    };
+
+    const closeModal = () => {
+        setModalState(false);
+    };
+    const closeRegistModal = () => {
+        setRegistModalState(false);
+        navigate('/login');
+    };
+
     return (
         <div style={{ position: 'relative' }}>
             <Background />
             <AuthModal title="아동 회원가입">
                 <div className="flex gap-2">
                     <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
-                        <img src={imgFile ? imgFile : bbi} alt="프로필 이미지" />
+                        <img
+                            src={imgFile ? imgFile : bbi}
+                            alt="프로필 이미지"
+                            className="w-full h-full object-cover rounded-3xl"
+                        />
                     </div>
                     <label
                         htmlFor="profileImg"
                         style={{
-                            margin: '5px 0 20px 0',
+                            margin: '5px 0 5px 0',
                             fontWeight: 'bold',
                             fontSize: '13px',
-                            color: '#0095f6',
+                            color: '#8ECAE6',
                             display: 'inline-block',
                             cursor: 'pointer',
                         }}
@@ -170,8 +251,14 @@ export default function ChildRegistPage() {
                     changeFunction={changeValue}
                     checkDuplicate={checkDuplicate}
                 />
-                <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" />
+                <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
             </AuthModal>
+            <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
+            <AlertModal
+                text="회원가입이 완료되었습니다."
+                modalState={registModalState}
+                closeHandler={closeRegistModal}
+            />
         </div>
     );
 }

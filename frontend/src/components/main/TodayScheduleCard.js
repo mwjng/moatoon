@@ -1,51 +1,141 @@
-import React from 'react';
-import BookImg from '../../assets/images/book2.png'
+import React, { useState, useEffect } from 'react';
 
-const TodayScheduleCard = () => {
+const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
+  const [isWithinTenMinutes, setIsWithinTenMinutes] = useState(false);
+  const [timeUntilSession, setTimeUntilSession] = useState(null);
+
+  useEffect(() => {
+    const checkTimeWindow = () => {
+      if (!schedule || !schedule.sessionTime) return false;
+      
+      const sessionDateTime = new Date(schedule.sessionTime);
+      const now = new Date();
+      
+      const timeRemaining = sessionDateTime.getTime() - now.getTime();
+      setTimeUntilSession(timeRemaining);
+      
+      const tenMinutes = 10 * 60 * 1000;
+      
+      // 세션 시작 시간이거나 10분 전일 때 API 갱신
+      if (sessionDateTime <= now || // 세션 시작 시간이 되었거나 지났을 때
+          (timeRemaining <= tenMinutes && timeRemaining > tenMinutes - 1000)) { // 10분 전 (1초 이내)
+        if (onRefresh) {
+          onRefresh();
+        }
+      }
+      
+      return timeRemaining <= tenMinutes && timeRemaining > 0;
+    };
+
+    setIsWithinTenMinutes(checkTimeWindow());
+
+    const timer = setInterval(() => {
+      setIsWithinTenMinutes(checkTimeWindow());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [schedule, onRefresh]);
+
+  if (!schedule) {
+    return (
+      <div className="rounded-2xl shadow-md bg-orange1 w-[350px] h-[290px]">
+         <div className="text-2xl font-bold pt-4 pb-1 text-white text-center">
+          오늘의 일정
+        </div>
+        <div className="bg-[#FC852B] h-[200px] flex items-center justify-center rounded-xl px-6 py-4 mx-4 my-4">
+            <p className="text-[#FFF3C6] text-xl break-keep">오늘의 일정이 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const isButtonEnabled = schedule.sessionStage !== 'WAITING' || (schedule.sessionStage === 'WAITING' && isWithinTenMinutes);
+
+  const getStatusColor = () => {
+    const sessionDateTime = new Date(schedule.sessionTime);
+    const now = new Date();
+    if (schedule.sessionStage === 'WAITING' && (!isWithinTenMinutes || sessionDateTime <= now)) {
+      return 'bg-red-500';
+    }
+    return 'bg-[#21DA14]'; // 더 밝은 초록색으로 변경
+  };
+
+  const getStatusText = () => {
+    const getStageText = () => {
+      switch(schedule.sessionStage) {
+        case 'WAITING': return '대기 중';
+        case 'WORD': return '단어 학습 중';
+        case 'DRAWING': return '그림 그리기 중';
+        default: return '대기 중';
+      }
+    };
+
+    if (schedule.sessionStage === 'WAITING') {
+      const sessionDateTime = new Date(schedule.sessionTime);
+      const now = new Date();
+      if (sessionDateTime <= now) {
+        if (onRefresh) {
+          onRefresh();
+        }
+        return '서비스 오류';
+      }
+      
+      if (!isWithinTenMinutes) {
+        const tenMinutes = 10 * 60 * 1000;
+        const waitingTime = timeUntilSession - tenMinutes;
+        const minutes = Math.ceil(waitingTime / (60 * 1000));
+        return `${minutes}분 후 입장 가능`;
+      }
+    }
+    
+    return getStageText();
+  };
+
+  const getButtonStyles = () => {
+    if (!isButtonEnabled) {
+      return 'bg-[#E1E2E6] text-[#5B5E65]';
+    }
+    return 'bg-[#FFE200] text-black hover:bg-[#FFD700]'; // 입장 가능할 때의 버튼 스타일
+  };
+
   return (
-    <div 
-      className="rounded-2xl shadow-md bg-orange1 w-[350px] h-[290px]" 
-    >
-      {/* Header - 중앙 정렬된 흰색 텍스트 */}
-      <div style={{ fontSize: '25px'}} className="text-lg font-bold pt-4 pb-1 text-white text-center">
+    <div className="rounded-2xl shadow-md bg-orange1 w-[380px] h-[290px]">
+      <div className="text-2xl font-bold pt-4 pb-1 text-white text-center">
         오늘의 일정
       </div>
       
-      {/* Main Content Container */}
-      <div className="flex items-start p-4 gap-4"> {/* h-full 추가 */}
-        {/* Left Side - 책의 이미지와 타이틀이 있는 카드드 */}
+      <div className="flex items-start p-4 gap-4">
         <div className="flex flex-col items-center">
           <div className="bg-[#FFF8EA] p-3 rounded-xl shadow-sm">
             <div className="bg-white rounded-lg mb-2">
               <img 
-                src={BookImg}
-                alt="돼지책 캐릭터"
-                style={{ width: '280px', height: '130px' }}
-                className='aspect-square object-cover rounded-lg'
+                src={schedule.bookCover}
+                alt={`${schedule.bookTitle} 표지`}
+                className="w-[130px] h-[140px] aspect-square object-cover rounded-lg"
               />
             </div>
-            <span style={{ fontSize: '14px' }} className="text-base font-bold text-center block">
-              돼지책
+            <span className="text-base font-bold text-center block break-keep whitespace-pre-wrap text-sm">
+              {schedule.bookTitle}
             </span>
           </div>
         </div>
         
-        {/* Right Side - 일정 정보와 버튼 */}
-        <div className="flex flex-col gap-3 w-full justify-center w-[160px] h-[200px]" > {/* 세로 중앙 정렬을 위해 justify-center 추가 */}
-          {/* 일정 정보 */}
-          <div 
-            className="bg-orange2 px-3 py-4 rounded-xl shadow-sm flex items-center justify-center w-full h-[130px]"> 
-            <div className="text-xs text-center w-full">
-              <div style={{ fontSize: '17px', color: '#FFF3C6'}} className="text-base font-bold">2일차</div>
-              <div style={{ fontSize: '17px', color: '#FFF3C6'}} className="text-base font-bold">오후 6시 시작</div>
+        <div className="flex flex-col gap-3 flex-1 justify-center h-[200px]">
+          <div className="bg-orange2 px-3 py-4 rounded-xl shadow-sm flex flex-col items-center justify-center w-full h-[130px]"> 
+            <div className="text-xs text-center w-full flex flex-col">
+              <div className="text-lg font-bold text-[#FFF3C6] whitespace-nowrap">{schedule.episodeNumber}일차</div>
+              <div className="text-lg font-bold text-[#FFF3C6] whitespace-nowrap">{sessionTime.slice(3)} 시작</div>
+            </div>
+
+            <div className="flex items-center gap-2 mt-4">
+              <div className={`w-3 h-3 rounded-full ${getStatusColor()}`}></div>
+              <span className="text-[#5B5E65] text-sm break-keep">{getStatusText()}</span>
             </div>
           </div>
 
-          {/* Button */}
           <button 
-            style={{ fontSize: '17px' }}
-            className="bg-[#E1E2E6] text-[#5B5E65] text-lg font-bold px-4 py-2 rounded-full shadow-sm 
-                      transition-colors w-full"
+            className={`text-lg font-bold px-4 py-2 rounded-full shadow-sm transition-colors w-full break-keep ${getButtonStyles()}`}
+            disabled={!isButtonEnabled}
           >
             입장하기
           </button>
