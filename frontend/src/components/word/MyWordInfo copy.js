@@ -15,26 +15,20 @@ const MyWordInfo = ({ word, removeMyWord }) => {
     };
 
     return (
-        <div key={word.wordListId} className="group w-[500px] h-[250px] [perspective:1000px]">
-            <div
-                className={`relative h-full w-full rounded-xl transition-transform duration-500 [transform-style:preserve-3d] ${
-                    isFront ? '' : '[transform:rotateY(180deg)]'
-                }`}
-            >
-                {/* front side */}
+        <>
+            {isFront ? (
                 <div
-                    className="p-4 mt-2 rounded-[30px] shadow-lg flex items-center justify-center w-[500px] h-[230px]
-                    border-[10px] border-solid border-white cursor-pointer absolute inset-0 [backface-visibility:hidden]"
+                    className="p-4 mt-2 rounded-[30px] shadow-lg flex items-center justify-center w-[500px] h-[250px]
+                    border-[10px] border-solid border-white cursor-pointer"
                     style={{ backgroundColor: failColor[Math.min(word.failCount, 5)] }}
                     onClick={handleClick}
                 >
                     <p className="font-semibold rounded-2xl p-4 bg-white bg-opacity-80 text-[48px]">{word.word}</p>
                 </div>
-                {/* back side */}
+            ) : (
                 <div
-                    className="px-4 py-4 mt-2 rounded-[30px] shadow-lg flex flex-col items-center justify-center w-[500px] h-[230px]
-                    border-[10px] border-solid border-seashell bg-white gap-4 cursor-pointer relative
-                    inset-0 [transform:rotateY(180deg)] [backface-visibility:hidden]"
+                    className="px-4 py-4 mt-2 rounded-[30px] shadow-lg flex flex-col items-center justify-center w-[500px] h-[250px]
+                    border-[10px] border-solid border-seashell bg-white gap-4 cursor-pointer relative"
                     style={{ borderColor: failColor[Math.min(word.failCount, 5)] }}
                     onClick={handleClick}
                 >
@@ -72,8 +66,8 @@ const MyWordInfo = ({ word, removeMyWord }) => {
                         ))}
                     </ol>
                 </div>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 
