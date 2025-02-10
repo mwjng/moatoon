@@ -20,6 +20,7 @@ import ChildRegistPage from './pages/member/ChildRegistPage';
 import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
+import MyWordPage from './pages/Myword.Page';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -44,7 +45,7 @@ root.render(
             </Route>
             <Route path="library" element={<LibraryPage />} />
             <Route path="word">
-                <Route index />
+                <Route index element={<MyWordPage />} />
             </Route>
             <Route path="user">
                 <Route index />
