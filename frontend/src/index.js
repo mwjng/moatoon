@@ -20,6 +20,7 @@ import ChildRegistPage from './pages/member/ChildRegistPage';
 import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
+import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
@@ -49,7 +50,7 @@ root.render(
                 </Route>
                 <Route path="library" element={<LibraryPage />} />
                 <Route path="word">
-                    <Route index />
+                    <Route index element={<MyWordPage />} />
                 </Route>
                 <Route path="user">
                     <Route index />
@@ -60,6 +61,6 @@ root.render(
                     <Route path="manager" element={<ManagerMainPage />} />
                 </Route>
             </Routes>
-        </BrowserRouter>
+        </BrowserRouter>,
     </Provider>,
 );
