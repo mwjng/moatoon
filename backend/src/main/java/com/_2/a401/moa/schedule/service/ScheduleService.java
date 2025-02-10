@@ -2,19 +2,19 @@ package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
-<<<<<<< HEAD
+
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.ScheduleState;
-import com._2.a401.moa.schedule.dto.response.MemberSchedulesResponse;
+//import com._2.a401.moa.schedule.dto.response.MemberSchedulesResponse;
 import com._2.a401.moa.schedule.dto.response.MonthlyChildrenSchedulesResponse;
-import com._2.a401.moa.schedule.dto.response.ScheduleResponse;
-=======
+//import com._2.a401.moa.schedule.dto.response.ScheduleResponse;
+
 import com._2.a401.moa.schedule.domain.SessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
 import com._2.a401.moa.schedule.dto.response.*;
->>>>>>> 779c5cf7c2cd1ac471b56c6c57a7a25fc22e82e3
+
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRepository;
 import com._2.a401.moa.schedule.repository.SessionRepository;
@@ -23,15 +23,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<<<<<<< HEAD
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-=======
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
->>>>>>> 779c5cf7c2cd1ac471b56c6c57a7a25fc22e82e3
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +67,7 @@ public class ScheduleService {
         return new MonthlyChildrenSchedulesResponse(month, childrenSchedules);
     }
 
-<<<<<<< HEAD
+
 
 
     @Transactional
@@ -108,10 +109,8 @@ public class ScheduleService {
         while (!selectedDays.contains(adjustedDate.getDayOfWeek())) {
             adjustedDate = adjustedDate.plusDays(1);
         }
-
         return adjustedDate;
     }
-
     /**
      * 선택된 요일을 기반으로 다음 세션 날짜를 계산
      */
@@ -141,7 +140,7 @@ public class ScheduleService {
                 .map(DayOfWeek::valueOf)
                 .sorted(Comparator.comparingInt(DayOfWeek::getValue))
                 .collect(Collectors.toList());
-=======
+
     public TodayAndUpcomingScheduleResponse getTodayAndUpcomingSchedule(long memberId) {
         List<ScheduleInfo> schedules = scheduleRepository.findBeforeAndOngoingSchedules(memberId);
 
@@ -190,6 +189,5 @@ public class ScheduleService {
 
     private boolean isToday(LocalDateTime dateTime) {
         return dateTime.toLocalDate().equals(LocalDate.now());
->>>>>>> 779c5cf7c2cd1ac471b56c6c57a7a25fc22e82e3
     }
 }
