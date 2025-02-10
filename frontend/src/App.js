@@ -1,5 +1,4 @@
-import RendingPage from "./pages/RendingPage";
-
+import RendingPage from './pages/RendingPage';
 
 function App() {
     return (
@@ -18,9 +17,6 @@ function App() {
 }
 
 export default App;
-
-
-
 
 // function App() {
 //     return (

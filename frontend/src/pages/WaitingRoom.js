@@ -9,23 +9,23 @@ import BookDisplay from '../components/BookDisplay';
 import FooterNotice from '../components/FooterNotice';
 import base64 from 'base-64';
 
-const APPLICATION_SERVER_URL = 'http://localhost:8080/';
+const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom() {
+function WaitingRoom({ scheduleId }) {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
-    const [nickname, setNickname] = useState('사용자');
+    const [nickname, setNickname] = useState('게스트');
     const token = localStorage.getItem('accessToken');
 
     useEffect(() => {
         if (token) {
             try {
                 const payloadBase64 = token.split('.')[1];
-                const decodedPayload = JSON.parse(base64.decode(payloadBase64));
-                setNickname(decodedPayload.nickname || '사용자');
+                const decodedPayload = JSON.parse(base64.decodeㅇ(payloadBase64));
+                setNickname(decodedPayload.nickname || '게스트');
             } catch (error) {
-                console.error('JWT 에러', error);
+                console.error('JWT 파싱 에러', error);
             }
         }
     }, [token]);
@@ -42,7 +42,6 @@ function WaitingRoom() {
     const joinSession = async () => {
         const openVidu = new OpenVidu();
         const newSession = openVidu.initSession();
-        console.log(newSession);
 
         newSession.on('streamCreated', event => {
             const subscriber = newSession.subscribe(event.stream, undefined);
@@ -54,7 +53,7 @@ function WaitingRoom() {
         });
 
         try {
-            const token = await getToken();
+            const token = await getSessionToken();
             await newSession.connect(token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
@@ -76,20 +75,16 @@ function WaitingRoom() {
         }
     };
 
-    const leaveSession = () => {
+    const leaveSession = async () => {
         if (session) {
+            await axios.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
             session.disconnect();
         }
         setSession(null);
         setPublisher(null);
         setSubscribers([]);
-    };
-
-    const getToken = async () => {
-        const sessionId = 'SessionA'; // 임시
-        await axios.post(`${APPLICATION_SERVER_URL}api/sessions`, { customSessionId: sessionId });
-        const response = await axios.post(`${APPLICATION_SERVER_URL}api/sessions/${sessionId}/connections`, {});
-        return response.data;
     };
 
     return (
