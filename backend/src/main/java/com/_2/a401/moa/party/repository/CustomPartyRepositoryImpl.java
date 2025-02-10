@@ -8,6 +8,7 @@ import com._2.a401.moa.party.domain.QPartyMember;
 import com._2.a401.moa.party.dto.response.BookInfoResponse;
 import com._2.a401.moa.party.dto.response.CutResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,9 +49,13 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
     }
 
     @Override
-    public Page<BookInfoResponse> findAllByMemberAndStatus(Long memberId, PartyState status, Pageable pageable) {
-        QParty party=QParty.party;
-        QPartyMember partyMember=QPartyMember.partyMember;
+    public Page<BookInfoResponse> findAllByMemberAndProgressStatus(Long memberId, boolean isCompleted, Pageable pageable) {
+        QParty party = QParty.party;
+        QPartyMember partyMember = QPartyMember.partyMember;
+
+        BooleanExpression statusCondition = isCompleted
+                ? party.status.eq(PartyState.DONE)
+                : party.status.in(PartyState.BEFORE, PartyState.ONGOING);
 
         List<BookInfoResponse> books = queryFactory
                 .select(Projections.constructor(BookInfoResponse.class,
@@ -64,7 +69,7 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
                 .join(partyMember).on(party.id.eq(partyMember.party.id))
                 .where(
                         partyMember.member.id.eq(memberId),
-                        party.status.eq(status)
+                        statusCondition
                 )
                 .offset(pageable.getOffset()) //페이지 번호 * 페이지 크기
                 .limit(pageable.getPageSize()) //페이지 크기
@@ -77,7 +82,7 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
                 .join(partyMember).on(party.id.eq(partyMember.party.id))
                 .where(
                         partyMember.member.id.eq(memberId),
-                        party.status.eq(status)
+                        statusCondition
                 )
                 .fetchOne();
 

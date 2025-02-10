@@ -22,8 +22,8 @@ public class BookService {
 
     //방 생성
 
-    public BookListResponse getAllBooks(Long memberId, PartyState status, Pageable pageable){
-        Page<BookInfoResponse> bookPage = partyRepository.findAllByMemberAndStatus(memberId, status, pageable);
+    public BookListResponse getAllBooks(Long memberId, boolean isCompleted, Pageable pageable){
+        Page<BookInfoResponse> bookPage = partyRepository.findAllByMemberAndProgressStatus(memberId, isCompleted, pageable);
 
         BookListResponse response = BookListResponse.builder()
                 .memberId(memberId)
