@@ -2,13 +2,17 @@ package com._2.a401.moa.party.controller;
 
 import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.party.domain.Keyword;
+import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 import com._2.a401.moa.party.dto.response.KeywordResponse;
+import com._2.a401.moa.party.dto.response.PartyDetailResponse;
 import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
+import com._2.a401.moa.schedule.domain.Schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +29,7 @@ public class PartyController {
     private final S3Service s3Service; // 🔹 S3 업로드 서비스 추가
 
     @PostMapping
-    public ResponseEntity<String> createParty(
+    public ResponseEntity<Long> createParty(
             @RequestParam("imageUrl") String imageUrl,
             @RequestPart("jsonData") CreatePartyRequest request) throws IOException {
 
@@ -34,11 +38,16 @@ public class PartyController {
         if(bookCoverUrl == null || bookCoverUrl.trim().isEmpty()){
             throw new RuntimeException("S3에 이미지 업로드 실패");
         }
-
-        partyService.createParty(request, bookCoverUrl);
-
-        return ResponseEntity.ok("생성된 이미지 S3 url : "+bookCoverUrl);
+        Party party = partyService.createParty(request, bookCoverUrl);
+        return ResponseEntity.ok(party.getId());
     }
+
+    @GetMapping("/{partyId}")
+    public ResponseEntity<PartyDetailResponse> getPartyDetail(@PathVariable Long partyId) {
+        PartyDetailResponse response = partyService.getPartyDetail(partyId);
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/keyword")
     public List<KeywordResponse> getKeywords() {
@@ -47,4 +56,5 @@ public class PartyController {
                 .map(KeywordResponse::fromEntity)  // 엔티티 -> DTO 변환
                 .collect(Collectors.toList());
     }
+
 }

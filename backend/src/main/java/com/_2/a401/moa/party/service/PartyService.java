@@ -6,8 +6,12 @@ import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
+import com._2.a401.moa.party.dto.response.KeywordResponse;
+import com._2.a401.moa.party.dto.response.PartyDetailResponse;
 import com._2.a401.moa.party.repository.*;
 import com._2.a401.moa.schedule.domain.Day;
+import com._2.a401.moa.schedule.domain.Schedule;
+import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com._2.a401.moa.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +35,7 @@ public class PartyService {
     private final MemberRepository memberRepository;
     private final CutService cutService;
     private final InitialScheduleService initialScheduleService;
-    private final S3Service s3Service;
+    private final ScheduleRepository scheduleRepository;
 
     @Transactional
     public Party createParty(CreatePartyRequest request,  String bookCoverUrl) {
@@ -131,4 +135,35 @@ public class PartyService {
     private String generateUniquePin() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
+
+    @Transactional(readOnly = true)
+    public PartyDetailResponse getPartyDetail(Long partyId) {
+        Party party = partyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 Party가 존재하지 않습니다: " + partyId));
+
+        List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(partyId);
+
+        List<Day> dayWeeks = schedules.stream()
+                .map(Schedule::getDayWeek)
+                .distinct()
+                .toList();
+
+        List<KeywordResponse> keywords = partyKeywordRepository.findByParty(partyId).stream()
+                .map(partyKeyword -> KeywordResponse.fromEntity(partyKeyword.getKeyword()))
+                .toList();
+
+        return PartyDetailResponse.builder()
+                .pinNumber(party.getPinNumber())
+                .title(party.getBookTitle())
+                .startDate(party.getStartDate())
+                .dayWeeks(dayWeeks)
+                .level(party.getLevel())
+                .progressCount(party.getProgressCount())
+                .episodeCount(party.getEpisodeCount())
+                .introduction(party.getIntroduction())
+                .bookCover(party.getBookCover())
+                .keywords(keywords)
+                .build();
+    }
+
 }
