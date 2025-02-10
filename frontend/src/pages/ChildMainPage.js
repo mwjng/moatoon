@@ -25,9 +25,9 @@ function ChildMainPage() {
    }, []);
 
    return (
-       <div className="min-h-screen bg-light-cream flex flex-col">
+       <div className="h-screen bg-light-cream flex flex-col">
             <Navigation />
-            <div className="h-3/5">
+            <div className="flex-1">
                 <ScheduleSection 
                   className="h-full" 
                   scheduleData={scheduleData}
