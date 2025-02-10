@@ -3,12 +3,15 @@ import Navigation from '../components/Navigation'; // Navigation 컴포넌트의
 import ScheduleSection from '../components/main/ScheduleSection';
 import BookParticipationSection from '../components/main/BookParticipationSection';
 import { getEBookCover } from '../api/book';
-import store from '../store/store';
+import { useSelector } from 'react-redux';
 
 function ChildMainPage() {
-    const userInfo = useSelector(state => state.user.userInfo);
+    // const userInfo = useSelector(state => state.user.userInfo);
     useEffect(() => {
-        const data = getEBookCover(userInfo.memberId, localStorage.getItem('accessToken'));
+        const data = getEBookCover(
+            1,
+            'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwibWVtYmVySWQiOjEsIm5pY2tuYW1lIjoicm9vdCIsImlhdCI6MTczOTE3Njg5MSwiZXhwIjoxNzM5MTg0MDkxfQ.feOASH6qowHApvaGob1La2Ok4wV2ONg7qpPEahIxNe0',
+        );
     });
 
     return (

@@ -11,12 +11,18 @@ import base64 from 'base-64';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom({ scheduleId }) {
+function WaitingRoom({ scheduleId, bookTitle, bookInfo, sessionTime }) {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
     const [nickname, setNickname] = useState('게스트');
     const token = localStorage.getItem('accessToken');
+    const [bookInfo, setBookInfo] = useState({
+        partyId: 1,
+        bookTitle: '용감한 기사',
+        bookCover: 'cover.jpg',
+        cuts: [],
+    });
 
     useEffect(() => {
         if (token) {
@@ -89,7 +95,7 @@ function WaitingRoom({ scheduleId }) {
 
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
-            <Navigation stage={'waiting'} leaveSession={leaveSession} />
+            <Navigation stage={'waiting'} leaveSession={leaveSession} sessionTime={sessionTime} bookTitle={bookTitle} />
             <div className="justify-center items-center gap-4">
                 <div
                     className="flex flex-row gap-4 justify-center items-center bg-custom-blue my-8"
@@ -105,7 +111,7 @@ function WaitingRoom({ scheduleId }) {
                         </div>
                         <OtherCameras subscribers={subscribers} />
                     </div>
-                    <BookDisplay />
+                    <BookDisplay bookInfo={bookInfo} />
                 </div>
                 <div className="flex items-center justify-center">
                     <FooterNotice />
