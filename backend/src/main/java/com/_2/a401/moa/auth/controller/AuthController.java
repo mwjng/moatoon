@@ -26,7 +26,6 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthService authService;
@@ -37,12 +36,13 @@ public class AuthController {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private int refreshExpirationTime;
 
-    @GetMapping("/id/check?loginId={loginId}")
+    @GetMapping("/id/check")
     public ResponseEntity<String> checkLoginId(@RequestParam String loginId){
-        authService.checkLoginId(loginId);
-        return new ResponseEntity<>("사용가능 한 아이디", HttpStatus.OK);
-
-
+        if(authService.checkLoginId(loginId)){
+            return new ResponseEntity<>("중복 아이디", HttpStatus.CONFLICT);
+        }else{
+            return new ResponseEntity<>("사용가능 한 아이디", HttpStatus.OK);
+        }
     }
 
     @PostMapping("/email/check")
@@ -54,6 +54,14 @@ public class AuthController {
             return new ResponseEntity<>("이메일 코드 전송 성공", HttpStatus.OK);
         }
         return new ResponseEntity<>("이메일 코드 전송 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PostMapping("/email/code")
+    public ResponseEntity<String> checkEmailCode(@RequestBody Map<String, String> req){
+        String code = req.get("code");
+        String email = req.get("email");
+        authService.checkCode(email, code);
+        return new ResponseEntity<>("인증 성공", HttpStatus.OK);
     }
 
     @PostMapping("/login")
