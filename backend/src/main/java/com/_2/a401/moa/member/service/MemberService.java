@@ -29,19 +29,32 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createMember(@Valid MemberCreate memberCreate) {
-        Member manager = memberRepository.save(memberCreate.toMember(passwordEncoder));
-
-        if(memberCreate.getChildren()!=null){
-            List<Member> children = new ArrayList<>();
-            for(long childId :memberCreate.getChildren()){
-                memberRepository.findById(childId).ifPresent(children::add);
-            }
-
-            children.forEach(child -> child.setManager(manager));
-
-            memberRepository.saveAll(children);
+    public void createMember(MemberCreate memberCreate) {
+        if (memberCreate.isChild()) {
+            createChildren(memberCreate);
+        } else {
+            createManager(memberCreate);
         }
+    }
+
+    private void createChildren(MemberCreate memberCreate) {
+        memberRepository.save(memberCreate.toChildMember(passwordEncoder));
+    }
+
+    private void createManager(MemberCreate memberCreate) {
+        Member manager = memberRepository.save(memberCreate.toManageMember(passwordEncoder));
+        if (memberCreate.getChildren() != null) {
+            List<Member> members = memberCreate.getChildren().stream()
+                    .map(this::getMember)
+                    .toList();
+
+            members.forEach(child -> child.setManager(manager));
+        }
+    }
+
+    private Member getMember(Long childId) {
+        return memberRepository.findById(childId)
+                .orElseThrow(() -> new MoaException(INVALID_MEMBER));
     }
 
     public MemberInfoResponse getUserInfo(long memberId) {

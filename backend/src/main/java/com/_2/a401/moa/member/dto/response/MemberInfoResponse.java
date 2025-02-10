@@ -5,6 +5,7 @@ import com._2.a401.moa.member.domain.MemberRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.apache.catalina.Manager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class MemberInfoResponse {
     private String imageUrl;
     private String email;
     private MemberRole role;
+    private Long managerId;
     private List<ChildInfo> childrenList;
 
     public static MemberInfoResponse ofManager(Member manager, List<Member> children) {
@@ -31,6 +33,7 @@ public class MemberInfoResponse {
                 .imageUrl(manager.getImageUrl())
                 .email(manager.getEmail())
                 .role(manager.getRole())
+                .managerId(null)
                 .childrenList(children.stream().map(ChildInfo::from).collect(Collectors.toList()))
                 .build();
     }
@@ -43,6 +46,7 @@ public class MemberInfoResponse {
                 .nickname(child.getNickname())
                 .imageUrl(child.getImageUrl())
                 .email(null)
+                .managerId(child.getManager().getId())
                 .role(child.getRole())
                 .childrenList(null)
                 .build();

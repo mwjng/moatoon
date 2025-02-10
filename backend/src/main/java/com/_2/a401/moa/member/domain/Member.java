@@ -55,7 +55,8 @@ public class Member extends BaseEntity {
             final String loginId,
             final String imageUrl,
             final MemberRole role,
-            final MemberState status
+            final MemberState status,
+            final Member manager
     ) {
         this.nickname = nickname;
         this.name = name;
@@ -65,5 +66,6 @@ public class Member extends BaseEntity {
         this.imageUrl = imageUrl;
         this.role = role;
         this.status = ACTIVE;
+        this.manager = manager;
     }
 }

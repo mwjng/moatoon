@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+import static com._2.a401.moa.member.domain.MemberRole.*;
+
 @Getter
 public class MemberCreate {
 
@@ -36,18 +38,37 @@ public class MemberCreate {
 
     String imgUrl;
 
+    Member manager;
+
     MemberRole role;
 
     List<Long> children;
 
-    public Member toMember(PasswordEncoder encoder) {
+    public Member toChildMember(PasswordEncoder encoder) {
+        return Member.builder()
+                .nickname(nickname)
+                .name(name)
+                .loginId(loginId)
+                .password(encoder.encode(password))
+                .manager(null)
+                .role(role)
+                .imageUrl(imgUrl)
+                .build();
+    }
+
+    public Member toManageMember(PasswordEncoder encoder) {
         return Member.builder()
                 .nickname(nickname)
                 .name(name)
                 .loginId(loginId)
                 .password(encoder.encode(password))
                 .role(role)
+                .email(email)
+                .imageUrl(imgUrl)
                 .build();
     }
 
+    public boolean isChild() {
+        return CHILD.equals(role);
+    }
 }
