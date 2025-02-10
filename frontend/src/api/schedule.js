@@ -17,3 +17,14 @@ export const getMonthlySchedule = async (year, month) => {
         return error.response;
     }
 };
+
+export const getTodayAndUpComingSchedule = async () => {
+    try {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/manager`, {
+        });
+        return response;
+    } catch (error) {
+        console.error('스케줄 조회 중 오류 발생:', error);
+        return error.response;
+    }
+};
