@@ -4,10 +4,9 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.media.MediaType;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,7 +24,14 @@ public class SwaggerConfig {
 
         return new OpenAPI()
                 .components(new Components()
-                        .addSchemas("FileUpload", fileSchema))
+                        .addSchemas("FileUpload", fileSchema)
+                        .addSecuritySchemes("BearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                        ))
+                .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
                 .info(new Info()
                         .title("모아 책방 API")
                         .description("공통 프로젝트 REST API 문서")

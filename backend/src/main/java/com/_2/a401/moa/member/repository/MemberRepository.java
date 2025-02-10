@@ -13,7 +13,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByManager(Member manager);
 
-    Optional<Object> findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
     // memberId가 managerId의 자녀인지 확인하는 메서드
     boolean existsByIdAndManagerId(Long memberId, Long managerId);
