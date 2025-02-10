@@ -50,7 +50,7 @@ public class WordController {
 
     @GetMapping("/words/saved-words")
     public ResponseEntity<MyWordsResponse> getMyWords(@RequestHeader("Authorization") String token,
-                                                      @RequestParam("page") int page,
+                                                      @Nullable @RequestParam("page") Integer page,
                                                       @Nullable @RequestParam("keyword") String keyword) {
         long memberId = jwtUtil.getMemberId(token);
         return ResponseEntity.ok(wordService.getMyWords(memberId, page, keyword));
