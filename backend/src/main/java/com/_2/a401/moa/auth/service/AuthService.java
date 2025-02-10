@@ -51,13 +51,13 @@ public class AuthService {
 
     }
 
-    public boolean checkLoginId(String loginId) {
-        return memberRepository.findByLoginId(loginId).isPresent();
-
+    public void checkLoginId(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new AuthException(DUPLICATED_USER_ID);
+        }
     }
 
     public void checkCode(String email, String code) {
-        System.out.println(email+" "+ code);
         if(!code.equals(redisMailSevice.getCode(email))){
             throw new AuthException(INVALID_CODE);
         }
