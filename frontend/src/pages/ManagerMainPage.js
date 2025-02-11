@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import ManagerBookParticipationSection from '../components/main/ManagerBookParticipationSection';
 import { getMonthlySchedule } from '../api/schedule';
+import { useSelector } from 'react-redux';
 
 const CalendarIcon = () => (
   <svg 
@@ -192,6 +193,8 @@ const DayCell = ({ day, isToday, dayIndex, selectedMember, formatTime }) => {
 };
 
 const ManagerMainPage = () => {
+  const userInfo = useSelector(state => state.user.userInfo);
+  console.log(userInfo);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [scheduleData, setScheduleData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -466,7 +469,9 @@ const ManagerMainPage = () => {
         </div>
       </div>
       <div className="h-2/5 bg-light-blue1 flex items-center justify-center">
-        <ManagerBookParticipationSection/>
+        <ManagerBookParticipationSection
+          childrenList={userInfo.childrenList} 
+        />
       </div>
     </div>
   );

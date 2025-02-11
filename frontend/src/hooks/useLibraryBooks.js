@@ -35,8 +35,9 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
     };
 
     useEffect(() => {
+        resetError(); 
         fetchBooks();
-    }, [currentPage]);
+    }, [currentPage, memberId]); 
 
     useEffect(() => {
         // 에러가 있거나 더 이상 데이터가 없을 때는 observer를 설정하지 않음

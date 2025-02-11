@@ -3,20 +3,14 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import ParticipatingBookCard from './ParticipatingBookCard';
 import useFetchBooks from '../../hooks/useLibraryBooks';
 
-const ManagerBookParticipationSection = ({ memberId }) => {
+const ManagerBookParticipationSection = ({ childrenList }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedStory, setSelectedStory] = useState('김싸피 이야기');
+  const [selectedChild, setSelectedChild] = useState(childrenList?.[0] || null);
   const [isOpen, setIsOpen] = useState(false);
   const [formattedBooks, setFormattedBooks] = useState([]);
   const dropdownRef = useRef(null);
   
-  const { bookList, loading } = useFetchBooks(3, false);
-
-  const stories = [
-    '김싸피 이야기',
-    '이싸피 이야기',
-    '박싸피 이야기',
-  ];
+  const { bookList, loading } = useFetchBooks(selectedChild?.id, false, 5);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,8 +26,13 @@ const ManagerBookParticipationSection = ({ memberId }) => {
   }, []);
 
   useEffect(() => {
+    if (selectedChild?.id) {
+      setCurrentPage(0);
+    }
+  }, [selectedChild]);
+
+  useEffect(() => {
     if (bookList) {
-      // 5개씩 나누어 2차원 배열 생성
       const chunkedBooks = bookList.reduce((acc, book, i) => {
         const chunkIndex = Math.floor(i / 5);
         if (!acc[chunkIndex]) acc[chunkIndex] = [];
@@ -51,6 +50,8 @@ const ManagerBookParticipationSection = ({ memberId }) => {
       }, []);
       
       setFormattedBooks(chunkedBooks);
+    } else {
+      setFormattedBooks([]);
     }
   }, [bookList]);
 
@@ -62,20 +63,28 @@ const ManagerBookParticipationSection = ({ memberId }) => {
     setCurrentPage(prev => Math.min(formattedBooks.length - 1, prev + 1));
   };
 
-  if (loading) {
+  const handleChildSelect = (child) => {
+    if (child.id !== selectedChild?.id) {
+      setSelectedChild(child);
+      setIsOpen(false);
+    }
+  };
+
+  if (loading && formattedBooks.length === 0) {
     return <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6 flex items-center justify-center">Loading...</div>;
   }
 
   return (
     <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6">
-      {/* 커스텀 드롭다운 */}
       <div className="mb-6">
-        <div className="relative w-44" ref={dropdownRef}>
+        <div className="relative w-40" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="w-full bg-blue-50/70 text-gray-700 py-2.5 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer shadow-sm flex items-center justify-between"
           >
-            <span className="flex-1 text-center pr-2">{selectedStory}</span>
+            <span className="flex-1 text-center pr-2 truncate">
+              {selectedChild ? `${selectedChild.nickname}의 그림책` : '아동 선택'}
+            </span>
             <svg 
               className={`fill-current h-4 w-4 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
               xmlns="http://www.w3.org/2000/svg" 
@@ -85,20 +94,17 @@ const ManagerBookParticipationSection = ({ memberId }) => {
             </svg>
           </button>
           
-          {isOpen && (
-            <div className="absolute z-10 w-full mt-1 bg-blue-50/95 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden">
-              {stories.map((story) => (
+          {isOpen && childrenList && (
+            <div className="absolute z-10 w-full mt-1 bg-blue-50/95 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+              {childrenList.map((child) => (
                 <button
-                  key={story}
+                  key={child.id}
                   className={`w-full text-center px-4 py-2.5 text-gray-700 hover:bg-blue-100/80 transition-colors ${
-                    selectedStory === story ? 'bg-blue-100/60' : ''
+                    selectedChild?.id === child.id ? 'bg-blue-100/60' : ''
                   }`}
-                  onClick={() => {
-                    setSelectedStory(story);
-                    setIsOpen(false);
-                  }}
+                  onClick={() => handleChildSelect(child)}
                 >
-                  {story}
+                  {child.nickname}
                 </button>
               ))}
             </div>
@@ -107,7 +113,6 @@ const ManagerBookParticipationSection = ({ memberId }) => {
       </div>
 
       <div className="relative flex items-center justify-center max-w-6xl mx-auto">
-        {/* 왼쪽 화살표 */}
         <div className="w-12 flex-shrink-0 flex">
           {currentPage > 0 && (
             <button 
@@ -119,16 +124,22 @@ const ManagerBookParticipationSection = ({ memberId }) => {
           )}
         </div>
 
-        {/* 그림책 목록 */} 
         <div className="flex-1">
-          <div className="w-[750px] flex gap-8">
-            {formattedBooks[currentPage]?.map((item) => (
-              <ParticipatingBookCard key={item.id} item={item} />
-            ))}
-          </div>
+          {formattedBooks.length > 0 ? (
+            <div className="w-[750px] flex gap-8">
+              {formattedBooks[currentPage]?.map((item) => (
+                <ParticipatingBookCard key={item.id} item={item} />
+              ))}
+            </div>
+          ) : (
+            <div className="w-[750px] h-[200px] flex items-center justify-center -mt-6">
+              <div className="bg-white/60 px-8 py-4 rounded-xl shadow-sm backdrop-blur-sm">
+                <p className="text-gray-600 text-lg">진행 중인 그림책이 없어요!</p>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* 오른쪽 화살표 */}
         <div className="w-12 flex-shrink-0 flex justify-end">
           {currentPage < formattedBooks.length - 1 && (
             <button 
