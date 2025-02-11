@@ -23,6 +23,7 @@ import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import EBookPage from './pages/EBookPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -41,6 +42,7 @@ root.render(
                     <Route path="id" element={<FindIdPage />} />
                     <Route path="pw" element={<FindPWPage />} />
                 </Route>
+                <Route path="ebook" element={<EBookPage />} />
                 <Route path="/session">
                     <Route path="search" />
                     <Route path="create" element={<BookGeneratorPage />} />
@@ -55,10 +57,8 @@ root.render(
                     <Route index />
                 </Route>
                 <Route path="waiting" element={<WaitingRoom />}></Route>
-                <Route path="home" element={<MainPage/>}>
-                </Route>
+                <Route path="home" element={<MainPage />}></Route>
             </Routes>
         </BrowserRouter>
-    </Provider>
+    </Provider>,
 );
-
