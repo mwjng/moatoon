@@ -76,37 +76,39 @@ const Canvas = () => {
     }, [partyId]);
 
     //canvas에 그린 데이터 임시저장
+    const sendCanvasData = canvasData => {
+        const requestData = {
+            cutId: cutId,
+            canvasData: canvasData,
+            timestamp: new Date().toISOString(),
+        };
+
+        fetch('http://localhost:8080/cuts/save-temp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData),
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('캔버스 임시 저장 성공');
+                } else {
+                    console.error('캔버스 임시 저장 실패:', response.status);
+                }
+            })
+            .catch(error => console.error('캔버스 임시 저장 중 오류 발생:', error));
+    };
+
     useEffect(() => {
         const saveCanvasData = () => {
             if (!connected || !stompClient.current) return;
 
             const canvasData = JSON.stringify(lines);
-            const requestData = {
-                cutId: cutId, // 적절한 cutId로 변경
-                canvasData: canvasData,
-                timestamp: new Date().toISOString(),
-            };
-
-            console.log(requestData);
-
-            fetch('http://localhost:8080/cuts/save-temp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestData),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('캔버스 임시 저장 성공');
-                    } else {
-                        console.error('캔버스 임시 저장 실패:', response.status);
-                    }
-                })
-                .catch(error => console.error('캔버스 임시 저장 중 오류 발생:', error));
+            sendCanvasData(canvasData);
         };
 
-        const intervalId = setInterval(saveCanvasData, 30000); // 30ch마다 실행
+        const intervalId = setInterval(saveCanvasData, 30000); // 30초마다 실행
 
         return () => clearInterval(intervalId);
     }, [lines, connected]);
@@ -226,6 +228,11 @@ const Canvas = () => {
         return canvasState;
     };
 
+    const handleExportCanvasData = () => {
+        const canvasState = exportCanvasState();
+        sendCanvasData(canvasState); // sendCanvasData 함수 호출로 변경
+    };
+
     return (
         <div className="flex bg-white" style={{ width: '600px', height: '600px', position: 'relative' }}>
             <div className="flex flex-col">
@@ -253,7 +260,13 @@ const Canvas = () => {
                 </Stage>
                 <div className="flex justify-center gap-4 mt-4">
                     <Link to="/session/overview">
-                        <WordButton color="bg-light-orange" textColor="text-white" size="md" textSize="large">
+                        <WordButton
+                            color="bg-light-orange"
+                            textColor="text-white"
+                            size="md"
+                            textSize="large"
+                            onClick={handleExportCanvasData}
+                        >
                             전체 보기
                         </WordButton>
                     </Link>
