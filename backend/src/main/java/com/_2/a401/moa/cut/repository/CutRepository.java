@@ -20,11 +20,6 @@ public interface CutRepository extends JpaRepository<Cut, Long> {
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)
     List<Cut> getCutsByRange(@Param("partyId") Long partyId, @Param("startRange") int startRange, @Param("endRange") int endRange);
 
-    @Modifying
-    @Query(value = """
-        INSERT INTO cut (party_id, word_id, content, cut_order, random_order, created_at, modified_at)
-        VALUES (:#{#cuts[0].party.id}, :#{#cuts[0].word.id}, :#{#cuts[0].content}, :#{#cuts[0].cutOrder}, :#{#cuts[0].randomOrder}, NOW(), NOW())
-    """, nativeQuery = true)
-    void insertCuts(@Param("cuts") List<Cut> cuts);
+
 
 }

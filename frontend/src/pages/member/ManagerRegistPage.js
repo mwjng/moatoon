@@ -276,7 +276,6 @@ export default function ManagerRegistPage() {
         let canAdd = true;
         if (!searchChildId) return;
         addedChildren.forEach(child => {
-            console.log(child);
             if (child['loginId'] == searchChildId) {
                 setModalText('이미 추가된 아동입니다.');
                 setModalState(true);

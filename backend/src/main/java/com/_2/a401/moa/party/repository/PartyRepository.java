@@ -46,6 +46,6 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
             @Param("time") String time
     );
 
-
+    boolean existsByPinNumber(String pinNumber);
 
 }

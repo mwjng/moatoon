@@ -1,5 +1,7 @@
 package com._2.a401.moa.party.service;
 
+
+import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
@@ -15,6 +17,11 @@ import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com.querydsl.core.Tuple;
+
+import com._2.a401.moa.party.repository.*;
+import com._2.a401.moa.schedule.domain.Day;
+import com._2.a401.moa.schedule.service.InitialScheduleService;
+import com._2.a401.moa.schedule.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +46,7 @@ public class PartyService {
     private final ScheduleRepository scheduleRepository;
     private final PartyRepositoryCustom partyRepositoryCustom;
 
+
     @Transactional
     public Party createParty(CreatePartyRequest request,  String bookCoverUrl) {
         String pinNumber = generateUniquePin();
@@ -47,7 +55,9 @@ public class PartyService {
                 LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
                 request.getDayWeek()
         );
+
         LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
+
 
         Party party = partyRepository.save(Party.builder()
                 .bookCover(bookCoverUrl)
@@ -135,6 +145,7 @@ public class PartyService {
     private String generateUniquePin() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
+
 
     @Transactional(readOnly = true)
     public PartyDetailResponse getPartyDetail(Long partyId) {

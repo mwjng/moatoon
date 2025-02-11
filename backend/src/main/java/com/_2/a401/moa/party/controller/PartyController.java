@@ -78,8 +78,6 @@ public class PartyController {
         return partyService.searchParties(request);
     }
 
-
-
     @GetMapping("/keyword")
     public List<KeywordResponse> getKeywords() {
         List<Keyword> keywords = keywordRepository.findAll();
@@ -87,5 +85,4 @@ public class PartyController {
                 .map(KeywordResponse::fromEntity)  // 엔티티 -> DTO 변환
                 .collect(Collectors.toList());
     }
-
 }
