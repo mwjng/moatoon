@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
-import { fetchRandomWords, sendStoryToBackend } from "../api/keyword";
+import { fetchRandomWords, sendStoryToBackend } from "../../api/keyword";
 
 // OpenAI API 객체 생성
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
+
 
 const BookStoryGenerator = ({
   startDate,

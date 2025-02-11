@@ -1,6 +1,7 @@
 package com._2.a401.moa.party.controller;
 
 import com._2.a401.moa.common.s3.S3Service;
+import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
@@ -10,6 +11,7 @@ import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 @RestController
 @RequestMapping("/parties")
 @RequiredArgsConstructor
@@ -27,6 +31,17 @@ public class PartyController {
     private final PartyService partyService;
     private final KeywordRepository keywordRepository;
     private final S3Service s3Service; // 🔹 S3 업로드 서비스 추가
+
+
+
+
+//
+//    @PostMapping
+//    public ResponseEntity<Void> createMember(@Valid @RequestBody final MemberCreate memberCreate) {
+//        memberService.createMember(memberCreate);
+//        return ResponseEntity.status(CREATED).build();
+//    }
+
 
     @PostMapping
     public ResponseEntity<Long> createParty(
