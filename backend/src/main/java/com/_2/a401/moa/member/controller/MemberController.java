@@ -1,7 +1,9 @@
 package com._2.a401.moa.member.controller;
 
 import com._2.a401.moa.common.jwt.JwtUtil;
+import com._2.a401.moa.member.dto.request.FindIdRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
+import com._2.a401.moa.member.dto.response.FindIdInfo;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
 import com._2.a401.moa.member.service.MemberService;
@@ -39,5 +41,11 @@ public class MemberController {
     public ResponseEntity<SearchChildInfo> getChildInfoById(@RequestParam String loginId){
         SearchChildInfo searchChildInfo = memberService.getChildInfoById(loginId);
         return ResponseEntity.ok().body(searchChildInfo);
+    }
+
+    @PostMapping("/managers/id")
+    public ResponseEntity<FindIdInfo> findLoginId(@RequestBody FindIdRequest req){
+        FindIdInfo findIdInfo = memberService.getLoginIdByNameAndEmail(req);
+        return ResponseEntity.ok().body(findIdInfo);
     }
 }
