@@ -21,7 +21,6 @@ public class ScheduleController {
     @GetMapping("/manager")
     public ResponseEntity<MonthlyChildrenSchedulesResponse> getMonthlyChildrenSchedules(@RequestHeader("Authorization") String token, @RequestParam("year") int year, @RequestParam("month") int month) {
         Long memberId = jwtUtil.getMemberId(token.substring(7)); //Bearer까지 넘어와서 이렇게 처리함
-        log.info("memberId: {}", memberId);
         return ResponseEntity.ok(scheduleService.getMonthlyChildrenSchedules(memberId, year, month));
     }
 
