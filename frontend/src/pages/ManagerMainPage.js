@@ -357,7 +357,7 @@ const ManagerMainPage = () => {
   return (
     <div className="min-h-screen bg-blue1 flex flex-col">
       <Navigation />
-      <div className="h-3/5">
+      <div className="flex-1">
         <div className="max-w-5xl mx-auto p-6">
           <div className="flex gap-4">
             <div className="flex-1 bg-white px-4 rounded-lg shadow">
@@ -432,7 +432,7 @@ const ManagerMainPage = () => {
                           isToday={isSameDay(day.date, new Date())}
                           dayIndex={dayIndex}
                           selectedMember={selectedMember}
-                          formatTime={formatTime}  // 이 부분이 추가됨
+                          formatTime={formatTime}
                         />
                       ))}
                     </div>
@@ -468,7 +468,7 @@ const ManagerMainPage = () => {
           </div>
         </div>
       </div>
-      <div className="h-2/5 bg-light-blue1 flex items-center justify-center">
+      <div className="flex-1 bg-light-blue1 flex items-center justify-center">
         <ManagerBookParticipationSection
           childrenList={userInfo.childrenList} 
         />
