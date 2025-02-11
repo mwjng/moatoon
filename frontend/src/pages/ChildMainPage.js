@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import ScheduleSection from "../components/main/ScheduleSection";
-import BookParticipationSection from "../components/main/BookParticipationSection";
+import ChildBookParticipationSection from "../components/main/ChildBookParticipationSection";
 import { getTodayAndUpComingSchedule } from '../api/schedule';
 import { useSelector } from 'react-redux';
 
@@ -37,7 +37,7 @@ function ChildMainPage() {
                 />
             </div>
             <div className="h-2/5">
-                <BookParticipationSection className="h-full" />
+                <ChildBookParticipationSection className="h-full" />
             </div>
        </div>
    );

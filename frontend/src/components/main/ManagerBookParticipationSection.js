@@ -1,13 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import ParticipatingBookCard from './ParticipatingBookCard';
+import useFetchBooks from '../../hooks/useLibraryBooks';
 
-const ManagerBookList = () => {
+const ManagerBookParticipationSection = ({ memberId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedStory, setSelectedStory] = useState('김싸피 이야기');
   const [isOpen, setIsOpen] = useState(false);
+  const [formattedBooks, setFormattedBooks] = useState([]);
   const dropdownRef = useRef(null);
- 
+  
+  const { bookList, loading } = useFetchBooks(3, false);
+
+  const stories = [
+    '김싸피 이야기',
+    '이싸피 이야기',
+    '박싸피 이야기',
+  ];
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -21,39 +31,40 @@ const ManagerBookList = () => {
     };
   }, []);
 
-  // 더미 데이터
-  const dummyBooks = [
-    { id: 1, name: '안녕, 독도 고래!', imageUrl: '/api/placeholder/128/160' },
-    { id: 2, name: '02.12 오후 4시', imageUrl: '/api/placeholder/128/160' },
-    { id: 3, name: '안녕, 독도 고래!', imageUrl: '/api/placeholder/128/160' },
-    { id: 4, name: '백설공주', imageUrl: '/api/placeholder/128/160' },
-    { id: 5, name: '백설공주', imageUrl: '/api/placeholder/128/160' },
-    { id: 6, name: '안녕, 독도 고래!', imageUrl: '/api/placeholder/128/160' },
-    { id: 7, name: '02.12 오후 4시', imageUrl: '/api/placeholder/128/160' },
-    { id: 8, name: '안녕, 독도 고래!', imageUrl: '/api/placeholder/128/160' },
-  ];
-
-  const stories = [
-    '김싸피 이야기',
-    '이싸피 이야기',
-    '박싸피 이야기',
-  ];
-
-  const booksPerPage = 5;
-  const totalPages = Math.ceil(dummyBooks.length / booksPerPage);
+  useEffect(() => {
+    if (bookList) {
+      // 5개씩 나누어 2차원 배열 생성
+      const chunkedBooks = bookList.reduce((acc, book, i) => {
+        const chunkIndex = Math.floor(i / 5);
+        if (!acc[chunkIndex]) acc[chunkIndex] = [];
+        
+        acc[chunkIndex].push({
+          id: book.id,
+          status: book.status,
+          bookCover: book.bookCover,
+          bookTitle: book.bookTitle,
+          bgColor: book.status === 'BEFORE' ? 'bg-gray-200' : 'bg-blue-100',
+          startDate: book.startDate
+        });
+        
+        return acc;
+      }, []);
+      
+      setFormattedBooks(chunkedBooks);
+    }
+  }, [bookList]);
 
   const handlePrevPage = () => {
     setCurrentPage(prev => Math.max(0, prev - 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
+    setCurrentPage(prev => Math.min(formattedBooks.length - 1, prev + 1));
   };
 
-  const currentBooks = dummyBooks.slice(
-    currentPage * booksPerPage,
-    (currentPage + 1) * booksPerPage
-  );
+  if (loading) {
+    return <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6 flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6">
@@ -109,38 +120,17 @@ const ManagerBookList = () => {
         </div>
 
         {/* 그림책 목록 */} 
-        <div className="flex-1 flex justify-center">
-          <div className="flex w-[800px] justify-center">
-            {[...currentBooks, ...Array(Math.max(0, 5 - currentBooks.length))].map((book, index, array) => (
-              <div 
-                key={book?.id || `empty-${index}`} 
-                className={`w-32 flex-shrink-0 ${index !== array.length - 1 ? 'mr-8' : ''}`}
-              >
-                {book ? (
-                  <ParticipatingBookCard 
-                    item={{
-                      name: book.name,
-                      image: book.imageUrl
-                    }} 
-                  />
-                ) : (
-                  <div className="invisible">
-                    <ParticipatingBookCard 
-                      item={{
-                        name: "placeholder",
-                        image: "/api/placeholder/128/160"
-                      }} 
-                    />
-                  </div>
-                )}
-              </div>
+        <div className="flex-1">
+          <div className="w-[750px] flex gap-8">
+            {formattedBooks[currentPage]?.map((item) => (
+              <ParticipatingBookCard key={item.id} item={item} />
             ))}
           </div>
         </div>
 
         {/* 오른쪽 화살표 */}
         <div className="w-12 flex-shrink-0 flex justify-end">
-          {currentPage < totalPages - 1 && (
+          {currentPage < formattedBooks.length - 1 && (
             <button 
               onClick={handleNextPage}
               className="w-10 h-10 rounded-full bg-white/70 flex items-center justify-center hover:bg-white hover:shadow-md transition-all duration-200"
@@ -154,4 +144,4 @@ const ManagerBookList = () => {
   );
 };
 
-export default ManagerBookList;
+export default ManagerBookParticipationSection;

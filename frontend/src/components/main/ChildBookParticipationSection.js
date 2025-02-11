@@ -3,7 +3,7 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import ParticipatingBookCard from "./ParticipatingBookCard";
 import useFetchBooks from '../../hooks/useLibraryBooks';
 
-const BookParticipationSection = () => {
+const ChildBookParticipationSection = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const { bookList, loading } = useFetchBooks(3, false); // TODO: 사용자 MEMBERID로 바꿔야함
   const [formattedBooks, setFormattedBooks] = useState([]);
@@ -92,4 +92,4 @@ const BookParticipationSection = () => {
   );
 };
 
-export default BookParticipationSection;
+export default ChildBookParticipationSection;

@@ -1,7 +1,7 @@
 // ManagerMainPage.js
 import React, { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
-import ManagerBookList from '../components/main/ManagerBookList';
+import ManagerBookParticipationSection from '../components/main/ManagerBookParticipationSection';
 import { getMonthlySchedule } from '../api/schedule';
 
 const CalendarIcon = () => (
@@ -466,7 +466,7 @@ const ManagerMainPage = () => {
         </div>
       </div>
       <div className="h-2/5 bg-light-blue1 flex items-center justify-center">
-        <ManagerBookList/>
+        <ManagerBookParticipationSection/>
       </div>
     </div>
   );
