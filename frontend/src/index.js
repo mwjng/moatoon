@@ -22,8 +22,8 @@ import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
-import CutAllPage from './pages/CutAllPage';
-import DrawingPage from './pages/DrawingPage';
+import CutAllPage from './pages/draw/CutAllPage';
+import DrawingPage from './pages/draw/DrawingPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
