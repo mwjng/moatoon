@@ -97,11 +97,7 @@ export const login = async (loginInfo, navigate) => {
             }
             store.dispatch(setUserInfo(userInfo));
 
-            if (userInfo.role == 'MANAGER') {
-                navigate('/main/manager');
-            } else {
-                navigate('/main/child');
-            }
+            navigate('/home');
         }
 
         return null;

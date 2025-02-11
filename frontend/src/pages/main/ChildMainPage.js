@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD:frontend/src/pages/ChildMainPage.js
 import Navigation from '../components/Navigation';
 import ScheduleSection from '../components/main/ScheduleSection';
 import BookParticipationSection from '../components/main/BookParticipationSection';
 import { getTodayAndUpComingSchedule } from '../api/schedule';
+=======
+import Navigation from '../../components/Navigation';
+import ScheduleSection from "../../components/main/ScheduleSection";
+import BookParticipationSection from "../../components/main/BookParticipationSection";
+import { getTodayAndUpComingSchedule } from '../../api/schedule';
+>>>>>>> develop:frontend/src/pages/main/ChildMainPage.js
 
 function ChildMainPage() {
     const [scheduleData, setScheduleData] = useState({

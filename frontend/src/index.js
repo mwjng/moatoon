@@ -10,9 +10,8 @@ import LoginPage from './pages/member/LoginPage';
 
 import './index.css';
 import WaitingRoom from './pages/WaitingRoom';
-import ChildMainPage from './pages/ChildMainPage';
 import LibraryPage from './pages/ChildLibraryPage';
-import ManagerMainPage from './pages/ManagerMainPage';
+import MainPage from './pages/main/MainPage';
 import WordLearning from './pages/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
@@ -56,9 +55,7 @@ root.render(
                     <Route index />
                 </Route>
                 <Route path="waiting" element={<WaitingRoom />}></Route>
-                <Route path="main">
-                    <Route path="child" element={<ChildMainPage />} />
-                    <Route path="manager" element={<ManagerMainPage />} />
+                <Route path="home" element={<MainPage/>}>
                 </Route>
             </Routes>
         </BrowserRouter>
