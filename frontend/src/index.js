@@ -24,6 +24,7 @@ import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import ChildLibraryPage from './pages/ChildLibraryPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -48,7 +49,7 @@ root.render(
                     <Route path="quiz" element={<QuizPage />} />
                     <Route path="learning" element={<WordLearning />} />
                 </Route>
-                <Route path="library" element={<LibraryPage />} />
+                <Route path="library" element={<ChildLibraryPage />} />
                 <Route path="word">
                     <Route index element={<MyWordPage />} />
                 </Route>

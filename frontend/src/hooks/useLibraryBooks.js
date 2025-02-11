@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { authInstance } from '../api/axios';
 
-const useFetchBooks = (memberId, isCompleted) => {
+const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
     const [bookList, setBookList] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
     const [currentPage, setCurrentPage] = useState(0); // 현재 페이지
-    const [pageSize] = useState(10); // 한 페이지에 불러올 책의 수 (예: 10개)
+    //pageSize // 한 페이지에 불러올 책의 수 (예: 10개)
     const observerRef = useRef(null);
 
     const fetchBooks = async () => {

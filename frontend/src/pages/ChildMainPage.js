@@ -3,9 +3,11 @@ import Navigation from '../components/Navigation';
 import ScheduleSection from "../components/main/ScheduleSection";
 import BookParticipationSection from "../components/main/BookParticipationSection";
 import { getTodayAndUpComingSchedule } from '../api/schedule';
+import { useSelector } from 'react-redux';
 
 function ChildMainPage() {
-   const [scheduleData, setScheduleData] = useState({
+  // 오늘의 일정 & e다가오는 일정 조회 api
+  const [scheduleData, setScheduleData] = useState({
      todaySchedule: null,
      upcomingSchedules: []
    });
@@ -24,6 +26,7 @@ function ChildMainPage() {
      fetchScheduleData();
    }, []);
 
+   // 화면 html
    return (
        <div className="h-screen bg-light-cream flex flex-col">
             <Navigation />
