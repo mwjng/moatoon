@@ -19,4 +19,6 @@ public interface CutRepository extends JpaRepository<Cut, Long> {
             "WHERE c.party_id = :partyId " +
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)
     List<Cut> getCutsByRange(@Param("partyId") Long partyId, @Param("startRange") int startRange, @Param("endRange") int endRange);
+
+
 }
