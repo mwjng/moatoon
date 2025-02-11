@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, targetTime, schedule }) {
+function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
@@ -27,10 +27,6 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
     //단계 정보, 삭제 필요 (대기방, 단어 학습, 뽑기, 그림 그리기, 그림 보기, 퀴즈)
     // stage = 'quiz';
     const [targetTimeDummy, setTargetTime] = useState(Date.now() + 5 * MINUTE);
-    const [scheduleDummy, setSchedule] = useState({
-        bookTitle: '사과와 생쥐', //책 제목
-        time: Date.now() + 5 * MINUTE, //시작 시간
-    });
 
     //사용자 정보
     const [user, setUser] = useState({
@@ -117,10 +113,10 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
                                 <img src={`${arrowBack}`} alt="back" width="50"></img>
                             </button>
                             <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">{scheduleDummy.bookTitle}</span>
+                                <span className="text-2xl font-bold">{bookTitle}</span>
                                 <span>
-                                    오늘의 일정 : {getTimeFormatted(scheduleDummy.time)} ~{' '}
-                                    {getTimeFormatted(addTime(scheduleDummy.time, 1))}
+                                    오늘의 일정 : {getTimeFormatted(sessionTime)} ~{' '}
+                                    {getTimeFormatted(addTime(sessionTime, 1))}
                                 </span>
                             </div>
                             <div className="flex flex-col text-center gap-4">

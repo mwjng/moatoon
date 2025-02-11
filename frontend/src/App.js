@@ -1,10 +1,12 @@
-import RendingPage from "./pages/RendingPage";
-
+import { Provider } from 'react-redux';
+import RendingPage from './pages/RendingPage';
+import store from './store/store';
 
 function App() {
     return (
-        <div className="App">
-            {/* <header className="App-header">
+        <Provider store={store}>
+            <div className="App">
+                {/* <header className="App-header">
                 <p>
                     Edit <code>src/App.js</code> and save to reload.
                 </p>
@@ -12,15 +14,13 @@ function App() {
                     Learn React
                 </a>
             </header> */}
-            <RendingPage />
-        </div>
+                <RendingPage />
+            </div>
+        </Provider>
     );
 }
 
 export default App;
-
-
-
 
 // function App() {
 //     return (

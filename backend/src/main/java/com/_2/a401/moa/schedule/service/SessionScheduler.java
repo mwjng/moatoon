@@ -38,6 +38,9 @@ public class SessionScheduler {
         LocalDateTime thirtyMinutesLater = now.plusMinutes(30);
         final List<Schedule> schedules = scheduleRepository.findBySessionTimeBetweenAndStatus(now(), thirtyMinutesLater, ScheduleState.BEFORE);
 
+        if(schedules.isEmpty()) {
+            return;
+        }
         for (Schedule schedule : schedules) {
             final String sessionId = videoConferenceManager.createSession();
             final Session session = new Session(schedule.getId(), sessionId, WAITING);
