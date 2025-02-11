@@ -10,8 +10,66 @@ import { getQuizs, addToMyWords } from '../api/word';
 import { useNavigate } from 'react-router';
 
 const QuizPage = () => {
-    const [quizs, setQuizs] = useState([]);
-    const [words, setWords] = useState([]);
+    const [quizs, setQuizs] = useState([
+        {
+            front: 'front',
+            back: 'back',
+            word: 'word',
+            wordId: 1,
+        },
+        {
+            front: 'front',
+            back: 'back',
+            word: 'word',
+            wordId: 2,
+        },
+        {
+            front: 'front',
+            back: 'back',
+            word: 'word',
+            wordId: 3,
+        },
+        {
+            front: 'front',
+            back: 'back',
+            word: 'word',
+            wordId: 4,
+        },
+    ]);
+    const [words, setWords] = useState([
+        {
+            wordId: 1,
+            word: 'word',
+        },
+        {
+            wordId: 2,
+            word: 'word',
+        },
+        {
+            wordId: 3,
+            word: 'word',
+        },
+        {
+            wordId: 4,
+            word: 'word',
+        },
+        {
+            wordId: 5,
+            word: 'word',
+        },
+        {
+            wordId: 6,
+            word: 'word',
+        },
+        {
+            wordId: 7,
+            word: 'word',
+        },
+        {
+            wordId: 8,
+            word: 'word',
+        },
+    ]);
     const [correctList, setCorrectList] = useState([false, false, false, false]);
     const [failList, setFailList] = useState(new Set());
     const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
