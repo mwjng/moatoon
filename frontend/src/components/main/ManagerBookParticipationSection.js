@@ -80,7 +80,7 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
   return (
     <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6">
       <div className="mb-6">
-        <div className="relative w-40" ref={dropdownRef}>
+        <div className="relative w-fit min-w-[10rem]" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="w-full bg-blue-50/70 text-gray-700 py-2.5 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 cursor-pointer shadow-sm flex items-center justify-between"
