@@ -3,7 +3,9 @@ package com._2.a401.moa.member.service;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.domain.MemberRole;
+import com._2.a401.moa.member.dto.request.FindIdRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
+import com._2.a401.moa.member.dto.response.FindIdInfo;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
 import com._2.a401.moa.member.repository.MemberRepository;
@@ -80,5 +82,13 @@ public class MemberService {
             throw new MoaException(DUPLICATED_CHILD);
         }
         return SearchChildInfo.from(member);
+    }
+
+    public FindIdInfo getLoginIdByNameAndEmail(FindIdRequest req) {
+        Member member = memberRepository.findByEmail(req.email()).orElseThrow(()->new MoaException(INVALID_MEMBER));
+        if(!member.getName().equals(req.name())){
+            throw new MoaException(INVALID_MEMBER);
+        }
+        return FindIdInfo.from(member);
     }
 }
