@@ -1,9 +1,9 @@
 import React from 'react';
-import WordButton from '../components/WordButton.js';
-import Canvas from '../components/draw/Canvas.js';
-import Navigation from '../components/Navigation.js';
-import ChildImg from '../assets/child.svg';
-import StoryCard from '../components/draw/StoryCard';
+import WordButton from '../../components/WordButton.js';
+import Canvas from '../../components/draw/Canvas.js';
+import Navigation from '../../components/Navigation.js';
+import ChildImg from '../../assets/child.svg';
+import StoryCard from '../../components/draw/StoryCard.js';
 
 function DrawingPage() {
     return (
