@@ -16,7 +16,36 @@ const Canvas = () => {
     const stageRef = useRef();
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
-    const [partyId, setpartyId] = useState(1); // 예시로 방 ID를 설정
+
+    //임시 설정
+    const [partyId, setpartyId] = useState(2); // 예시로 방 ID를 설정
+    const [cutId, setcutId] = useState(12);
+    const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
+
+    //redis에 cut 초기화 데이터 추가
+    useEffect(() => {
+        const initializeCanvasData = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/cuts/init-canvas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cutIds), // 기본 cutId 리스트 전달
+                });
+
+                if (!response.ok) {
+                    throw new Error('캔버스 초기화 실패');
+                }
+
+                console.log('캔버스 데이터 초기화 성공');
+            } catch (error) {
+                console.error('캔버스 초기화 중 오류 발생:', error);
+            }
+        };
+
+        initializeCanvasData();
+    }, []);
 
     // 웹소켓 클라이언트 초기화
     useEffect(() => {
@@ -46,16 +75,19 @@ const Canvas = () => {
         };
     }, [partyId]);
 
+    //canvas에 그린 데이터 임시저장
     useEffect(() => {
         const saveCanvasData = () => {
             if (!connected || !stompClient.current) return;
 
             const canvasData = JSON.stringify(lines);
             const requestData = {
-                cutId: 1, // 적절한 cutId로 변경
+                cutId: cutId, // 적절한 cutId로 변경
                 canvasData: canvasData,
                 timestamp: new Date().toISOString(),
             };
+
+            console.log(requestData);
 
             fetch('http://localhost:8080/cuts/save-temp', {
                 method: 'POST',
@@ -74,10 +106,29 @@ const Canvas = () => {
                 .catch(error => console.error('캔버스 임시 저장 중 오류 발생:', error));
         };
 
-        const intervalId = setInterval(saveCanvasData, 60000); // 1분마다 실행
+        const intervalId = setInterval(saveCanvasData, 30000); // 30ch마다 실행
 
         return () => clearInterval(intervalId);
     }, [lines, connected]);
+
+    //임시저장한 데이터 불러오기
+    useEffect(() => {
+        const fetchCanvasData = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/cuts/${cutId}`);
+                if (!response.ok) throw new Error('캔버스 데이터 조회 실패');
+
+                const data = await response.json();
+                if (data.canvasData) {
+                    setLines(JSON.parse(data.canvasData)); // 저장된 데이터를 캔버스에 반영
+                }
+            } catch (error) {
+                console.error('캔버스 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+
+        fetchCanvasData();
+    }, [cutId]);
 
     const handleMouseDown = e => {
         isDrawing.current = true;
@@ -106,8 +157,8 @@ const Canvas = () => {
 
             if (connected && stompClient.current) {
                 const messageData = {
-                    partyId: 1,
-                    memberId: 2,
+                    partyId: partyId,
+                    cutId: cutId,
                     type: 'draw',
                     line: lastLine,
                 };
@@ -136,6 +187,7 @@ const Canvas = () => {
                 destination: '/app/draw',
                 body: JSON.stringify({
                     partyId: partyId,
+                    cutId: cutId,
                     type: 'UNDO',
                 }),
             });
@@ -154,6 +206,7 @@ const Canvas = () => {
                 destination: '/app/draw',
                 body: JSON.stringify({
                     partyId: partyId,
+                    cutId: cutId,
                     type: 'REDO',
                     redoLine: undoneLines[undoneLines.length - 1],
                 }),
@@ -199,7 +252,7 @@ const Canvas = () => {
                     </Layer>
                 </Stage>
                 <div className="flex justify-center gap-4 mt-4">
-                    <Link to="/session/cutAll">
+                    <Link to="/session/overview">
                         <WordButton color="bg-light-orange" textColor="text-white" size="md" textSize="large">
                             전체 보기
                         </WordButton>
