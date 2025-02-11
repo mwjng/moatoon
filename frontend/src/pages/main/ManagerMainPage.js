@@ -1,8 +1,8 @@
 // ManagerMainPage.js
 import React, { useState, useEffect } from 'react';
-import Navigation from '../components/Navigation';
-import ManagerBookList from '../components/main/ManagerBookList';
-import { getMonthlySchedule } from '../api/schedule';
+import Navigation from '../../components/Navigation';
+import ManagerBookList from '../../components/main/ManagerBookList';
+import { getMonthlySchedule } from '../../api/schedule';
 
 const CalendarIcon = () => (
   <svg 
