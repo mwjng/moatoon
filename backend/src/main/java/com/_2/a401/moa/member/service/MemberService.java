@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com._2.a401.moa.common.exception.ExceptionCode.DUPLICATED_CHILD;
-import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_MEMBER;
+import static com._2.a401.moa.common.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +65,8 @@ public class MemberService {
         if (member.getRole() == MemberRole.MANAGER) {
             List<Member> children = memberRepository.findByManager(member);
             return MemberInfoResponse.ofManager(member, children);
+        }else if(member.getManager()==null){
+            throw new MoaException(UNCONNECTED_CHILD);
         }
 
         return MemberInfoResponse.ofChild(member);

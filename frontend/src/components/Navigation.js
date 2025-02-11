@@ -9,12 +9,14 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, targetTime, schedule }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
+    const userInfo = useSelector(state => state.user.userInfo);
 
     const navigate = useNavigate();
     const handleBackClick = () => {
@@ -227,7 +229,11 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
                         ></img>
                         <button
                             className="flex flex-col text-center gap-3 items-center"
-                            onClick={() => navigationHandler('')}
+                            onClick={() =>
+                                userInfo.role == 'CHILD'
+                                    ? navigationHandler('home/child')
+                                    : navigationHandler('home/manager')
+                            }
                         >
                             <img src={`${homeIcon}`} alt="home" width="50"></img>
                             <span>홈</span>
