@@ -22,4 +22,5 @@ public class Word {
 
     @Column(nullable = false)
     private String meaning;
+
 }
