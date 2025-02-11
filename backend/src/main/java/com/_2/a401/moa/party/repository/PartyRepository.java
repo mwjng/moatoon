@@ -1,6 +1,8 @@
 package com._2.a401.moa.party.repository;
 
+import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.party.domain.Party;
+import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -47,5 +49,6 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
     );
 
     boolean existsByPinNumber(String pinNumber);
+    Optional<Party> findByPinNumberAndStatus(String PinNumber, PartyState state);
 
 }

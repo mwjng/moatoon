@@ -2,14 +2,13 @@ package com._2.a401.moa.party.controller;
 
 import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.member.dto.request.MemberCreate;
+import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
+import com._2.a401.moa.party.dto.request.PartyMemberRequest;
 import com._2.a401.moa.party.dto.request.PartySearchRequest;
-import com._2.a401.moa.party.dto.response.KeywordResponse;
-import com._2.a401.moa.party.dto.response.PartyDetailResponse;
-import com._2.a401.moa.party.dto.response.PartyResponse;
-import com._2.a401.moa.party.dto.response.PartySearchResponse;
+import com._2.a401.moa.party.dto.response.*;
 import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
 import com._2.a401.moa.schedule.domain.Day;
@@ -34,7 +33,8 @@ import static org.springframework.http.HttpStatus.CREATED;
 public class PartyController {
     private final PartyService partyService;
     private final KeywordRepository keywordRepository;
-    private final S3Service s3Service; // 🔹 S3 업로드 서비스 추가
+    private final S3Service s3Service;
+
 
     @PostMapping
     public ResponseEntity<Long> createParty(
@@ -53,6 +53,12 @@ public class PartyController {
     @GetMapping("/{partyId}")
     public ResponseEntity<PartyDetailResponse> getPartyDetail(@PathVariable Long partyId) {
         PartyDetailResponse response = partyService.getPartyDetail(partyId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/pin")
+    public ResponseEntity<PartyDetailResponse> getPartyFindByPin(@RequestParam String pinNumber) {
+        PartyDetailResponse response = partyService.getPartyFindByPin(pinNumber);
         return ResponseEntity.ok(response);
     }
 
@@ -85,4 +91,21 @@ public class PartyController {
                 .map(KeywordResponse::fromEntity)  // 엔티티 -> DTO 변환
                 .collect(Collectors.toList());
     }
+
+    @PostMapping("/{partyId}/members")
+    public ResponseEntity<ApiResponse> addChildrenToParty(
+            @PathVariable Long partyId,
+            @RequestBody PartyMemberRequest request){
+        return partyService.addChildrenToParty(partyId, request.getManagerId(), request.getChildIds());
+    }
+
+    @DeleteMapping("/{partyId}/members")
+    public ResponseEntity<ApiResponse> removeChildFromParty(
+            @PathVariable Long partyId,
+            @RequestParam Long managerId,
+            @RequestParam Long childId) {
+        return partyService.removeChildFromParty(partyId, managerId, childId);
+    }
+
+
 }

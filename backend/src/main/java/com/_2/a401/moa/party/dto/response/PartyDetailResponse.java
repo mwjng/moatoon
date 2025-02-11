@@ -20,4 +20,5 @@ public class PartyDetailResponse {
     private int episodeCount;
     private String introduction;
     private List<KeywordResponse> keywords;
+    private List<PartyMemberResponse> members;
 }

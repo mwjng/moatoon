@@ -1,4 +1,5 @@
 package com._2.a401.moa.party.service;
+import java.time.LocalDateTime;
 
 
 import com._2.a401.moa.common.s3.S3Service;
@@ -8,26 +9,30 @@ import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 import com._2.a401.moa.party.dto.request.PartySearchRequest;
-import com._2.a401.moa.party.dto.response.KeywordResponse;
-import com._2.a401.moa.party.dto.response.PartyDetailResponse;
-import com._2.a401.moa.party.dto.response.PartySearchResponse;
+import com._2.a401.moa.party.dto.response.*;
 import com._2.a401.moa.party.repository.*;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com.querydsl.core.Tuple;
+import com._2.a401.moa.party.dto.response.ApiResponse;
 
 import com._2.a401.moa.party.repository.*;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com._2.a401.moa.schedule.service.ScheduleService;
+//import io.swagger.v3.oas.models.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -152,6 +157,16 @@ public class PartyService {
         Party party = partyRepository.findById(partyId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 Party가 존재하지 않습니다: " + partyId));
 
+
+        List<PartyMemberResponse> members = party.getPartyMembers().stream()
+                .map(pm -> PartyMemberResponse.builder()
+                        .memberId(pm.getMember().getId())
+                        .name(pm.getMember().getName())
+                        .nickname(pm.getMember().getNickname())
+                        .managerId(pm.getMember().getManager() != null ? pm.getMember().getManager().getId() : null) // ✅ Manager의 ID 추가
+                        .build())
+                .collect(Collectors.toList());
+
         List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(partyId);
 
         List<Day> dayWeeks = schedules.stream()
@@ -174,6 +189,7 @@ public class PartyService {
                 .introduction(party.getIntroduction())
                 .bookCover(party.getBookCover())
                 .keywords(keywords)
+                .members(members)
                 .build();
     }
 
@@ -191,4 +207,121 @@ public class PartyService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public PartyDetailResponse getPartyFindByPin(String pinNumber) {
+        Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT, "해당 핀번호로 조회된 입장 가능한 파티가 없습니다."));
+
+        List<PartyMemberResponse> members = party.getPartyMembers().stream()
+                .map(pm -> PartyMemberResponse.builder()
+                        .memberId(pm.getMember().getId())
+                        .name(pm.getMember().getName())
+                        .nickname(pm.getMember().getNickname())
+                        .managerId(pm.getMember().getManager() != null ? pm.getMember().getManager().getId() : null)
+                        .build())
+                .collect(Collectors.toList());
+
+
+        List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(party.getId());
+
+        List<Day> dayWeeks = schedules.stream()
+                .map(Schedule::getDayWeek)
+                .distinct()
+                .toList();
+
+        List<KeywordResponse> keywords = partyKeywordRepository.findByParty(party.getId()).stream()
+                .map(partyKeyword -> KeywordResponse.fromEntity(partyKeyword.getKeyword()))
+                .toList();
+
+        return PartyDetailResponse.builder()
+                .pinNumber(party.getPinNumber())
+                .title(party.getBookTitle())
+                .startDate(party.getStartDate())
+                .dayWeeks(dayWeeks)
+                .level(party.getLevel())
+                .progressCount(party.getProgressCount())
+                .episodeCount(party.getEpisodeCount())
+                .introduction(party.getIntroduction())
+                .bookCover(party.getBookCover())
+                .keywords(keywords)
+                .members(members)
+                .build();
+    }
+
+    @Transactional
+    public ResponseEntity<ApiResponse> addChildrenToParty(Long partyId, Long parentId, List<Long> childIds) {
+        Member parent = memberRepository.findById(parentId)
+                .orElseThrow(() -> new IllegalArgumentException("부모 정보를 찾을 수 없습니다."));
+
+        Party party = partyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("파티를 찾을 수 없습니다."));
+
+        List<PartyMember> newMembers = new ArrayList<>();
+
+        //1시간 이상 남은 모임만 모임원 수정 가능
+        LocalDateTime now = LocalDateTime.now();
+        if (party.getStartDate().minusHours(1).isBefore(now)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("파티 시작 1시간 이내에는 아동을 추가할 수 없습니다."));
+        }
+
+        for (Long childId : childIds) {
+            Member child = memberRepository.findById(childId)
+                    .orElseThrow(() -> new IllegalArgumentException("아동 정보를 찾을 수 없습니다."));
+
+            if (!child.getManager().getId().equals(parentId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("보호자 권한이 없습니다."));
+            }
+
+            boolean isAlreadyMember = partyMemberRepository.existsByPartyAndMember(party, child);
+            if (isAlreadyMember) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new ApiResponse("이미 존재하는 아동입니다."));
+            }
+
+            PartyMember newPartyMember = PartyMember.builder()
+                    .party(party)
+                    .member(child)
+                    .build();
+            newMembers.add(newPartyMember);
+        }
+
+        partyMemberRepository.saveAll(newMembers);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("아동 등록 완료되었습니다."));
+    }
+
+    @Transactional
+    public ResponseEntity<ApiResponse> removeChildFromParty(Long partyId, Long parentId, Long childId) {
+
+        Party party = partyRepository.findById(partyId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 파티입니다."));
+
+
+        Member parent = memberRepository.findById(parentId)
+                .orElseThrow(() -> new IllegalArgumentException("부모 정보를 찾을 수 없습니다."));
+
+        Member child = memberRepository.findById(childId)
+                .orElseThrow(() -> new IllegalArgumentException("아동 정보를 찾을 수 없습니다."));
+
+        if (!child.getManager().getId().equals(parentId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("보호자 권한이 없습니다."));
+        }
+
+        //1시간 이상 남은 모임만 모임원 수정 가능
+        LocalDateTime now = LocalDateTime.now();
+        if (party.getStartDate().minusHours(1).isBefore(now)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("파티 시작 1시간 이내에는 아동을 삭제할 수 없습니다."));
+        }
+
+        PartyMember partyMember = partyMemberRepository.findByPartyAndMember(party, child)
+                .orElse(null);
+
+        if (partyMember == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("삭제할 아동이 없습니다."));
+        }
+
+        partyMemberRepository.delete(partyMember);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("아동 삭제가 완료되었습니다."));
+    }
+
+
+
 }
