@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import ManagerBookParticipationSection from '../../components/main/ManagerBookParticipationSection';
-import { getMonthlySchedule } from '../api/schedule';
+import { getMonthlySchedule } from '../../api/schedule';
 import { useSelector } from 'react-redux';
-import { getColorForMember } from '../utils/ColorGenerator';
+import { getColorForMember } from '../../utils/ColorGenerator';
 
 const CalendarIcon = () => (
   <svg 

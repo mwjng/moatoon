@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Navigation from '../components/Navigation';
-import ScheduleSection from "../components/main/ScheduleSection";
-import ChildBookParticipationSection from "../components/main/ChildBookParticipationSection";
-import { getTodayAndUpComingSchedule } from '../api/schedule';
+import Navigation from '../../components/Navigation';
+import ScheduleSection from "../../components/main/ScheduleSection";
+import ChildBookParticipationSection from "../../components/main/ChildBookParticipationSection";
+import { getTodayAndUpComingSchedule } from '../../api/schedule';
 import { useSelector } from 'react-redux';
 
 function ChildMainPage() {
