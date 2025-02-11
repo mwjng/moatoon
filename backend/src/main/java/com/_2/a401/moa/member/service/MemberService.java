@@ -1,8 +1,11 @@
 package com._2.a401.moa.member.service;
 
+import com._2.a401.moa.auth.exception.AuthException;
+import com._2.a401.moa.auth.service.MailService;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.domain.MemberRole;
+import com._2.a401.moa.member.dto.request.FindPwRequest;
 import com._2.a401.moa.member.dto.request.FindIdRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.member.dto.response.FindIdInfo;
@@ -28,6 +31,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Transactional
     public void createMember(MemberCreate memberCreate) {
@@ -85,11 +89,29 @@ public class MemberService {
         return SearchChildInfo.from(member);
     }
 
-    public FindIdInfo getLoginIdByNameAndEmail(FindIdRequest req) {
-        Member member = memberRepository.findByEmail(req.email()).orElseThrow(()->new MoaException(INVALID_MEMBER));
-        if(!member.getName().equals(req.name())){
-            throw new MoaException(INVALID_MEMBER);
+    @Transactional
+    public void sendUserPwMail(FindPwRequest req) {
+        Member member = memberRepository.findByLoginId(req.loginId())
+                .orElseThrow(()->new MoaException(INVALID_MEMBER));;
+        if(member.getRole().equals(MemberRole.CHILD)){
+            if(!member.getManager().getEmail().equals(req.email())){
+                throw new MoaException(INVALID_MEMBER);
+            }
+        }else{
+            if(!member.getEmail().equals(req.email())){
+                throw new MoaException(INVALID_MEMBER);
+            }
         }
+
+        String pw = mailService.sendPwMail(req.email());
+
+        member.setPassword(passwordEncoder.encode(pw));
+    }
+
+    public FindIdInfo getLoginIdByNameAndEmail(FindIdRequest req) {
+        Member member = memberRepository.findByEmailAndName(req.email(), req.name())
+                .orElseThrow(()->new MoaException(INVALID_MEMBER));
+
         return FindIdInfo.from(member);
     }
 }

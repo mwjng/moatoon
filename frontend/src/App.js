@@ -9,9 +9,8 @@ import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/WaitingRoom';
-import ChildMainPage from './pages/ChildMainPage';
+import MainPage from './pages/main/MainPage';
 import LibraryPage from './pages/ChildLibraryPage';
-import ManagerMainPage from './pages/ManagerMainPage';
 import WordLearning from './pages/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
@@ -79,11 +78,7 @@ function App() {
         const path = location.pathname;
 
         if (userInfo && (path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
-            if (userInfo.role == 'CHILD') {
-                navigate('/home/child');
-            } else {
-                navigate('/home/manager');
-            }
+            navigate('/home');
         }
 
         if (!userInfo && !(path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
@@ -123,10 +118,7 @@ function App() {
                         <Route index element={<ChangeUserInfoPage />} />
                     </Route>
                     <Route path="waiting" element={<WaitingRoom />}></Route>
-                    <Route path="home">
-                        <Route path="child" element={<ChildMainPage />} />
-                        <Route path="manager" element={<ManagerMainPage />} />
-                    </Route>
+                    <Route path="home" element={<MainPage />}></Route>
                 </Routes>
             )}
         </div>

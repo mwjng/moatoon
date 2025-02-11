@@ -1,13 +1,13 @@
 package com._2.a401.moa.party.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Table(name = "keyword")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Entity
 public class Keyword {
 
@@ -21,4 +21,5 @@ public class Keyword {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Option option;
+
 }

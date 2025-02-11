@@ -22,7 +22,7 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
     const handleBackClick = () => {
         if (stage === 'waiting') {
             leaveSession(); // 세션에서 나가기
-            navigate('/'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+            navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
 
@@ -229,11 +229,7 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
                         ></img>
                         <button
                             className="flex flex-col text-center gap-3 items-center"
-                            onClick={() =>
-                                userInfo.role == 'CHILD'
-                                    ? navigationHandler('home/child')
-                                    : navigationHandler('home/manager')
-                            }
+                            onClick={() => navigationHandler('home')}
                         >
                             <img src={`${homeIcon}`} alt="home" width="50"></img>
                             <span>홈</span>
