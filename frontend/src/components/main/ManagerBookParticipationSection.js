@@ -1,3 +1,4 @@
+// ManagerBookParticipationSection.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import ParticipatingBookCard from './ParticipatingBookCard';
@@ -10,7 +11,7 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
   const [formattedBooks, setFormattedBooks] = useState([]);
   const dropdownRef = useRef(null);
   
-  const { bookList, loading } = useFetchBooks(selectedChild?.id, false, 5);
+  const { bookList, loading, resetError } = useFetchBooks(selectedChild?.id, false, 5);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,9 +28,11 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
 
   useEffect(() => {
     if (selectedChild?.id) {
+      resetError(); // API 요청을 위한 상태 초기화
       setCurrentPage(0);
+      setFormattedBooks([]); // 기존 도서 목록 초기화
     }
-  }, [selectedChild]);
+  }, [selectedChild, resetError]);
 
   useEffect(() => {
     if (bookList) {

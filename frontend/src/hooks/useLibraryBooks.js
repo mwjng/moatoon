@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { authInstance } from '../api/axios';
 
 const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
@@ -6,17 +6,17 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [currentPage, setCurrentPage] = useState(0); // 현재 페이지
-    //pageSize // 한 페이지에 불러올 책의 수 (예: 10개)
+    const [currentPage, setCurrentPage] = useState(0);
     const observerRef = useRef(null);
 
-    const fetchBooks = async () => {
-        if (loading || !hasMore || error) return; // 에러 상태일 때 요청 중단
+    // fetchBooks를 useCallback으로 메모이제이션
+    const fetchBooks = useCallback(async () => {
+        if (loading || !hasMore || error || !memberId) return;
         setLoading(true);
 
         try {
             const response = await authInstance.get(`/books/${memberId}`, {
-                params: { isCompleted: isCompleted, page: currentPage, size: pageSize },
+                params: { isCompleted, page: currentPage, size: pageSize },
             });
 
             const newBooks = response.data.bookList || [];
@@ -27,49 +27,56 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
             }
         } catch (err) {
             setError(err);
-            setHasMore(false); // 에러 발생 시 추가 요청 중단
+            setHasMore(false);
             console.error('Error fetching books:', err);
         } finally {
             setLoading(false);
         }
-    };
+    }, [memberId, isCompleted, currentPage, pageSize, loading, hasMore, error]);
 
-    useEffect(() => {
-        resetError(); 
-        fetchBooks();
-    }, [currentPage, memberId]); 
+    // resetError를 useCallback으로 메모이제이션
+    const resetError = useCallback(() => {
+        setError(null);
+        setHasMore(true);
+        setCurrentPage(0);
+        setBookList([]);
+    }, []);
 
+    // memberId가 변경될 때만 상태 초기화
     useEffect(() => {
-        // 에러가 있거나 더 이상 데이터가 없을 때는 observer를 설정하지 않음
-        if (error || !hasMore) return;
+        if (memberId) {
+            resetError();
+        }
+    }, [memberId, resetError]);
+
+    // 데이터 페칭
+    useEffect(() => {
+        if (memberId) {
+            fetchBooks();
+        }
+    }, [memberId, currentPage, fetchBooks]);
+
+    // Intersection Observer 설정
+    useEffect(() => {
+        if (!observerRef.current || error || !hasMore) return;
 
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting && !loading && hasMore) {
-                    setCurrentPage(prevPage => prevPage + 1);
+                    setCurrentPage(prev => prev + 1);
                 }
             },
-            { threshold: 1.0 },
+            { threshold: 1.0 }
         );
 
-        if (observerRef.current) {
-            observer.observe(observerRef.current);
-        }
+        observer.observe(observerRef.current);
 
         return () => {
             if (observerRef.current) {
                 observer.unobserve(observerRef.current);
             }
         };
-    }, [loading, hasMore, error]); // error 의존성 추가
-
-    // 에러 상태를 초기화하는 함수 추가
-    const resetError = () => {
-        setError(null);
-        setHasMore(true);
-        setCurrentPage(0);
-        setBookList([]);
-    };
+    }, [loading, hasMore, error]);
 
     return { bookList, error, loading, observerRef, hasMore, resetError };
 };
