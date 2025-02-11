@@ -1,6 +1,7 @@
 package com._2.a401.moa.member.controller;
 
 import com._2.a401.moa.common.jwt.JwtUtil;
+import com._2.a401.moa.member.dto.request.FindPwRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
@@ -39,5 +40,11 @@ public class MemberController {
     public ResponseEntity<SearchChildInfo> getChildInfoById(@RequestParam String loginId){
         SearchChildInfo searchChildInfo = memberService.getChildInfoById(loginId);
         return ResponseEntity.ok().body(searchChildInfo);
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<Void> sendUserPw(@RequestBody FindPwRequest req){
+        memberService.sendUserPwMail(req);
+        return ResponseEntity.ok().build();
     }
 }

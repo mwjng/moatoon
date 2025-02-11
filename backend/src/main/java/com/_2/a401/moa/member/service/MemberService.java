@@ -1,8 +1,11 @@
 package com._2.a401.moa.member.service;
 
+import com._2.a401.moa.auth.exception.AuthException;
+import com._2.a401.moa.auth.service.MailService;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.domain.MemberRole;
+import com._2.a401.moa.member.dto.request.FindPwRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
@@ -27,6 +30,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Transactional
     public void createMember(MemberCreate memberCreate) {
@@ -36,6 +40,7 @@ public class MemberService {
             createManager(memberCreate);
         }
     }
+
 
     private void createChildren(MemberCreate memberCreate) {
         memberRepository.save(memberCreate.toChildMember(passwordEncoder));
@@ -80,5 +85,16 @@ public class MemberService {
             throw new MoaException(DUPLICATED_CHILD);
         }
         return SearchChildInfo.from(member);
+    }
+
+    @Transactional
+    public void sendUserPwMail(FindPwRequest req) {
+        String pw = mailService.sendPwMail(req.email());
+        Member member = memberRepository.findByLoginIdAndEmail(req.loginId(), req.email());
+        if (member == null) {
+            throw new AuthException(INVALID_MEMBER);
+        }
+
+        member.setPassword(passwordEncoder.encode(pw));
     }
 }

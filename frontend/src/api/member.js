@@ -96,7 +96,6 @@ export const login = async (loginInfo, navigate) => {
                 return null;
             }
             store.dispatch(setUserInfo(userInfo));
-            console.log(store.getState());
 
             if (userInfo.role == 'MANAGER') {
                 navigate('/main/manager');
