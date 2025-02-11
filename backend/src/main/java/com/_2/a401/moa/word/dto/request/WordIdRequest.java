@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class WordIdRequest {
 
-    private long wordId;
+    long wordId;
 }

@@ -20,6 +20,7 @@ import com._2.a401.moa.word.repository.WordExampleRepository;
 import com._2.a401.moa.word.repository.WordRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class WordService {
     private final PartyRepository partyRepository;
     private final WordExampleRepository wordExampleRepository;
@@ -40,16 +42,18 @@ public class WordService {
 
     public MyWordsResponse getMyWords(Long memberId, Integer page, String keyword) {
         Long totalCount = myWordRepository.countAll(memberId, keyword);
-        int totalPage = (int) (totalCount / 4) + 1;
+        int totalPage = (int) (totalCount % 4) == 0 ? (int) (totalCount / 4) : (int) (totalCount / 4) + 1;
+        int searchPage;
 
         if (page == null || page < 1) {
-            page = 1;
-        }
-        if (totalPage < page) {
-            page = totalPage;
+            searchPage = 1;
+        } else if (page > totalPage) {
+            searchPage = totalPage;
+        } else {
+            searchPage = 1;
         }
 
-        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, page - 1, keyword);
+        List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, searchPage - 1, keyword);
 
         List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
         if (myWordExamples.isEmpty()) {

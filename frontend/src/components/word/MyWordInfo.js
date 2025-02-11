@@ -11,11 +11,11 @@ const MyWordInfo = ({ word, removeMyWord }) => {
 
     const handleRemove = event => {
         event.stopPropagation();
-        removeMyWord(word.wordListId);
+        removeMyWord(word.id);
     };
 
     return (
-        <div key={word.wordListId} className="group w-[500px] h-[250px] [perspective:1000px]">
+        <div className="group w-[500px] h-[250px] [perspective:1000px]">
             <div
                 className={`relative h-full w-full rounded-xl transition-transform duration-500 [transform-style:preserve-3d] ${
                     isFront ? '' : '[transform:rotateY(180deg)]'
@@ -57,7 +57,7 @@ const MyWordInfo = ({ word, removeMyWord }) => {
                         </ol>
                     </div>
                     <ol className="bg-[#F7F5F5] list-decimal px-8 py-4 rounded-[10px] w-full text-[16px] h-2/3">
-                        {word.example.map((example, index) => (
+                        {word.examples.map((example, index) => (
                             <li key={index} className="my-2">
                                 {example.split(/(\*.*?\*)/).map((part, index) =>
                                     part.startsWith('*') && part.endsWith('*') ? (
