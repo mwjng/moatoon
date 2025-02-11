@@ -6,14 +6,14 @@ import SockJS from 'sockjs-client';
 import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 
-const Canvas = () => {
+const Canvas = ({ stageRef }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
     const [lines, setLines] = useState([]);
     const [undoneLines, setUndoneLines] = useState([]);
     const isDrawing = useRef(false);
-    const stageRef = useRef();
+    //const stageRef = useRef();
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
 
