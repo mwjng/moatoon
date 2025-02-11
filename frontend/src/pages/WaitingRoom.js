@@ -11,7 +11,7 @@ import base64 from 'base-64';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom({ scheduleId, bookTitle, bookInfo, sessionTime }) {
+function WaitingRoom({ scheduleId, bookTitle, paramBookInfo, sessionTime }) {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
