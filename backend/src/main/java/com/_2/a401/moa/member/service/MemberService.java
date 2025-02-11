@@ -6,7 +6,9 @@ import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.domain.MemberRole;
 import com._2.a401.moa.member.dto.request.FindPwRequest;
+import com._2.a401.moa.member.dto.request.FindIdRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
+import com._2.a401.moa.member.dto.response.FindIdInfo;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
 import com._2.a401.moa.member.repository.MemberRepository;
@@ -40,7 +42,6 @@ public class MemberService {
             createManager(memberCreate);
         }
     }
-
 
     private void createChildren(MemberCreate memberCreate) {
         memberRepository.save(memberCreate.toChildMember(passwordEncoder));
@@ -90,11 +91,16 @@ public class MemberService {
     @Transactional
     public void sendUserPwMail(FindPwRequest req) {
         String pw = mailService.sendPwMail(req.email());
-        Member member = memberRepository.findByLoginIdAndEmail(req.loginId(), req.email());
-        if (member == null) {
-            throw new AuthException(INVALID_MEMBER);
-        }
+        Member member = memberRepository.findByLoginIdAndEmail(req.loginId(), req.email())
+                .orElseThrow(()->new MoaException(INVALID_MEMBER));;
 
         member.setPassword(passwordEncoder.encode(pw));
+    }
+
+    public FindIdInfo getLoginIdByNameAndEmail(FindIdRequest req) {
+        Member member = memberRepository.findByEmailAndName(req.email(), req.name())
+                .orElseThrow(()->new MoaException(INVALID_MEMBER));
+
+        return FindIdInfo.from(member);
     }
 }
