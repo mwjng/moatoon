@@ -2,6 +2,7 @@ package com._2.a401.moa.auth.controller;
 
 import com._2.a401.moa.auth.dto.AuthToken;
 import com._2.a401.moa.auth.dto.LoginInfo;
+import com._2.a401.moa.auth.dto.request.CheckEmailRequest;
 import com._2.a401.moa.auth.exception.InvalidTokenException;
 import com._2.a401.moa.auth.service.AuthService;
 import com._2.a401.moa.auth.service.MailService;
@@ -10,6 +11,7 @@ import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     private final AuthService authService;
@@ -36,16 +39,25 @@ public class AuthController {
     @Value("${spring.jwt.token.refresh-expiration-time}")
     private int refreshExpirationTime;
 
+    @GetMapping("/id/check/{loginId}")
+    public ResponseEntity<Void> checkLoginId(@PathVariable("loginId") String loginId) {
+        authService.checkLoginId(loginId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/email/check")
-    public ResponseEntity<String> checkEmailInRegist(@RequestBody Map<String, String> request){
-        String email = request.get("email").trim();
-        if(authService.checkEmailDup(email)){
-            return new ResponseEntity<>("이미 존재하는 이메일", HttpStatus.CONFLICT);
-        }
-        if(mailService.sendCodeMail(email)){
-            return new ResponseEntity<>("이메일 코드 전송 성공", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("이메일 코드 전송 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<Void> checkEmailInRegist(@RequestBody @Valid CheckEmailRequest request){
+        authService.checkEmailDup(request.email());
+        mailService.sendCodeMail(request.email());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/email/code")
+    public ResponseEntity<String> checkEmailCode(@RequestBody Map<String, String> req){
+        String code = req.get("code");
+        String email = req.get("email");
+        authService.checkCode(email, code);
+        return new ResponseEntity<>("인증 성공", HttpStatus.OK);
     }
 
     @PostMapping("/login")

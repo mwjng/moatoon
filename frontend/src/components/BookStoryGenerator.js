@@ -1,215 +1,232 @@
 import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
+import { fetchRandomWords, sendStoryToBackend } from "../api/keyword";
 
-// OpenAI API 객체 생성 (FE에서 직접 호출)
+// OpenAI API 객체 생성
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
 const BookStoryGenerator = ({
-  // 추가 정보
   startDate,
   level,
-  episodeLength,  // 챕터 수 (에피소드 분량)
+  episodeLength,
   time,
-  dayOfWeek,      // 배열
+  dayOfWeek,
   publicStatus,
   participatingChildren,
-  // 기존 정보
   mood,
   theme,
   genre,
   difficulty,
   onClose,
 }) => {
-  // 전달받은 정보들을 콘솔에 출력 (마운트 시)
-  useEffect(() => {
-    console.log("Received props:", {
-      startDate,
-      level,
-      episodeLength,
-      time,
-      dayOfWeek,
-      publicStatus,
-      participatingChildren,
-      mood,
-      theme,
-      genre,
-      difficulty,
-    });
-  }, [startDate, level, episodeLength, time, dayOfWeek, publicStatus, participatingChildren, mood, theme, genre, difficulty]);
-
-  // 내부 스토리 상태 (JSON 객체)
   const [currentStory, setCurrentStory] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [coverImage, setCoverImage] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [words, setWords] = useState([]);
 
-  // info 객체 (선택 항목 제외)
-  const info = {
-    "방 시작일": startDate,
-    "레벨": level,
-    "에피소드 분량": episodeLength,
-    "시간": time,
-    "요일": dayOfWeek.join(", "),
-    "공개 여부": publicStatus,
-    "분위기": mood,
-    "테마": theme,
-    "장르": genre,
-    "참여할 아동": participatingChildren,
-  };
+  // 🔹 이야기 생성 함수
+  const generateStory = async () => {
+    setIsGenerating(true);
+    try {
+      // 🔹 백엔드에서 새로운 단어셋 가져오기
+      const data = await fetchRandomWords(difficulty, episodeLength);
+      
+      if (!data || !data.words || data.words.length === 0) {
+        throw new Error("단어를 가져오는 데 실패했습니다.");
+      }
 
-  // 스토리 생성을 위한 프롬프트 생성 함수 (동화책 제목 포함, 상세 버전)
-  const generateStoryPrompt = () => {
-    const ageGroup =
-      difficulty === 1
-        ? "4~6세"
-        : difficulty === 2
-        ? "7세"
-        : difficulty === 3
-        ? "8세"
-        : difficulty === 4
-        ? "9세"
-        : difficulty === 5
-        ? "10세"
-        : "11세";
-    return `
-동화책 제목: 창의적인 동화책 제목을 지어주세요.
+      
+      // 🔹 OpenAI 프롬프트 생성
+      setWords(data.words);
+      const wordList = data.words.map((w) => w.word).join(", ");
+      console.log("리스트 !! ",wordList);
+      const prompt = `
+            동화책 제목: 생성된 이야기와 어울리는 동화책 제목을 지어줘.
 역할: ${mood} 분위기의 ${theme} 테마 ${genre} 동화를 작성하는 동화 작가.
-- 난이도: (${ageGroup}) 수준.
-- 제목 : 내용을 함축하고, 아이들이 흥미를 가질만한 제목.
-- 개요: 아래와 같이 5줄 내외의 동화 개요를 작성.
-- 챕터: 총 ${episodeLength}개, 각 챕터마다 4문장으로 구성.
-- 사용 단어: 각 챕터에 4개의 단어를 "<사용 단어: ...>" 형식으로 제공하며, 각 문장에는 해당 단어를 **볼드체**로 포함해 주세요.
-- JSON 형식으로 반환:
+- 난이도: (${difficulty}단계).
+- 개요: 이야기의 도입부만 제공하며, 전체 내용을 밝히지 않고 궁금증을 유발해야 함.
+- 챕터: 총 ${episodeLength}개로 구성됨.
+- 각 챕터는 4개의 문장으로 이루어짐.
+- 각 문장에는 반드시 지정된 단어를 포함해야 함.
+- JSON 형식으로 반환해야 함.
 
-- 다음은 예시로 이런 식의 JSON으로 글을 생성해주되, 이 글과 내용이 같으면 안돼.
+- 사용 단어 목록: ${words.map(w => `- ${w.word}`).join("\n")}
+
+- **words와 sentence의 관계**
+- words[0]은 sentence[0]에서 사용된다.
+- words[1]은 sentence[1]에서 사용된다.
+- words[2]은 sentence[2]에서 사용된다.
+- words[3]은 sentence[3]에서 사용된다.
+
+### JSON 출력 예시 1:
 {
-  "title": "마법 숲에 들어간 공주",
+  "title": "마법의 그림 속 모험",
   "overview": [
-    "옛날 어느 왕국에 작은 공주가 살고 있었어요.",
-    "그녀는 마법의 정원에서 특별한 꽃을 키웠어요.",
-    "어느 날, 신비한 나비를 만났어요.",
-    "나비는 공주에게 숨겨진 비밀을 알려주었어요.",
-    "공주는 모험을 떠나기로 결심했어요."
+    "한 마을에 그림을 사랑하는 아이가 있었어요.",
+    "그는 매일 신비한 그림을 그리며 꿈을 키웠어요.",
+    "어느 날, 그림 속에서 기차 소리가 들렸어요.",
+    "아이의 특별한 모험이 시작되었어요."
   ],
   "chapters": [
     {
       "title": "CH1",
-      "words": ["마법", "꽃", "꿈", "발견하다"],
+      "words": [
+        { "id": 1, "word": "그림" },
+        { "id": 8, "word": "기차" },
+        { "id": 2, "word": "그만" },
+        { "id": 4, "word": "글자" }
+      ],
       "sentences": [
-        "공주는 **마법**의 힘을 믿었어요.",
-        "정원의 **꽃**을 소중히 돌보았어요.",
-        "밤마다 **꿈** 속에서 미래를 보았어요.",
-        "어느 날, 숨겨진 열쇠를 **발견했어요.**"
+        "아이의 벽에는 신비한 그림이 걸려 있었어요.",
+        "그림 속에서는 오래된 기차가 달리고 있었어요.",
+        "기차가 멈추자, 아이는 그만 숨을 멈추고 말았어요.",
+        "벽에 적힌 글자가 갑자기 빛나기 시작했어요."
       ]
     },
     {
       "title": "CH2",
-      "words": ["나비", "여행", "우정", "밝히다"],
+      "words": [
+        { "id": 3, "word": "글씨" },
+        { "id": 6, "word": "기다리다" },
+        { "id": 5, "word": "금요일" },
+        { "id": 7, "word": "기린" }
+      ],
       "sentences": [
-        "신비한 **나비**가 나타났어요.",
-        "공주는 나비와 함께 **여행**을 시작했어요.",
-        "그 과정에서 새로운 **우정**을 쌓았어요.",
-        "나비가 숨겨진 비밀을 **밝혀주었어요**."
+        "그림 속에 적힌 글씨는 마법의 주문이었어요.",
+        "소년은 기차를 타고 목적지를 기다리며 설렜어요.",
+        "그곳은 매주 금요일에만 열리는 비밀스러운 마을이었어요.",
+        "그곳에서 아이는 거대한 기린을 만났어요."
       ]
     }
-    // 에피소드 분량에 따라 추가 챕터 생성...
   ]
-}`;
-  };
+}
 
-  // 최초 스토리 생성 (컴포넌트 마운트 시)
-  const handleGenerateInitialStory = async () => {
-    setIsGenerating(true);
-    const prompt = generateStoryPrompt();
-    try {
+### JSON 출력 예시 2:
+{
+  "title": "바다 속의 보물 찾기",
+  "overview": [
+    "어느 날, 한 용감한 소년이 깊은 바다로 들어갔어요.",
+    "그는 신비로운 해양 생물들과 친구가 되었어요.",
+    "소년은 오래된 보물 지도를 발견했어요.",
+    "그는 새로운 모험을 시작했어요."
+  ],
+
+    "chapters": [
+    ${words.reduce((acc, word, idx) => {
+      if (idx % 4 === 0) acc.push([]);
+      acc[acc.length - 1].push(word);
+      return acc;
+    }, []).map((chapterWords, index) => `{
+      "title": "CH${index + 1}",
+      "words": [${chapterWords.map(w => `{"id": ${w.wordId}, "word": "${w.word}"}`).join(", ")}],
+      "sentences": [
+        "첫 번째 문장: **${chapterWords[0]?.word}**을 사용해야 합니다.",
+        "두 번째 문장: **${chapterWords[1]?.word}**을 사용해야 합니다.",
+        "세 번째 문장: **${chapterWords[2]?.word}**을 사용해야 합니다.",
+        "네 번째 문장: **${chapterWords[3]?.word}**을 사용해야 합니다."
+      ]
+    }`).join(", ")}
+  ]
+  
+}
+      `;
+
+      // 🔹 OpenAI 요청
       const response = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: [{ role: "user", content: prompt }],
       });
-      const generated = response.choices[0]?.message?.content || "";
-      const newStory = JSON.parse(generated);
-      setCurrentStory(newStory);
+
+      const responseText = response.choices[0]?.message?.content;
+
+      if (!responseText) {
+        throw new Error("OpenAI 응답이 비어 있습니다.");
+      }
+
+      let generatedStory;
+      try {
+        generatedStory = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error("JSON 파싱 오류:", jsonError);
+        throw new Error("OpenAI에서 올바른 JSON 응답을 받지 못했습니다.");
+      }
+
+      // ✅ overview를 하나의 문자열로 변환
+      if (Array.isArray(generatedStory.overview)) {
+        generatedStory.overview = generatedStory.overview.join(" ");
+      }
+
+      setCurrentStory(generatedStory);
     } catch (error) {
-      console.error("초기 스토리 생성 오류:", error);
+      console.error("스토리 생성 오류:", error.message);
     } finally {
       setIsGenerating(false);
     }
   };
 
   useEffect(() => {
-    handleGenerateInitialStory();
+    generateStory();
   }, []);
 
-  // 재생성 버튼 클릭 시
-  const handleRegenerateStory = async () => {
-    setIsGenerating(true);
-    const prompt = generateStoryPrompt();
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-      });
-      const generated = response.choices[0]?.message?.content || "";
-      const newStory = JSON.parse(generated);
-      setCurrentStory(newStory);
-    } catch (error) {
-      console.error("재생성 오류:", error);
-    } finally {
-      setIsGenerating(false);
-    }
+
+  const convertDayOfWeekToEnum = (dayList) => {
+    const dayMap = {
+      "월": "MONDAY",
+      "화": "TUESDAY",
+      "수": "WEDNESDAY",
+      "목": "THURSDAY",
+      "금": "FRIDAY",
+      "토": "SATURDAY",
+      "일": "SUNDAY"
+    };
+    return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
   };
 
-  // 결정하기 버튼 클릭 시: 표지 생성 후 최종 payload 구성하여 백엔드 전송
+
+  
+
+  // 🔹 표지 이미지 생성 및 최종 데이터 전송
   const handleDecide = async () => {
     setIsGeneratingImage(true);
-    let overviewText = "";
     try {
-      overviewText = currentStory.overview.join(" ");
-    } catch (error) {
-      console.error("overview 추출 오류:", error);
-    }
-    const coverPrompt = `이 이야기를 바탕으로 아이들의 흥미를 끌만한 동화책 표지에 들어갈 일러스트를 글 없이 만들어줘: ${overviewText}`;
-    try {
+      const coverPrompt = `${currentStory.overview} : 참고 내용을 바탕으로 동화 스타일의 일러스트 이미지 생성.(텍스트 미포함)`;
       const response = await openai.images.generate({
         model: "dall-e-3",
         prompt: coverPrompt,
         n: 1,
         size: "1024x1024",
       });
-      // DALL-E 3가 URL(다운로드 링크)을 반환한다고 가정
-      const generatedCover = response.data[0]?.url || "";
-      setCoverImage(generatedCover);
 
-      // 최종 payload 구성
+      const generatedCover = response.data[0]?.url || "";
+      if (!generatedCover) throw new Error("이미지 생성 실패");
+
+      const formattedDayOfWeek = convertDayOfWeekToEnum(dayOfWeek);
+      const isPublic = publicStatus === "공개"
+
+      
       const payload = {
         startDate,
-        level,
+        level: parseInt(level.replace("Lv", "").trim()),
         episodeLength,
         time,
-        dayOfWeek,  // 배열 그대로 전송
-        publicStatus,
-        mood,
-        theme,
-        genre,
+        dayWeek: formattedDayOfWeek,
+        genre: parseInt(genre),
+        mood: parseInt(mood),
+        theme: parseInt(theme),
+        publicStatus:isPublic,
         participatingChildren,
         story: currentStory,
-        coverImage: generatedCover
       };
 
-      // 백엔드 최종 제출
-      const submitResponse = await fetch("http://localhost:8080/api/parties", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!submitResponse.ok) throw new Error("스토리 전송 실패");
-      console.log("스토리 전송 성공");
+      const result = await sendStoryToBackend(payload, generatedCover);
+      console.log("스토리 전송 성공", result);
       onClose();
     } catch (error) {
-      console.error("최종 결정 오류:", error);
+      console.error("최종 전송 오류:", error.message);
     } finally {
       setIsGeneratingImage(false);
     }
@@ -217,82 +234,29 @@ const BookStoryGenerator = ({
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
-      <div
-        className="p-6 rounded-lg shadow-lg w-2/3 relative max-h-screen overflow-y-auto"
-        style={{ backgroundColor: "#BCDAFE" }}
-      >
+      <div className="p-6 rounded-lg shadow-lg w-2/3 relative max-h-screen overflow-y-auto bg-blue-100">
         <h2 className="text-xl font-bold mb-4 text-center">📖 생성된 이야기</h2>
 
-        {/* 선택 및 추가 정보 태그 영역 */}
-        <div className="mb-4 flex flex-wrap gap-2">
-          {Object.entries(info).map(([key, value]) => (
-            <span
-              key={key}
-              className="bg-gray-200 text-gray-800 px-3 py-1 rounded-full text-sm"
-            >
-              {key}: {typeof value === "string" ? value : Array.isArray(value) ? value.join(", ") : value}
-            </span>
-          ))}
-        </div>
-
-        {/* 로딩 메시지 */}
-        {isGenerating && <p className="mb-4 text-center">스토리 생성 중...</p>}
-
-        {/* 스토리 출력: 제목 및 개요 */}
         {currentStory && (
-          <div className="mb-4 p-4 border border-gray-300 rounded" style={{ backgroundColor: "#EBF4FF" }}>
+          <div className="mb-4 p-4 border border-gray-300 rounded bg-gray-50">
             <h3 className="font-bold mb-2">동화책 제목: {currentStory.title}</h3>
-            <h4 className="font-bold mb-2">개요</h4>
-            {currentStory.overview.map((line, idx) => (
-              <p key={idx} className="mb-1">{line}</p>
-            ))}
+            <p>{currentStory.overview}</p>
           </div>
         )}
 
-        {/* 스토리 출력: 각 챕터 */}
-        {currentStory && currentStory.chapters &&
-          currentStory.chapters.map((chapter, index) => (
-            <div
-              key={index}
-              className="mb-4 p-4 border border-gray-300 rounded"
-              style={{ backgroundColor: "#EBF4FF" }}
-            >
-              <h3 className="font-bold mb-2">{chapter.title}</h3>
-              <div className="mb-2">
-                <strong>사용 단어:</strong> {chapter.words.join(", ")}
-              </div>
-              {chapter.sentences.map((sentence, idx) => (
-                <p
-                  key={idx}
-                  className="mb-1"
-                  dangerouslySetInnerHTML={{
-                    __html: sentence.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-                  }}
-                ></p>
-              ))}
-            </div>
-          ))}
+        {currentStory?.chapters?.map((chapter, index) => (
+          <div key={index} className="mb-4 p-4 border border-gray-300 rounded bg-gray-50">
+            <h3 className="font-bold mb-2">{chapter.title}</h3>
+            <p><strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}</p>
+            {chapter.sentences.map((sentence, idx) => <p key={idx}>{sentence}</p>)}
+          </div>
+        ))}
 
-        {/* 버튼 영역 */}
-        <div className="flex justify-between mt-4">
-          <button
-            onClick={handleRegenerateStory}
-            disabled={isGenerating}
-            className={`px-4 py-2 rounded-lg font-bold ${isGenerating ? "bg-gray-400" : "bg-blue-500 text-white hover:bg-blue-600"}`}
-          >
-            {isGenerating ? "재생성 중..." : "재생성"}
-          </button>
-          <button
-            onClick={handleDecide}
-            disabled={isGeneratingImage}
-            className={`px-4 py-2 rounded-lg font-bold ${isGeneratingImage ? "bg-gray-400" : "bg-green-700 text-white hover:bg-green-800"}`}
-          >
-            결정하기
-          </button>
-        </div>
-
-        <button onClick={onClose} className="absolute top-2 right-2 px-3 py-1 bg-gray-500 text-white rounded-full">
-          X
+        <button onClick={generateStory} disabled={isGenerating} className="bg-blue-500 px-4 py-2 rounded-lg text-white">
+          {isGenerating ? "재생성 중..." : "재생성"}
+        </button>
+        <button onClick={handleDecide} disabled={isGeneratingImage} className="bg-green-700 px-4 py-2 rounded-lg text-white">
+          결정하기
         </button>
       </div>
     </div>

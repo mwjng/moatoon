@@ -5,8 +5,12 @@ import Input from '../../components/member/Input';
 import { login } from '../../api/member';
 import { Link } from 'react-router';
 import Btn from '../../components/member/Btn';
+import { useNavigate } from 'react-router';
+import AlertModal from '../../components/common/AlertModal';
 
 export default function LoginPage() {
+    const navigate = useNavigate();
+
     const inputs = [
         { id: 'loginId', value: '아이디', type: 'text', color: '#fff', require: true },
         { id: 'password', value: '비밀번호', type: 'password', color: '#fff', require: true },
@@ -17,6 +21,9 @@ export default function LoginPage() {
         password: '',
     });
 
+    const [alertModal, setAlertModal] = useState(false);
+    const [checkModal, setCheckModal] = useState(false);
+
     const changeValue = (key, value) => {
         setLoginState(prevState => ({
             ...prevState,
@@ -24,8 +31,21 @@ export default function LoginPage() {
         }));
     };
 
-    const loginHandler = () => {
-        login(loginState);
+    const loginHandler = async () => {
+        try {
+            const res = await login(loginState, navigate);
+            if (res == null) {
+                setCheckModal(true);
+            }
+        } catch (error) {
+            setAlertModal(true);
+            console.error('로그인 중 에러 발생:', error);
+        }
+    };
+
+    const closeAlertModal = () => {
+        setAlertModal(false);
+        setCheckModal(false);
     };
 
     return (
@@ -44,6 +64,12 @@ export default function LoginPage() {
                     </Link>
                 </div>
             </AuthModal>
+            <AlertModal
+                text="아이디 또는 비밀번호가 일치하지 않습니다."
+                modalState={alertModal}
+                closeHandler={closeAlertModal}
+            />
+            <AlertModal text="보호자 계정에서 등록해주세요" modalState={checkModal} closeHandler={closeAlertModal} />
         </div>
     );
 }

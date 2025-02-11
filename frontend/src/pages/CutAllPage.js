@@ -8,7 +8,7 @@ const CutAllPage = () => {
     const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
 
     return (
-        <div className="h-screen bg-light-yellow">
+        <div className="h-screen bg-light-cream-yellow">
             <div className="w-full mb-5">
                 <Navigation stage="drawing" />
             </div>

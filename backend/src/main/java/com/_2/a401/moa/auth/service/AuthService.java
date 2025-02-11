@@ -26,12 +26,14 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final AuthenticationManager authenticationManager;
     private final RedisRefreshTokenService redisRefreshTokenService;
+    private final RedisMailSevice redisMailSevice;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public boolean checkEmailDup(String email) {
-//        return memberRepository.findEmailExist(email)>0;
-        return false;
+    public void checkEmailDup(String email) {
+        if(memberRepository.findByEmail(email).isPresent()) {
+            throw new AuthException(DUPLICATED_EMAIL);
+        }
     }
 
     @Transactional
@@ -49,6 +51,15 @@ public class AuthService {
 
     }
 
+    public void checkLoginId(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new AuthException(DUPLICATED_USER_ID);
+        }
+    }
 
-
+    public void checkCode(String email, String code) {
+        if(!code.equals(redisMailSevice.getCode(email))){
+            throw new AuthException(INVALID_CODE);
+        }
+    }
 }

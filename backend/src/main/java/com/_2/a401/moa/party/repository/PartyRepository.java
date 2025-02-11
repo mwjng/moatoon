@@ -22,6 +22,7 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
         LIMIT 1
     """, nativeQuery = true)
     Optional<EpisodeNumberAndLevel> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
+    boolean existsByPinNumber(String pinNumber);
 
     @Query(value= """
         SELECT pm.member_id

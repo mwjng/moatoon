@@ -10,5 +10,6 @@ import java.util.List;
 public class WordWithExamples {
     private long wordId;
     private String word;
+    private String meaning;
     private List<String> examples;
 }

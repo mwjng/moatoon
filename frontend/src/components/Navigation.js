@@ -109,7 +109,7 @@ function Navigation({ stage, leaveSession, targetTime, schedule }) {
     };
 
     return (
-        <header className="shadow-lg rounded-full bg-white w-full">
+        <header className="shadow-lg rounded-b-3xl bg-white w-full">
             {stage ? (
                 <div className="flex flew-row justify-between py-4 px-10 items-center">
                     {stage === 'waiting' ? (
