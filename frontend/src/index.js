@@ -24,6 +24,7 @@ import { Provider } from 'react-redux';
 import store from './store/store';
 import CutAllPage from './pages/draw/CutAllPage';
 import DrawingPage from './pages/draw/DrawingPage';
+import DrawingEnd from './pages/draw/DrawingEndPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -45,6 +46,7 @@ root.render(
                 <Route path="/session">
                     <Route path="overview" element={<CutAllPage />} />
                     <Route path="draw" element={<DrawingPage />} />
+                    <Route path="draw-end" element={<DrawingEnd />} />
                     <Route path="search" />
                     <Route path="create" element={<BookGeneratorPage />} />
                     <Route path="quiz" element={<QuizPage />} />
