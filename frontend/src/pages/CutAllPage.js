@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import CanvasAll from '../components/draw/CanvasAll';
+import Navigation from '../components/Navigation.js';
+import CanvasGrid from '../components/draw/CanvasGrid.js';
 
 const CutAllPage = () => {
-    const [partyId, setpartyId] = useState(1); // 현재 방 ID
+    const [partyId, setpartyId] = useState(2); // 현재 방 ID
+    const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
 
     return (
-        <div className="flex justify-between">
-            {/* 친구들의 그림을 각 방에서 받도록 수정 */}
-            <div style={{ width: '600px', height: '600px' }}>
-                <h3>친구들의 그림</h3>
-                <CanvasAll partyId={partyId} /> {/* 같은 partyId를 전달 */}
+        <div className="h-screen bg-light-yellow">
+            <div className="w-full mb-5">
+                <Navigation stage="drawing" />
             </div>
 
-            {/* 본인의 그림 */}
-            <div style={{ width: '600px', height: '600px' }}>
-                <h3>본인의 그림</h3>
-                <CanvasAll partyId="2" />
-                {/* <Canvas partyId={partyId} /> 본인 그림을 그리는 컴포넌트 */}
-            </div>
+            <CanvasGrid partyId={partyId} cutIds={cutIds} />
         </div>
     );
 };

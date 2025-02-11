@@ -1,18 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
-import useDrawWebSocket from '../../hooks/useDrawWebSocket';
 
-const CanvasAll = ({ partyId }) => {
-    const [lines, setLines] = useState([]);
+const CanvasAll = ({ cutId, canvasData }) => {
+    const [lines, setLines] = useState([]); // 상태를 lines로 관리
     const stageRef = useRef();
 
-    useDrawWebSocket(partyId, setLines);
-
-    useEffect(() => {}, [lines]);
+    // WebSocket 데이터가 전달되면 해당 데이터를 lines에 추가
+    useEffect(() => {
+        if (canvasData) {
+            setLines(canvasData);
+        }
+    }, [canvasData]);
 
     return (
-        <div className="relative w-[600px] h-[600px] border-2 border-black">
-            <Stage width={600} height={600} ref={stageRef}>
+        <div className="w-[300px] h-[300px] border-2 border-black">
+            <Stage width={300} height={300} ref={stageRef} style={{ border: '2px solid black' }}>
                 <Layer>
                     {lines.map((line, index) => (
                         <Line
