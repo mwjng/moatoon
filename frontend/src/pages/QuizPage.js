@@ -76,7 +76,7 @@ const QuizPage = () => {
     const [correctCount, setCorrectCount] = useState(0);
     const [isEnd, setIsEnd] = useState(false);
     const [partyId, setPartyId] = useState(1); //임의 값
-    const stageTime = 1;
+    const stageTime = 5;
     const navigate = useNavigate();
 
     const handleCorrect = (quizIndex, wordIndex) => {
