@@ -29,10 +29,18 @@ public class CutController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary="컷 정보 redis 초기화", description="그림 초기화 데이터를 redis에 넣어둡니다.")
+    @PostMapping("/init-canvas")
+    public ResponseEntity<Void> initCanvas(@Valid @RequestBody List<Long> cutIds) {
+        cutService.initializeCanvasData(cutIds);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary="임시 저장 컷 조회", description="임시저장된 그림 데이터를 조회합니다.")
     @GetMapping("/{cutId}")
     public ResponseEntity<CanvasRedisResponse> getTempCanvas(@PathVariable Long cutId) {
-        return ResponseEntity.ok().body(cutService.getTempCanvasData(cutId));
+        CanvasRedisResponse canvasRedisResponse = cutService.getTempCanvasData(cutId);
+        return ResponseEntity.ok().body(canvasRedisResponse);
     }
 
     @Operation(summary="그림 저장", description="그림을 db에 저장합니다.")

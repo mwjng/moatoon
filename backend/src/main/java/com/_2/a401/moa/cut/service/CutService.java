@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -96,5 +97,28 @@ public class CutService {
                         .imageUrl(cut.getImageUrl())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public void initializeCanvasData(@Valid List<Long> cutIds) {
+        try {
+            for (Long cutId : cutIds) {
+                String key = CACHE_PREFIX + cutId;
+
+                // Redis에 데이터가 없을 때만 기본 데이터 삽입
+                if (redisTemplate.opsForValue().get(key) == null) {
+                    CanvasRedisRequest defaultRequest=CanvasRedisRequest.builder()
+                            .cutId(cutId)
+                            .canvasData("[]")
+                            .timestamp(LocalDateTime.now())
+                            .build();
+
+                    String jsonData = objectMapper.writeValueAsString(defaultRequest);
+                    redisTemplate.opsForValue().set(key, jsonData);
+                    //System.out.println("초기 데이터 삽입: " + key);
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Redis 초기 데이터 설정 실패", e);
+        }
     }
 }

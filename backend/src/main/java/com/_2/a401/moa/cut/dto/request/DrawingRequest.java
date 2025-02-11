@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class DrawingRequest {
     private Long partyId;
-    private Long memberId;
+    private Long cutId;
     private String type;
     private LineRequest line;
     private LineRequest redoLine;

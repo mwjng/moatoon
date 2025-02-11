@@ -25,12 +25,11 @@ public class DrawingController {
         //System.out.println("Received message for party " + partyId + ": " + message);
 
         // 해당 party에 속한 사용자 목록 조회
-        List<Long> userIdsInRoom = partyRepository.findUserIdsByPartyId(partyId);
+        //List<Long> userIdsInRoom = partyRepository.findUserIdsByPartyId(partyId);
         String messageJson = new ObjectMapper().writeValueAsString(message);
 
         // 방에 속한 사용자들에게 메시지 전송
-        for (Long userId : userIdsInRoom) {
-            messagingTemplate.convertAndSend("/topic/party/" + partyId, messageJson);
-        }
+        messagingTemplate.convertAndSend("/topic/party/" + partyId, messageJson);
+    
     }
 }
