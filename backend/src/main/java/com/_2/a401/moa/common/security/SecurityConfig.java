@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.http.HttpMethod;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
-                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/members/search", "members/managers/id", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/files/upload").permitAll()
+                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/members/search", "members/managers/id", "/members/password","/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/files/upload", "/parties/**", "/words/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

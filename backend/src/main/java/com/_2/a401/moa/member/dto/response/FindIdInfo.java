@@ -6,14 +6,11 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 @AllArgsConstructor
 public class FindIdInfo {
     String loginId;
 
     public static FindIdInfo from(Member member) {
-        return FindIdInfo.builder()
-                .loginId(member.getLoginId())
-                .build();
+        return new FindIdInfo(member.getLoginId());
     }
 }

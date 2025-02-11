@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navigation from '../components/Navigation';
-import ManagerBookParticipationSection from '../components/main/ManagerBookParticipationSection';
+import Navigation from '../../components/Navigation';
+import ManagerBookParticipationSection from '../../components/main/ManagerBookParticipationSection';
 import { getMonthlySchedule } from '../api/schedule';
 import { useSelector } from 'react-redux';
 import { getColorForMember } from '../utils/ColorGenerator';
@@ -339,7 +339,49 @@ const ManagerMainPage = () => {
         <div className="max-w-5xl mx-auto p-6">
           <div className="flex gap-4">
             <div className="flex-1 bg-white px-4 rounded-lg shadow">
-              {/* ... (Calendar Header 부분은 그대로 유지) */}
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between py-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon />
+                    <h2 className="text-xl font-medium">{formatMonthYear(currentDate)}</h2>
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}
+                      className="w-6 h-6 flex items-center justify-center border rounded text-gray-500 text-sm hover:bg-gray-100"
+                    >
+                      ＜
+                    </button>
+                    <button
+                      onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}
+                      className="w-6 h-6 flex items-center justify-center border rounded text-gray-500 text-sm hover:bg-gray-100"
+                    >
+                      ＞
+                    </button>
+                    <button
+                      onClick={() => setCurrentDate(new Date())}
+                      className="px-2 h-6 flex items-center justify-center border rounded text-gray-500 text-sm hover:bg-gray-100"
+                    >
+                      오늘
+                    </button>
+                  </div>
+                </div>
+                {scheduleData && (
+                  <select
+                    value={selectedMember}
+                    onChange={(e) => setSelectedMember(e.target.value)}
+                    className="border rounded p-1 text-sm"
+                  >
+                    <option value="all">전체 보기</option>
+                    {scheduleData.childrenSchedules.map(member => (
+                      <option key={member.memberId} value={member.memberId.toString()}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
 
               {/* Calendar Body */}
               {isLoading ? (
@@ -409,7 +451,7 @@ const ManagerMainPage = () => {
       </div>
       <div className="flex-1 bg-light-blue1 flex items-center justify-center">
         <ManagerBookParticipationSection
-          childrenList={userInfo.childrenList} 
+          childrenList={userInfo.childrenList}
         />
       </div>
     </div>
