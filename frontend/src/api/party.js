@@ -12,6 +12,28 @@ export const fetchKeywords = async () => {
   }
 };
 
+
+export const sendStoryToBackend = async (storyData, imageUrl) => {
+  try {
+    // ✅ `FormData` 객체 생성
+    const formData = new FormData();
+    formData.append("imageUrl", imageUrl); // 이미지 URL 전달
+    formData.append("jsonData", JSON.stringify(storyData)); // JSON 데이터 전달
+    
+    // ✅ 백엔드로 POST 요청
+    const response = await axios.post(`/parties`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // 파일 업로드 처리
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error("스토리 전송 실패:", error);
+    throw error;
+  }
+};
+
 export const fetchRandomWords = async (level, episodeCount) => {
   try {
     const res = await axios.get(`/words/random`, {
@@ -24,24 +46,26 @@ export const fetchRandomWords = async (level, episodeCount) => {
   }
 };
 
-export const sendStoryToBackend = async (storyData, imageUrl) => {
+
+
+export const fetchBookDetail = async (partyId) => {
   try {
-    // ✅ `FormData` 객체 생성
-    const formData = new FormData();
-    formData.append("imageUrl", imageUrl); // 이미지 URL 전달
-    formData.append("jsonData", JSON.stringify(storyData)); // JSON 데이터 전달
+    const res = await axios.get(`/parties/${partyId}`);
+    return res.data;
+  } catch (err) {
+    console.error("파티 상세 정보 가져오기 실패:", err);
+    throw err;
+  }
+};
 
-    // ✅ 백엔드로 POST 요청
-    const response = await axios.post(`/parties`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data", // 파일 업로드 처리
-      },
-    });
 
-    return response.data;
-  } catch (error) {
-    console.error("스토리 전송 실패:", error);
-    throw error;
+export const fetchParties = async (filters) => {
+  try {
+    const res = await axios.get(`/parties`, { params: filters });
+    return res.data; // 검색된 파티 리스트 반환
+  } catch (err) {
+    console.error("파티 검색 실패:", err);
+    throw err;
   }
 };
 

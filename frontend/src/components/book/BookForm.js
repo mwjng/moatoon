@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchKeywords } from "../../api/keyword";
+import { fetchKeywords } from "../../api/party";
 
 const levelOptions = ["Lv1 (4~6세)", "Lv2 (7세)", "Lv3 (8세)", "Lv4 (9세)", "Lv5 (10세)", "Lv6 (11세)"];
 const episodeOptions = Array.from({ length: 9 }, (_, i) => i + 2);

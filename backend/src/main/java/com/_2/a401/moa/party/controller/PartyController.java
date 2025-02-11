@@ -5,10 +5,14 @@ import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
+import com._2.a401.moa.party.dto.request.PartySearchRequest;
 import com._2.a401.moa.party.dto.response.KeywordResponse;
 import com._2.a401.moa.party.dto.response.PartyDetailResponse;
+import com._2.a401.moa.party.dto.response.PartyResponse;
+import com._2.a401.moa.party.dto.response.PartySearchResponse;
 import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
+import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
@@ -32,17 +36,6 @@ public class PartyController {
     private final KeywordRepository keywordRepository;
     private final S3Service s3Service; // 🔹 S3 업로드 서비스 추가
 
-
-
-
-//
-//    @PostMapping
-//    public ResponseEntity<Void> createMember(@Valid @RequestBody final MemberCreate memberCreate) {
-//        memberService.createMember(memberCreate);
-//        return ResponseEntity.status(CREATED).build();
-//    }
-
-
     @PostMapping
     public ResponseEntity<Long> createParty(
             @RequestParam("imageUrl") String imageUrl,
@@ -62,6 +55,29 @@ public class PartyController {
         PartyDetailResponse response = partyService.getPartyDetail(partyId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping
+    public List<PartySearchResponse> searchParties(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String time,
+            @RequestParam(required = false) List<Day> dayWeek,
+            @RequestParam(required = false) Integer episodeLength,
+            @RequestParam(required = false) Integer level,
+            @RequestParam(required = false) Boolean canJoin) {
+
+        PartySearchRequest request = new PartySearchRequest();
+        request.setStartDate(startDate);
+        request.setEndDate(endDate);
+        request.setTime(time);
+        request.setDayWeek(dayWeek);
+        request.setEpisodeLength(episodeLength);
+        request.setLevel(level);
+        request.setCanJoin(canJoin);
+
+        return partyService.searchParties(request);
+    }
+
 
 
     @GetMapping("/keyword")

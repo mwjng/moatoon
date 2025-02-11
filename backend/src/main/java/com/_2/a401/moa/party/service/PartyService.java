@@ -1,19 +1,20 @@
 package com._2.a401.moa.party.service;
 
-import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
+import com._2.a401.moa.party.dto.request.PartySearchRequest;
 import com._2.a401.moa.party.dto.response.KeywordResponse;
 import com._2.a401.moa.party.dto.response.PartyDetailResponse;
+import com._2.a401.moa.party.dto.response.PartySearchResponse;
 import com._2.a401.moa.party.repository.*;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
-import com._2.a401.moa.schedule.service.ScheduleService;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class PartyService {
     private final CutService cutService;
     private final InitialScheduleService initialScheduleService;
     private final ScheduleRepository scheduleRepository;
+    private final PartyRepositoryCustom partyRepositoryCustom;
 
     @Transactional
     public Party createParty(CreatePartyRequest request,  String bookCoverUrl) {
@@ -45,10 +47,8 @@ public class PartyService {
                 LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
                 request.getDayWeek()
         );
-
         LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
 
-        //  Party 엔티티 생성 및 저장
         Party party = partyRepository.save(Party.builder()
                 .bookCover(bookCoverUrl)
                 .bookTitle(request.getStory().getTitle())
@@ -166,4 +166,18 @@ public class PartyService {
                 .build();
     }
 
+
+    public List<PartySearchResponse> searchParties(PartySearchRequest request) {
+        List<Tuple> results = partyRepositoryCustom.searchParties(request);
+
+        return results.stream()
+                .map(tuple -> PartySearchResponse.builder()
+                        .partyId(tuple.get(0, Party.class).getId()) // 첫 번째 값은 Party 객체
+                        .bookTitle(tuple.get(0, Party.class).getBookTitle())
+                        .bookCover(tuple.get(0, Party.class).getBookCover())
+                        .level(tuple.get(0, Party.class).getLevel())
+                        .participantCount(tuple.get(1, Long.class).intValue()) // 두 번째 값은 참여 인원 수
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
