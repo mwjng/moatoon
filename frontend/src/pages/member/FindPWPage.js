@@ -6,10 +6,12 @@ import Background from '../../components/member/Backround';
 import Btn from '../../components/member/Btn';
 import { findPw } from '../../api/member';
 import AlertModal from '../../components/common/AlertModal';
+import { useNavigate } from 'react-router';
 
 export default function FindPWPage() {
+    const navigate = useNavigate();
     const inputs = [
-        { type: 'text', id: 'name', value: '아이디', color: '#fff', require: true },
+        { type: 'text', id: 'loginId', value: '아이디', color: '#fff', require: true },
         { type: 'text', id: 'email', value: '이메일', color: '#fff', require: true },
     ];
     const [infoState, setInfoState] = useState({
@@ -38,6 +40,7 @@ export default function FindPWPage() {
     };
     const closeMailModalHandler = () => {
         setMailModalState(false);
+        navigate('/login');
     };
 
     return (
