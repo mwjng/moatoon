@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com._2.a401.moa.schedule.domain.ScheduleState.ONGOING;
-import static com._2.a401.moa.schedule.domain.SessionStage.WAITING;
+import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 import static java.time.LocalDateTime.now;
 
 @Service
