@@ -106,4 +106,12 @@ public class SessionService {
             throw new MoaException(INVALID_REQUEST);
         }
     }
+
+    public void validateMemberPermission(Long memberId, final Long scheduleId) {
+        final Schedule schedule = scheduleRepository.fetchById(scheduleId);
+        final List<Long> memberIds = partyMemberRepository.findMemberIdsByPartyId(schedule.getParty().getId());
+        if (!memberIds.contains(memberId)) {
+            throw new MoaException(INVALID_REQUEST);
+        }
+    }
 }

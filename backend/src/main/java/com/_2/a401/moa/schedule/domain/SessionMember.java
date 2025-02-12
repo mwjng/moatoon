@@ -36,12 +36,11 @@ public class SessionMember {
         return sessionMembers.size();
     }
 
-    public void setReadyStatus(final Long memberId) {
+    public void setReadyStatus(final Long memberId, final boolean isReady) {
         if (!sessionMembers.containsKey(memberId)) {
             throw new MoaException(SESSION_MEMBER_NOT_FOUND);
         }
-        sessionMembers.put(memberId, true);
-
+        sessionMembers.put(memberId, isReady);
     }
 
     public void resetReadyStatus() {
