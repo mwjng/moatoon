@@ -32,9 +32,13 @@ public class SessionStageService {
     private final TaskScheduler taskScheduler;
 
     private void dummyRedis(){
+        // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WAITING 상태임(세션 시작 30분전부터)
         final Session session = new Session(1L, "openviduSessionId", WAITING);
         sessionRepository.save(session);
-        sessionMemberRepository.save(new SessionMember(1L));
+
+        SessionMember sessionMember = new SessionMember(1L);
+        sessionMember.addMember(13L);
+        sessionMemberRepository.save(sessionMember);
     }
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
@@ -98,6 +102,7 @@ public class SessionStageService {
 
         // 세션 전환 메시지 브로드캐스트
         messagingTemplate.convertAndSend("/topic/session-stage/" + scheduleId, response);
+        log.info("세션 전환 메세지 전송 완료", scheduleId);
     }
 
     // 종료시간에 실행될 타이머
