@@ -9,8 +9,9 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUserInfo } from '../store/userSlice';
 import WordButton from './WordButton';
-import { useSelector } from 'react-redux';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
@@ -20,6 +21,8 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
     const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
     const userInfo = useSelector(state => state.user.userInfo);
+    const dispatch = useDispatch();
+
     const navigate = useNavigate();
     let timeoutNotEvented = true;
 
@@ -45,7 +48,8 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
 
     //로그아웃 핸들러
     const logoutHandler = () => {
-        console.log('logout');
+        localStorage.removeItem('accessToken');
+        navigate('/login');
     };
 
     //시간 더하기
