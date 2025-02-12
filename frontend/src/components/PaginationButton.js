@@ -1,5 +1,6 @@
 import React from 'react';
-import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
+import BracketLeft from '../assets/bracket-left.png';
+import BracketRight from '../assets/bracket-right.png';
 
 const PaginationButton = ({ direction, onClick, disabled }) => {
     return (
@@ -8,7 +9,11 @@ const PaginationButton = ({ direction, onClick, disabled }) => {
             onClick={onClick}
             disabled={disabled}
         >
-            {direction === 'left' ? <AiOutlineLeft size={32} /> : <AiOutlineRight size={32} />}
+            {direction === 'left' ? (
+                <img src={BracketLeft} alt="left bracket" className="w-8 h-8" />
+            ) : (
+                <img src={BracketRight} alt="right bracket" className="w-8 h-8" />
+            )}
         </button>
     );
 };
