@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookController {
     private final BookService bookService;
 
-    @Operation(summary="책 목록 조회", description="완료 또는 완료 전인 책 목록을 조회합니다.")
+    @Operation(summary="그림책 목록 조회", description="완료 또는 완료 전인 책 목록을 조회합니다.")
     @GetMapping("/books/{memberId}")
     public ResponseEntity<BookListResponse> getBookList(
             @AuthenticationPrincipal MemberDetails memberDetails,

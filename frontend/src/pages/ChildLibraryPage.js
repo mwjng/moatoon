@@ -6,7 +6,7 @@ import useFetchBooks from '../hooks/useLibraryBooks.js'; // 서버 페이징 적
 import { debounce } from 'lodash';
 import { useSelector } from 'react-redux';
 
-function LibraryPage() {	
+function ChildLibraryPage() {	
     const userInfo = useSelector(state => state.user.userInfo);
     const { bookList, loading, hasMore, observerRef } = useFetchBooks(3, true); // TODO: userInfo.id 뽑아서 넣어줘야함.
     const colsPerRow = 5; // 한 줄당 책 개수
@@ -53,4 +53,4 @@ function LibraryPage() {
     );
 }
 
-export default LibraryPage;
+export default ChildLibraryPage;
