@@ -28,9 +28,9 @@ public class ScheduleService {
     private final SessionRepository sessionRepository;
 
 
-    public MonthlyChildrenSchedulesResponse getMonthlyChildrenSchedules(int year, int month) {
+    public MonthlyChildrenSchedulesResponse getMonthlyChildrenSchedules(Long memberId, int year, int month) {
         // 요청을 보낸 부모의 memberId로 해당하는 아동 memberId 리스트를 들고온다.
-        List<Member> children = memberRepository.findByManagerId(1L);// TODO: 추후 jwt에서 가지고와야함.
+        List<Member> children = memberRepository.findByManagerId(memberId);
 
         // 각 아동의 스케줄을 조회하여 MemberSchedulesResponse를 만들고, 리스트로 만든다.
         List<MemberCalendarSchedules> childrenSchedules = children.stream()
