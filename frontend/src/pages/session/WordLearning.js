@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import Navigation from '../components/Navigation';
-import WordInfo from '../components/word/WordInfo';
+import Navigation from '../../components/Navigation';
+import WordInfo from '../../components/word/WordInfo';
 import CheckIcon from '../assets/icon-check.png';
-import { getLearningWords } from '../api/word';
+import { getLearningWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 
 // 카메라 연결 필요

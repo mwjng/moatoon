@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import Navigation from '../components/Navigation';
-import MyCamera from '../components/MyCamera';
-import OtherCameras from '../components/OtherCameras';
-import CameraMicControls from '../components/CameraMicControls';
-import BookDisplay from '../components/BookDisplay';
-import FooterNotice from '../components/FooterNotice';
+import Navigation from '../../components/Navigation';
+import MyCamera from '../../components/MyCamera';
+import OtherCameras from '../../components/OtherCameras';
+import CameraMicControls from '../../components/CameraMicControls';
+import BookDisplay from '../../components/BookDisplay';
+import FooterNotice from '../../components/FooterNotice';
 import base64 from 'base-64';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';

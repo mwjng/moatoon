@@ -8,10 +8,10 @@ import { Route, Routes, useNavigate, useLocation } from 'react-router';
 import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
-import WaitingRoom from './pages/WaitingRoom';
+import WaitingRoom from './pages/session/WaitingRoom';
 import MainPage from './pages/main/MainPage';
 import LibraryPage from './pages/ChildLibraryPage';
-import WordLearning from './pages/WordLearning';
+import WordLearning from './pages/session/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
 import ChildRegistPage from './pages/member/ChildRegistPage';
@@ -19,7 +19,7 @@ import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
-import QuizPage from './pages/QuizPage';
+import QuizPage from './pages/session/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
 
 function App() {

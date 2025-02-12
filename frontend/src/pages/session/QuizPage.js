@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Navigation from '../components/Navigation';
+import Navigation from '../../components/Navigation';
 import quizBook from '../assets/quiz-book.png';
 import quizTitle from '../assets/quiz-title.png';
-import QuizWordItem from '../components/quiz/QuizWordItem';
-import QuizItem from '../components/quiz/QuizItem';
+import QuizWordItem from '../../components/quiz/QuizWordItem';
+import QuizItem from '../../components/quiz/QuizItem';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { getQuizs, addToMyWords } from '../api/word';
+import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 
 const QuizPage = () => {
