@@ -33,6 +33,11 @@ function App() {
 
     useEffect(() => {
         let token = localStorage.getItem('accessToken');
+        const fromLogout = location.state?.fromLogout; // ✅ 로그아웃으로 이동했는지 확인
+
+        if (fromLogout) {
+            dispatch(clearUserInfo()); // ✅ 로그인 정보 초기화
+        }
 
         const fetchUserInfo = async () => {
             if (!token) {
