@@ -80,18 +80,20 @@ const CanvasGrid = ({ partyId, cutIds }) => {
     }, []);
 
     return (
-        <div className="w-full max-w-3xl p-4">
-            <div className="grid grid-cols-2 gap-4">
-                {cutIds.map(cutId => {
-                    const cutData = canvasData[cutId] || []; // cutId에 해당하는 캔버스 데이터 가져오기
-                    return (
-                        <div key={cutId} className="relative border-2 border-gray-300 rounded">
-                            <div className="absolute top-2 left-2 bg-yellow-400 px-3 py-1 rounded-full">김〇〇</div>
-                            <CanvasAll key={cutId} cutId={cutId} canvasData={cutData} />
-                            <div className="absolute bottom-2 right-2 bg-green-400 rounded-full p-1">✓</div>
-                        </div>
-                    );
-                })}
+        <div className="flex justify-center items-center h-screen">
+            <div className="p-4 border-2 border-black bg-white" style={{ border: '2px solid black' }}>
+                <div className="grid grid-cols-2 gap-4 w-full h-full">
+                    {cutIds.map(cutId => {
+                        const cutData = canvasData[cutId] || [];
+                        return (
+                            <div key={cutId} className="border-2 border-gray-300 rounded aspect-square">
+                                <div className="w-full h-full">
+                                    <CanvasAll key={cutId} cutId={cutId} canvasData={cutData} />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

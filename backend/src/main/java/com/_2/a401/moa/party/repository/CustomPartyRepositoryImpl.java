@@ -71,6 +71,7 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
                         partyMember.member.id.eq(memberId),
                         statusCondition
                 )
+                .orderBy(party.startDate.asc()) // startDate 기준 오름차순 정렬
                 .offset(pageable.getOffset()) //페이지 번호 * 페이지 크기
                 .limit(pageable.getPageSize()) //페이지 크기
                 .fetch();
