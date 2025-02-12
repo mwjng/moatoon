@@ -1,0 +1,26 @@
+###
+POST localhost:8080/members
+Content-Type: application/json
+
+{
+  "nickname": "root",
+  "name": "root",
+  "email": "abcd123@gmail.com",
+  "loginId": "root",
+  "password": "Asdf1234!",
+  "role": "CHILD"
+}
+
+###
+POST localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "loginId": "root",
+  "password": "Asdf1234!"
+}
+
+###
+GET localhost:8080/books/ebook/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwibWVtYmVySWQiOjEsIm5pY2tuYW1lIjoicm9vdCIsImlhdCI6MTczOTE3Njg5MSwiZXhwIjoxNzM5MTg0MDkxfQ.feOASH6qowHApvaGob1La2Ok4wV2ONg7qpPEahIxNe0
+

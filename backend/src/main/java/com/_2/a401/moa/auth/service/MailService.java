@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,7 @@ public class MailService {
         redisMailSevice.setCode(email, joinEmail(email));
     }
 
-
+    @Async
     public String joinEmail(String email) {
         String code = Integer.toString(makeRandomNumber());
         String content = String.format(EMAIL_CONTENT_TEMPLATE, code);
@@ -84,6 +85,7 @@ public class MailService {
         return str;
     }
 
+    @Async
     public String sendPwMail(String email) {
         String newPw = getTempPassword();
         String content = String.format(EMAIL_CONTENT_FOR_TEMP_TEMPLATE, newPw);

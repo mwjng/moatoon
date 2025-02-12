@@ -5,39 +5,36 @@ import BookParticipationSection from "../../components/main/BookParticipationSec
 import { getTodayAndUpComingSchedule } from '../../api/schedule';
 
 function ChildMainPage() {
-   const [scheduleData, setScheduleData] = useState({
-     todaySchedule: null,
-     upcomingSchedules: []
-   });
+    const [scheduleData, setScheduleData] = useState({
+        todaySchedule: null,
+        upcomingSchedules: [],
+    });
 
-   useEffect(() => {
-     const fetchScheduleData = async () => {
-       try {
-         const res = await getTodayAndUpComingSchedule();
-         setScheduleData(res.data);
-          console.log(scheduleData);
-       } catch (error) {
-         console.error('Failed to fetch schedule data:', error);
-       }
-     };
+    useEffect(() => {
+        const fetchScheduleData = async () => {
+            try {
+                const res = await getTodayAndUpComingSchedule();
+                setScheduleData(res.data);
+                console.log(scheduleData);
+            } catch (error) {
+                console.error('Failed to fetch schedule data:', error);
+            }
+        };
 
-     fetchScheduleData();
-   }, []);
+        fetchScheduleData();
+    }, []);
 
-   return (
-       <div className="h-screen bg-light-cream flex flex-col">
+    return (
+        <div className="h-screen bg-light-cream flex flex-col">
             <Navigation />
             <div className="flex-1">
-                <ScheduleSection 
-                  className="h-full" 
-                  scheduleData={scheduleData}
-                />
+                <ScheduleSection className="h-full" scheduleData={scheduleData} />
             </div>
             <div className="h-2/5">
                 <BookParticipationSection className="h-full" />
             </div>
-       </div>
-   );
+        </div>
+    );
 }
 
 export default ChildMainPage;

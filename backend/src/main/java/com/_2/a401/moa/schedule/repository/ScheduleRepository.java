@@ -87,4 +87,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             "WHERE s.id = :scheduleId", nativeQuery = true)
     Optional<ScheduleInfoResponse> getScheduleInfo(@Param("scheduleId") Long scheduleId);
 
+    List<Schedule> findByPartyIdOrderBySessionTimeAsc(Long partyId);
 }
