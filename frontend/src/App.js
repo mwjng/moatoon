@@ -21,7 +21,6 @@ import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
-import CutAllPage from './pages/draw/CutAllPage';
 import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
 import EBookPage from './pages/EBookPage';
@@ -123,7 +122,6 @@ function App() {
                     </Route>
                     <Route path="/session">
                         <Route path="search" />
-                        <Route path="overview" element={<CutAllPage />} />
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
