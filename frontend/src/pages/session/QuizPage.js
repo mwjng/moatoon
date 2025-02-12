@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '../../components/Navigation';
-import quizBook from '../assets/quiz-book.png';
-import quizTitle from '../assets/quiz-title.png';
+import quizBook from '../../assets/quiz-book.png';
+import quizTitle from '../../assets/quiz-title.png';
 import QuizWordItem from '../../components/quiz/QuizWordItem';
 import QuizItem from '../../components/quiz/QuizItem';
 import { DndProvider } from 'react-dnd';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navigation from '../../components/Navigation';
 import WordInfo from '../../components/word/WordInfo';
-import CheckIcon from '../assets/icon-check.png';
+import CheckIcon from '../../assets/icon-check.png';
 import { getLearningWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 
