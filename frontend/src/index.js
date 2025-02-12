@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { BrowserRouter } from 'react-router';
-// import DrawPage from './pages/drawPage';
+
 import './index.css';
 import { Provider } from 'react-redux';
 import store from './store/store';
@@ -16,4 +16,3 @@ root.render(
         </BrowserRouter>
     </Provider>,
 );
-

@@ -3,6 +3,8 @@ package com._2.a401.moa.party.repository;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,12 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
     """, nativeQuery = true)
     Optional<EpisodeNumberAndLevel> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
     boolean existsByPinNumber(String pinNumber);
+
+    @Query(value= """
+        SELECT pm.member_id
+        FROM party_member as pm
+        JOIN party as p ON pm.party_id = p.id
+        WHERE p.id = :partyId
+    """, nativeQuery = true)
+    List<Long> findUserIdsByPartyId(@Param("partyId") Long partyId);
 }

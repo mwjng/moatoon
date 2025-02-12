@@ -13,13 +13,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/topic"); //클라이언트가 메시지를 받을 경로
+        config.setApplicationDestinationPrefixes("/app"); //클라이언트가 메시지를 보낼 경로
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
+        registry.addEndpoint("/ws") //WebSocket 엔드포인트
                 .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
