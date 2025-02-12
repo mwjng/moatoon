@@ -7,11 +7,11 @@ import logoutIcon from '../assets/icon-logout.svg';
 import accountCircle from '../assets/account-circle.svg';
 import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearUserInfo } from '../store/userSlice';
 import WordButton from './WordButton';
+import ConfirmModal from './common/ConfirmModal';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
@@ -20,7 +20,7 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     const targetTime = Date.now() + stageTime * MINUTE;
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
     const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
-    const userInfo = useSelector(state => state.user.userInfo);
+    const [logoutModal, setLogoutModal] = useState(false);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -47,9 +47,19 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     };
 
     //로그아웃 핸들러
-    const logoutHandler = () => {
+    const logoutHandler = useCallback(() => {
+        setLogoutModal(false);
         localStorage.removeItem('accessToken');
-        navigate('/login');
+
+        navigate('/login', { state: { fromLogout: true } });
+    }, [dispatch, navigate]);
+
+    const logoutConfirmHandler = () => {
+        setLogoutModal(true);
+    };
+
+    const cancelModal = () => {
+        setLogoutModal(false);
     };
 
     //시간 더하기
@@ -103,188 +113,199 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     }, []);
 
     return (
-        <header className="shadow-lg rounded-b-3xl bg-white w-full">
-            {stage ? (
-                <div className="flex flew-row justify-between py-4 px-10 items-center">
-                    {stage === 'waiting' ? (
-                        <>
-                            <button onClick={handleBackClick}>
-                                <img src={`${arrowBack}`} alt="back" width="50"></img>
-                            </button>
-                            <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">{bookTitle}</span>
-                                <span>
-                                    오늘의 일정 : {getTimeFormatted(sessionTime)} ~{' '}
-                                    {getTimeFormatted(addTime(sessionTime, 1))}
-                                </span>
-                            </div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${remainTimePercent}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </>
-                    ) : stage === 'learning' ? (
-                        <>
-                            <div></div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">오늘의 단어 학습</span>
-                            </div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${remainTimePercent}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </>
-                    ) : stage === 'picking' ? (
-                        <>
-                            <div></div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">내가 그리게 될 컷은 몇번일까요?</span>
-                            </div>
-                            <div></div>
-                        </>
-                    ) : stage === 'drawing' ? (
-                        <>
-                            <div className="flex items-center gap-8">
-                                <span className="text-2xl font-bold">오늘의 단어</span>
-                                <div className="flex gap-8">
-                                    <WordButton color="bg-dark-yellow" size="md">
-                                        단어1
-                                    </WordButton>
-                                    <WordButton color="bg-dark-yellow" size="md">
-                                        단어2
-                                    </WordButton>
-                                    <WordButton color="bg-dark-yellow" size="md">
-                                        단어3
-                                    </WordButton>
-                                    <WordButton color="bg-dark-yellow" size="md">
-                                        단어4
-                                    </WordButton>
-                                </div>
-                            </div>
-                            <div></div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${remainTimePercent}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </>
-                    ) : stage === 'endDrawing' ? (
-                        <>
-                            <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">오늘의 그림</span>
-                            </div>
-                            <div></div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${remainTimePercent}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </>
-                    ) : stage === 'quiz' ? (
-                        <>
-                            <div></div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span className="text-2xl font-bold">오늘의 단어 학습</span>
-                            </div>
-                            <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
-                                    <div
-                                        className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${remainTimePercent}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <></>
-                    )}
-                </div>
-            ) : (
-                <div className="flex flex-row justify-between py-4 px-10 items-center">
-                    <div className="flex flex-row justify-around items-center gap-20">
-                        <img
-                            src={`${user.userIcon == '' ? accountCircle : user.userIcon}`}
-                            alt="user-icon"
-                            width="50"
-                            height="50"
-                            className="w-12 h-12 rounded-full object-cover border-2"
-                        ></img>
-                        <button
-                            className="flex flex-col text-center gap-3 items-center"
-                            onClick={() => navigationHandler('home')}
-                        >
-                            <img src={`${homeIcon}`} alt="home" width="50"></img>
-                            <span>홈</span>
-                        </button>
-                        <button
-                            className="flex flex-col text-center gap-3 items-center"
-                            onClick={() => navigationHandler('library')}
-                        >
-                            <img src={`${booksIcon}`} alt="library" width="50"></img>
-                            <span>도서관</span>
-                        </button>
-                        {user.role === 'manager' ? (
+        <>
+            <ConfirmModal
+                modalState={logoutModal}
+                text="로그아웃 하시겠습니까?"
+                cancelHandler={cancelModal}
+                confirmHandler={logoutHandler}
+            />
+            <header className="shadow-lg rounded-b-3xl bg-white w-full">
+                {stage ? (
+                    <div className="flex flew-row justify-between py-4 px-10 items-center">
+                        {stage === 'waiting' ? (
                             <>
-                                <button
-                                    className="flex flex-col text-center gap-3 items-center"
-                                    onClick={() => navigationHandler('session/search')}
-                                >
-                                    <img src={`${magnifyIcon}`} alt="search" width="50"></img>
-                                    <span>방 탐색</span>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
                                 </button>
-                                <button
-                                    className="flex flex-col text-centerv gap-3 items-center"
-                                    onClick={() => navigationHandler('session/create')}
-                                >
-                                    <img src={`${createIcon}`} alt="create" width="50"></img>
-                                    <span>방 생성</span>
-                                </button>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">{bookTitle}</span>
+                                    <span>
+                                        오늘의 일정 : {getTimeFormatted(sessionTime)} ~{' '}
+                                        {getTimeFormatted(addTime(sessionTime, 1))}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span>남은 시간 {getRemainingTimeFormatted()}</span>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full"
+                                            style={{ width: `${remainTimePercent}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : stage === 'learning' ? (
+                            <>
+                                <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">오늘의 단어 학습</span>
+                                </div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span>남은 시간 {getRemainingTimeFormatted()}</span>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full"
+                                            style={{ width: `${remainTimePercent}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : stage === 'picking' ? (
+                            <>
+                                <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">내가 그리게 될 컷은 몇번일까요?</span>
+                                </div>
+                                <div></div>
+                            </>
+                        ) : stage === 'drawing' ? (
+                            <>
+                                <div className="flex items-center gap-8">
+                                    <span className="text-2xl font-bold">오늘의 단어</span>
+                                    <div className="flex gap-8">
+                                        <WordButton color="bg-dark-yellow" size="md">
+                                            단어1
+                                        </WordButton>
+                                        <WordButton color="bg-dark-yellow" size="md">
+                                            단어2
+                                        </WordButton>
+                                        <WordButton color="bg-dark-yellow" size="md">
+                                            단어3
+                                        </WordButton>
+                                        <WordButton color="bg-dark-yellow" size="md">
+                                            단어4
+                                        </WordButton>
+                                    </div>
+                                </div>
+                                <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span>남은 시간 {getRemainingTimeFormatted()}</span>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full"
+                                            style={{ width: `${remainTimePercent}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : stage === 'endDrawing' ? (
+                            <>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">오늘의 그림</span>
+                                </div>
+                                <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span>남은 시간 {getRemainingTimeFormatted()}</span>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full"
+                                            style={{ width: `${remainTimePercent}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : stage === 'quiz' ? (
+                            <>
+                                <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">오늘의 단어 학습</span>
+                                </div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span>남은 시간 {getRemainingTimeFormatted()}</span>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full"
+                                            style={{ width: `${remainTimePercent}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
                             </>
                         ) : (
-                            <>
-                                <button
-                                    className="flex flex-col text-center gap-3 items-center"
-                                    onClick={() => navigationHandler('word')}
-                                >
-                                    <img src={`${wordIcon}`} alt="words" width="50"></img>
-                                    <span>단어장</span>
-                                </button>
-                            </>
+                            <></>
                         )}
+                    </div>
+                ) : (
+                    <div className="flex flex-row justify-between py-4 px-10 items-center">
+                        <div className="flex flex-row justify-around items-center gap-20">
+                            <img
+                                src={`${user.userIcon == '' ? accountCircle : user.userIcon}`}
+                                alt="user-icon"
+                                width="50"
+                                height="50"
+                                className="w-12 h-12 rounded-full object-cover border-2"
+                            ></img>
+                            <button
+                                className="flex flex-col text-center gap-3 items-center"
+                                onClick={() => navigationHandler('home')}
+                            >
+                                <img src={`${homeIcon}`} alt="home" width="50"></img>
+                                <span>홈</span>
+                            </button>
+                            <button
+                                className="flex flex-col text-center gap-3 items-center"
+                                onClick={() => navigationHandler('library')}
+                            >
+                                <img src={`${booksIcon}`} alt="library" width="50"></img>
+                                <span>도서관</span>
+                            </button>
+                            {user.role === 'manager' ? (
+                                <>
+                                    <button
+                                        className="flex flex-col text-center gap-3 items-center"
+                                        onClick={() => navigationHandler('session/search')}
+                                    >
+                                        <img src={`${magnifyIcon}`} alt="search" width="50"></img>
+                                        <span>방 탐색</span>
+                                    </button>
+                                    <button
+                                        className="flex flex-col text-centerv gap-3 items-center"
+                                        onClick={() => navigationHandler('session/create')}
+                                    >
+                                        <img src={`${createIcon}`} alt="create" width="50"></img>
+                                        <span>방 생성</span>
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        className="flex flex-col text-center gap-3 items-center"
+                                        onClick={() => navigationHandler('word')}
+                                    >
+                                        <img src={`${wordIcon}`} alt="words" width="50"></img>
+                                        <span>단어장</span>
+                                    </button>
+                                </>
+                            )}
+                            <button
+                                className="flex flex-col text-centerv gap-3 items-center"
+                                onClick={() => navigationHandler('user')}
+                            >
+                                <img src={`${pencilIcon}`} alt="user" width="50"></img>
+                                <span>회원정보 수정</span>
+                            </button>
+                        </div>
                         <button
                             className="flex flex-col text-centerv gap-3 items-center"
-                            onClick={() => navigationHandler('user')}
+                            onClick={logoutConfirmHandler}
                         >
-                            <img src={`${pencilIcon}`} alt="user" width="50"></img>
-                            <span>회원정보 수정</span>
+                            <img src={`${logoutIcon}`} alt="logout" width="50"></img>
+                            <span>로그아웃</span>
                         </button>
                     </div>
-                    <button className="flex flex-col text-centerv gap-3 items-center" onClick={logoutHandler}>
-                        <img src={`${logoutIcon}`} alt="logout" width="50"></img>
-                        <span>로그아웃</span>
-                    </button>
-                </div>
-            )}
-        </header>
+                )}
+            </header>
+        </>
     );
 }
 

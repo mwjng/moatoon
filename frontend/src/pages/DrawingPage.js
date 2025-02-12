@@ -5,7 +5,7 @@ import Navigation from '../components/Navigation.js';
 import ChildImg from '../assets/child.svg';
 import StoryCard from '../components/draw/StoryCard';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 function DrawingPage() {
     const navigate = useNavigate();
