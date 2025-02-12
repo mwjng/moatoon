@@ -23,6 +23,7 @@ import QuizPage from './pages/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
 import CutAllPage from './pages/CutAllPage';
 import DrawingPage from './pages/DrawingPage';
+import DrawingEndPage from './pages/draw/DrawingEndPage';
 
 function App() {
     const location = useLocation();
@@ -123,6 +124,7 @@ function App() {
                         <Route path="search" />
                         <Route path="overview" element={<CutAllPage />} />
                         <Route path="draw" element={<DrawingPage />} />
+                        <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
