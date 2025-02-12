@@ -75,18 +75,26 @@ function App() {
     }, [dispatch, navigate]);
 
     useEffect(() => {
+        const path = location.pathname;
         if (loading) return;
 
-        const path = location.pathname;
-
-        if (userInfo && (path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
+        if (
+            userInfo &&
+            (path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find') || path === '/')
+        ) {
             navigate('/home');
-        }
-
-        if (!userInfo && !(path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
+        } else if (
+            !userInfo &&
+            path !== '/' &&
+            !path.startsWith('/login') &&
+            !path.startsWith('/regist') &&
+            !path.startsWith('/find')
+        ) {
             navigate('/login');
+        } else {
+            navigate(path);
         }
-    }, [loading, userInfo, location, navigate]);
+    }, [loading, userInfo, location.pathname, navigate]);
 
     return (
         <div className="App">
