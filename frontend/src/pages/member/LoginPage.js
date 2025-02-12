@@ -7,6 +7,7 @@ import { Link } from 'react-router';
 import Btn from '../../components/member/Btn';
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
+import { useSelector } from 'react-redux';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -34,11 +35,12 @@ export default function LoginPage() {
     const loginHandler = async () => {
         try {
             const res = await login(loginState, navigate);
-            if (res == null) {
-                setCheckModal(true);
-            }
         } catch (error) {
-            setAlertModal(true);
+            if (error.status == 400) {
+                setCheckModal(true);
+            } else {
+                setAlertModal(true);
+            }
             console.error('로그인 중 에러 발생:', error);
         }
     };

@@ -9,18 +9,20 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
+    const userInfo = useSelector(state => state.user.userInfo);
 
     const navigate = useNavigate();
     const handleBackClick = () => {
         if (stage === 'waiting') {
             leaveSession(); // 세션에서 나가기
-            navigate('/'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+            navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
 
@@ -223,7 +225,7 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                         ></img>
                         <button
                             className="flex flex-col text-center gap-3 items-center"
-                            onClick={() => navigationHandler('')}
+                            onClick={() => navigationHandler('home')}
                         >
                             <img src={`${homeIcon}`} alt="home" width="50"></img>
                             <span>홈</span>
