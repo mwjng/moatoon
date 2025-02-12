@@ -7,21 +7,16 @@ import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
 
-const Canvas = ({ stageRef, toggleView }) => {
+const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
     const [lines, setLines] = useState([]);
     const [undoneLines, setUndoneLines] = useState([]);
     const isDrawing = useRef(false);
-    //const stageRef = useRef();
+
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
-
-    //임시 설정
-    const [partyId, setpartyId] = useState(2); // 예시로 방 ID를 설정
-    const [cutId, setcutId] = useState(12);
-    const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
 
     //redis에 cut 초기화 데이터 추가
     useEffect(() => {

@@ -1,15 +1,18 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import WordButton from '../WordButton.js';
 import Canvas from '../draw/Canvas.js';
-import Navigation from '../Navigation.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import axios from 'axios';
-import { useNavigate } from 'react-router';
 
-const Drawing = forwardRef(({ toggleView }, ref) => {
-    const navigate = useNavigate();
+const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
     const stageRef = useRef(null);
+    const userId = 3; // 받아오기
+
+    const partyId = cutsInfo[0].partyId;
+    const cutIds = cutsInfo.map(item => item.cutId);
+    const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
+    const userStory = cutsInfo.filter(cut => cut.memberId === userId);
 
     // SVG 변환 및 다운로드 함수
     const exportToSVGAndUpload = async () => {
@@ -38,8 +41,6 @@ const Drawing = forwardRef(({ toggleView }, ref) => {
         const formData = new FormData();
         formData.append('file', file);
 
-        // API 요청
-        const cutId = 1;
         try {
             const response = await axios.patch(`http://localhost:8080/cuts/save-final/${cutId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
@@ -68,11 +69,29 @@ const Drawing = forwardRef(({ toggleView }, ref) => {
                         </WordButton>
 
                         <div className="relative w-full h-100 p-6 flex flex-col items-center mt-5">
-                            <StoryCard />
+                            <StoryCard story={cutsInfo} />
                         </div>
                     </div>
                 </div>
-                <Canvas stageRef={stageRef} toggleView={toggleView} />
+                <div className="relative w-full h-full">
+                    <Canvas
+                        stageRef={stageRef}
+                        toggleView={toggleView}
+                        partyId={partyId}
+                        cutId={cutId}
+                        cutIds={cutIds}
+                    />
+                    {userStory && (
+                        <div className="absolute bottom-0 w-full text-center py-2.5 text-black text-xs">
+                            <p
+                                className="text-md text-gray-700"
+                                dangerouslySetInnerHTML={{
+                                    __html: userStory[0].content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
             <button
                 onClick={exportToSVGAndUpload}
