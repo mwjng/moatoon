@@ -9,24 +9,29 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUserInfo } from '../store/userSlice';
+import WordButton from './WordButton';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle }) {
+function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
-    const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
+    const targetTime = Date.now() + stageTime * MINUTE;
+    const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
+    const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
+    const userInfo = useSelector(state => state.user.userInfo);
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
+    let timeoutNotEvented = true;
+
     const handleBackClick = () => {
         if (stage === 'waiting') {
             leaveSession(); // 세션에서 나가기
-            navigate('/'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+            navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
-
-    //단계 정보, 삭제 필요 (대기방, 단어 학습, 뽑기, 그림 그리기, 그림 보기, 퀴즈)
-    // stage = 'quiz';
-    const [targetTimeDummy, setTargetTime] = useState(Date.now() + 5 * MINUTE);
 
     //사용자 정보
     const [user, setUser] = useState({
@@ -35,31 +40,6 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
             'https://i.namu.wiki/i/KUM2tQX1XioB6nLXb1hNgb47SQkzckA4LAbfCUWej7_opVso4ebnkijBdglFek7Dn2FzcKoGgOjOlm_UeIAYdQ3_i-CmhnnYc-PiI3erJmqqWI03S5ci3WZBbaqENJ90FcL3FtIjpnxFB8kNEynbag.webp',
         role: 'manager',
     });
-    //일정 정보
-    const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
-
-    // 남은 시간 계산
-    const getRemainingTime = targetTime => {
-        let diff = targetTime - Date.now();
-
-        if (diff <= 0) return 0; // 시간이 지났다면 0 반환
-
-        return diff;
-    };
-
-    useEffect(() => {
-        // 타이머 초기화
-        const updateRemainTime = () => {
-            const remaining = getRemainingTime(targetTimeDummy);
-            setRemainTime(remaining);
-        };
-
-        // 1초마다 갱신
-        const interval = setInterval(updateRemainTime, SECOND);
-
-        // 컴포넌트 언마운트 시 타이머 클리어
-        return () => clearInterval(interval);
-    }, []); // targetTime이 변경될 때마다 갱신
 
     //페이지 이동 핸들러
     const navigationHandler = path => {
@@ -68,7 +48,8 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
 
     //로그아웃 핸들러
     const logoutHandler = () => {
-        console.log('logout');
+        localStorage.removeItem('accessToken');
+        navigate('/login');
     };
 
     //시간 더하기
@@ -85,23 +66,41 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
         return `${hours}:${minutes}`;
     };
 
-    //남은 시간 계산
-    const getRemainingTimeFormatted = diff => {
-        if (diff <= 0) return '00:00'; // 시간이 지났다면 "00:00" 반환
+    // 남은 시간 형식 변환
+    const getRemainingTimeFormatted = () => {
+        if (remainTime <= 0) return '00:00'; // 시간이 지났다면 "00:00" 반환
 
-        const minutes = Math.floor(diff / MINUTE);
-        const seconds = Math.floor((diff % MINUTE) / SECOND);
+        const minutes = Math.floor(remainTime / MINUTE);
+        const seconds = Math.floor((remainTime % MINUTE) / SECOND);
 
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     };
 
-    // 남은 시간 비율 계산 (0~100%)
-    const getRemainingPercentage = (targetTime, duration) => {
-        const elapsed = Date.now();
-        const totalDuration = duration * MINUTE;
-        const remaining = Math.max(0, (targetTime - elapsed) / totalDuration) * 100;
-        return remaining;
-    };
+    useEffect(() => {
+        if (stage) {
+            // 타이머 초기화
+            const updateRemainTime = () => {
+                let remaining = targetTime - Date.now();
+                if (remaining <= 0) {
+                    remaining = 0;
+                    if (timeoutNotEvented) {
+                        onTimeOut();
+                        timeoutNotEvented = false;
+                    }
+                }
+                let percent = (remaining / (stageTime * MINUTE)) * 100;
+
+                setRemainTime(remaining);
+                setRemainTimePercent(percent);
+            };
+
+            // 1초마다 갱신
+            const interval = setInterval(updateRemainTime, SECOND);
+
+            // 컴포넌트 언마운트 시 타이머 클리어
+            return () => clearInterval(interval);
+        }
+    }, []);
 
     return (
         <header className="shadow-lg rounded-b-3xl bg-white w-full">
@@ -120,11 +119,11 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                                 </span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
                                     <div
                                         className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[0])}%` }}
+                                        style={{ width: `${remainTimePercent}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -136,11 +135,11 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                                 <span className="text-2xl font-bold">오늘의 단어 학습</span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
                                     <div
                                         className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[1])}%` }}
+                                        style={{ width: `${remainTimePercent}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -158,19 +157,27 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                             <div className="flex items-center gap-8">
                                 <span className="text-2xl font-bold">오늘의 단어</span>
                                 <div className="flex gap-8">
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어1</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어2</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어3</button>
-                                    <button className="px-8 py-4 shadow-lg rounded-full">단어4</button>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어1
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어2
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어3
+                                    </WordButton>
+                                    <WordButton color="bg-dark-yellow" size="md">
+                                        단어4
+                                    </WordButton>
                                 </div>
                             </div>
                             <div></div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
                                     <div
                                         className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[3])}%` }}
+                                        style={{ width: `${remainTimePercent}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -182,11 +189,11 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                             </div>
                             <div></div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
                                     <div
                                         className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[4])}%` }}
+                                        style={{ width: `${remainTimePercent}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -198,11 +205,11 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                                 <span className="text-2xl font-bold">오늘의 단어 학습</span>
                             </div>
                             <div className="flex flex-col text-center gap-4">
-                                <span>남은 시간 {getRemainingTimeFormatted(remainTime)}</span>
+                                <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                 <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">
                                     <div
                                         className="bg-blue-600 h-2.5 rounded-full"
-                                        style={{ width: `${getRemainingPercentage(scheduleDummy.time, INITTIME[5])}%` }}
+                                        style={{ width: `${remainTimePercent}%` }}
                                     ></div>
                                 </div>
                             </div>
@@ -223,7 +230,7 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
                         ></img>
                         <button
                             className="flex flex-col text-center gap-3 items-center"
-                            onClick={() => navigationHandler('')}
+                            onClick={() => navigationHandler('home')}
                         >
                             <img src={`${homeIcon}`} alt="home" width="50"></img>
                             <span>홈</span>
