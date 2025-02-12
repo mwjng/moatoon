@@ -32,12 +32,12 @@ const QuizItem = ({ onCorrect, quiz, index, isCorrect, isEnd, onFail }) => {
             style={{
                 backgroundColor: isOver && !isCorrect ? 'lightgreen' : '#D9D9D9',
             }}
-            className="flex gap-4 text-[32px] bg-opacity-40 rounded-full p-4 bg-opacity-40 align-ceneter relative"
+            className="flex gap-2 text-[28px] bg-opacity-40 rounded-full p-4 w-full relative"
         >
             <img
                 src={isCorrect ? quizCircle : quizStar}
                 alt=""
-                className="absolute top-[-30px] left-[25px] transform -translate-x-1/2 w-[120px] h-[120px] object-fill"
+                className="absolute top-[-30px] left-[25px] transform -translate-x-1/2 h-[120px] object-fill"
                 style={{ display: isCorrect || isEnd ? 'block' : 'none' }}
             />
             <div className="relative">{index + 1}.</div>

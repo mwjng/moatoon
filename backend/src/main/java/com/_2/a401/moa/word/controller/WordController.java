@@ -9,6 +9,7 @@ import com._2.a401.moa.word.dto.response.QuizResponse;
 import com._2.a401.moa.word.dto.response.RandomWordsResponse;
 import com._2.a401.moa.word.service.WordService;
 import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +24,16 @@ public class WordController {
 
 
     @DeleteMapping("/words/saved-words")
-    public ResponseEntity<Object> removeMyWords(@RequestHeader("Authorization") String token, @RequestBody WordIdRequest wordIdRequest) {
+    public ResponseEntity<Object> removeMyWords(HttpServletRequest request, @RequestBody WordIdRequest wordIdRequest) {
+        String token = jwtUtil.getTokenFromRequest(request);
         long memberId = jwtUtil.getMemberId(token);
         wordService.removeWord(memberId, wordIdRequest);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/words/saved-words")
-    public ResponseEntity<Object> addMyWords(@RequestHeader("Authorization") String token, @RequestBody AddWordsRequest addWordsRequest) {
+    public ResponseEntity<Object> addMyWords(HttpServletRequest request, @RequestBody AddWordsRequest addWordsRequest) {
+        String token = jwtUtil.getTokenFromRequest(request);
         long memberId = jwtUtil.getMemberId(token);
         wordService.addMyWords(memberId, addWordsRequest);
         return ResponseEntity.ok().build();
@@ -49,9 +52,10 @@ public class WordController {
     }
 
     @GetMapping("/words/saved-words")
-    public ResponseEntity<MyWordsResponse> getMyWords(@RequestHeader("Authorization") String token,
+    public ResponseEntity<MyWordsResponse> getMyWords(HttpServletRequest request,
                                                       @Nullable @RequestParam("page") Integer page,
                                                       @Nullable @RequestParam("keyword") String keyword) {
+        String token = jwtUtil.getTokenFromRequest(request);
         long memberId = jwtUtil.getMemberId(token);
         return ResponseEntity.ok(wordService.getMyWords(memberId, page, keyword));
     }
