@@ -2,6 +2,7 @@ package com._2.a401.moa.party.service;
 import java.time.LocalDateTime;
 
 
+import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
@@ -30,6 +31,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com._2.a401.moa.common.exception.ExceptionCode.SCHEDULE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -203,7 +206,17 @@ public class PartyService {
     }
 
     public PartyDetailResponse getPartyFindByPin(String pinNumber) {
-        Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT, "해당 핀번호로 조회된 입장 가능한 파티가 없습니다."));
+
+
+        Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE)
+                .orElseThrow(()-> new MoaException(SCHEDULE_NOT_FOUND));
+
+
+        LocalDateTime now = LocalDateTime.now();
+        if (party.getStartDate().minusHours(1).isBefore(now)) {
+            throw new MoaException(SCHEDULE_NOT_FOUND);
+        }
+
 
         List<PartyMemberResponse> members = party.getPartyMembers().stream()
                 .map(pm -> PartyMemberResponse.builder()
