@@ -3,25 +3,29 @@ package com._2.a401.moa.schedule.service;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
-import com._2.a401.moa.schedule.domain.SessionStage;
 import com._2.a401.moa.schedule.dto.response.WsReadyStatusResponse;
 import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
 import com._2.a401.moa.schedule.repository.SessionMemberRepository;
 import com._2.a401.moa.schedule.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class SessionStageService {
-    SessionService sessionService;
-    SessionRepository sessionRepository;
-    SessionMemberRepository sessionMemberRepository;
+    private final SessionService sessionService;
+    private final SessionRepository sessionRepository;
+    private final SessionMemberRepository sessionMemberRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
+    private final TaskScheduler taskScheduler;
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
         sessionService.validateMemberPermission(memberId, scheduleId); // 권한 검증
@@ -64,6 +68,11 @@ public class SessionStageService {
         SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
         sessionMember.resetReadyStatus();
 
+        // 다음 타이머 예약
+        if (nextSessionStage != FullSessionStage.DONE) {
+            setEndTimeTimer(scheduleId, now.plusSeconds(nextSessionStage.getDuration()), currentSessionStage);
+        }
+
         // 세션 전환 메시지 생성
         WsSessionTransferResponse response = WsSessionTransferResponse.builder()
                 .type("SESSION_TRANSFER")
@@ -75,5 +84,37 @@ public class SessionStageService {
 
         // 세션 전환 메시지 브로드캐스트
         messagingTemplate.convertAndSend("/topic/session-stage/" + scheduleId, response);
+    }
+
+    // 종료시간에 실행될 타이머
+    private void setEndTimeTimer(Long scheduleId, LocalDateTime endTime, FullSessionStage expectedStage) {
+        taskScheduler.schedule(
+                () -> {
+                    // 현재 세션 정보 조회
+                    Session session = sessionRepository.fetchByScheduleId(scheduleId);
+                    FullSessionStage currentStage = session.getSessionStage();
+
+                    // 예상했던 단계와 현재 단계가 같을 때만 전환
+                    if (currentStage == expectedStage) {
+                        handleSessionTransfer(scheduleId);
+                    }
+                },
+                endTime.atZone(ZoneId.systemDefault()).toInstant()
+        );
+    }
+
+    // 외부(WaitingRoom)에서 호출할  최초 타이머 설정
+    public void startSessionTimer(Long scheduleId) {
+        Session session = sessionRepository.fetchByScheduleId(scheduleId);
+        FullSessionStage currentStage = session.getSessionStage();
+        LocalDateTime startTime = session.getStartTime();
+
+        if (currentStage != FullSessionStage.DONE) {
+            setEndTimeTimer(
+                    scheduleId,
+                    startTime.plusSeconds(currentStage.getDuration()),
+                    currentStage
+            );
+        }
     }
 }

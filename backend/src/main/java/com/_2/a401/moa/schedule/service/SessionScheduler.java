@@ -31,6 +31,7 @@ public class SessionScheduler {
     private final ScheduleRepository scheduleRepository;
     private final SessionRepository sessionRepository;
     private final SessionMemberRepository sessionMemberRepository;
+    private final SessionStageService sessionStageService;
 
     @Scheduled(cron = "0 0,30 * * * *")
     public void createSession() {
@@ -44,6 +45,7 @@ public class SessionScheduler {
         for (Schedule schedule : schedules) {
             final String sessionId = videoConferenceManager.createSession();
             final Session session = new Session(schedule.getId(), sessionId, WAITING);
+            sessionStageService.startSessionTimer(schedule.getId()); // 10분뒤 다음 단계로 넘어가기 위한 타이머 설정
             sessionRepository.save(session);
             sessionMemberRepository.save(new SessionMember(schedule.getId()));
         }
