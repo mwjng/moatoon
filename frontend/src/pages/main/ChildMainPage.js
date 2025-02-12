@@ -4,6 +4,7 @@ import ScheduleSection from "../../components/main/ScheduleSection";
 import BookParticipationSection from "../../components/main/BookParticipationSection";
 import { getTodayAndUpComingSchedule } from '../../api/schedule';
 
+
 function ChildMainPage() {
     const [scheduleData, setScheduleData] = useState({
         todaySchedule: null,
