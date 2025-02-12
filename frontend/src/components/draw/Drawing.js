@@ -5,7 +5,7 @@ import Navigation from '../Navigation.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Drawing = forwardRef(({ toggleView }, ref) => {
     const navigate = useNavigate();

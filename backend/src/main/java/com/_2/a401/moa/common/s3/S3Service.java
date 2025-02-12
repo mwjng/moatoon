@@ -23,7 +23,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3Service {
     private final S3Client s3Client;
-    private final RestTemplate restTemplate = new RestTemplate(); // URL에서 파일 다운로드
 
 
     @Value("${S3_BUCKET}")
