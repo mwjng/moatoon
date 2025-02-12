@@ -37,8 +37,8 @@ const WordLearning = () => {
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
     const [checkedWords, setCheckedWords] = useState(new Set());
-    const [partyId, setPartyId] = useState(1); //임의 값
-    const stageTime = 10;
+    const [partyId, setPartyId] = useState(1); //TODO: 임의 값
+    const stageTime = 10; // TODO: 나중에 값 바꿔줘야함함
     const navigate = useNavigate();
 
     const handleCheck = wordId => {
@@ -54,7 +54,7 @@ const WordLearning = () => {
     };
 
     const handleStep = () => {
-        navigate('/'); //다음 단계의 url로 수정 필요
+        navigate('/session/draw'); //다음 단계의 url로 수정 필요
     };
 
     useEffect(() => {
@@ -65,7 +65,8 @@ const WordLearning = () => {
 
     useEffect(() => {
         if (checkedWords.size === 4) {
-            //서버에 이벤트 보내기
+            //서버에 이벤트 보내기 - 준비됐다!
+            
         }
     }, [checkedWords]);
 
