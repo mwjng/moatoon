@@ -1,8 +1,6 @@
 package com._2.a401.moa.party.controller;
 
 import com._2.a401.moa.common.s3.S3Service;
-import com._2.a401.moa.member.dto.request.MemberCreate;
-import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
@@ -12,20 +10,14 @@ import com._2.a401.moa.party.dto.response.*;
 import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
 import com._2.a401.moa.schedule.domain.Day;
-import com._2.a401.moa.schedule.domain.Schedule;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/parties")

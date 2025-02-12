@@ -10,6 +10,7 @@ import lombok.Setter;
 public class PartyMemberResponse {
     private long memberId;
     private String name;
+    private String imgUrl;
     private String nickname;
     private long managerId;
 

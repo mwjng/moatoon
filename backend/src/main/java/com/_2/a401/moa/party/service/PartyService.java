@@ -2,7 +2,6 @@ package com._2.a401.moa.party.service;
 import java.time.LocalDateTime;
 
 
-import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
@@ -18,11 +17,6 @@ import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com.querydsl.core.Tuple;
 import com._2.a401.moa.party.dto.response.ApiResponse;
 
-import com._2.a401.moa.party.repository.*;
-import com._2.a401.moa.schedule.domain.Day;
-import com._2.a401.moa.schedule.service.InitialScheduleService;
-import com._2.a401.moa.schedule.service.ScheduleService;
-//import io.swagger.v3.oas.models.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -162,8 +155,9 @@ public class PartyService {
                 .map(pm -> PartyMemberResponse.builder()
                         .memberId(pm.getMember().getId())
                         .name(pm.getMember().getName())
+                        .imgUrl(pm.getMember().getImageUrl())
                         .nickname(pm.getMember().getNickname())
-                        .managerId(pm.getMember().getManager() != null ? pm.getMember().getManager().getId() : null) // ✅ Manager의 ID 추가
+                        .managerId(pm.getMember().getManager() != null ? pm.getMember().getManager().getId() : null)
                         .build())
                 .collect(Collectors.toList());
 
