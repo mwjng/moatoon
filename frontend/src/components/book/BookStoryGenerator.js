@@ -26,6 +26,9 @@ const BookStoryGenerator = ({
   const [coverImage, setCoverImage] = useState(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [words, setWords] = useState([]);
+  const [partyId, setPartyId] = useState(null);
+  const [isCreatingParty, setIsCreatingParty] = useState(false);
+  const [showBookDetail, setShowBookDetail] = useState(false);
 
   const generateStory = async () => {
     setIsGenerating(true);
@@ -186,6 +189,8 @@ const BookStoryGenerator = ({
   // 🔹 표지 이미지 생성 및 최종 데이터 전송
   const handleDecide = async () => {
     setIsGeneratingImage(true);
+    setIsCreatingParty(true);
+
     try {
       const coverPrompt = `${currentStory.overview} : 참고 내용을 바탕으로 동화 스타일의 일러스트 이미지 생성.(텍스트 미포함)`;
       const response = await openai.images.generate({
@@ -217,7 +222,9 @@ const BookStoryGenerator = ({
       };
 
       const result = await sendStoryToBackend(payload, generatedCover);
-      console.log("스토리 전송 성공", result);
+      console.log("스토리 전송 성공", result);//result = partyId
+      setPartyId(result);
+
       onClose();
     } catch (error) {
       console.error("최종 전송 오류:", error.message);
@@ -225,6 +232,13 @@ const BookStoryGenerator = ({
       setIsGeneratingImage(false);
     }
   };
+
+  useEffect(() => {
+    if (partyId) {
+      setIsCreatingParty(false);
+      setShowBookDetail(true);
+    }
+  }, [partyId]);
 
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">

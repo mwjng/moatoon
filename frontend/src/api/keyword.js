@@ -1,10 +1,11 @@
 import axios from "axios";
+import { authInstance } from "./axios";
 
 // const BASE_URL = "http://localhost:8080"; ${BASE_URL}
 
 export const fetchKeywords = async () => {
   try {
-    const res = await axios.get(`/parties/keyword`);
+    const res = await authInstance.get(`/parties/keyword`);
     return res.data;
   } catch (err) {
     console.error("키워드 데이터 가져오기 실패:", err);
@@ -14,7 +15,7 @@ export const fetchKeywords = async () => {
 
 export const fetchRandomWords = async (level, episodeCount) => {
   try {
-    const res = await axios.get(`/words/random`, {
+    const res = await authInstance.get(`/words/random`, {
       params: { level, episodeCount },
     });
     return res.data;
@@ -32,7 +33,7 @@ export const sendStoryToBackend = async (storyData, imageUrl) => {
     formData.append("jsonData", JSON.stringify(storyData)); // JSON 데이터 전달
 
     // ✅ 백엔드로 POST 요청
-    const response = await axios.post(`/parties`, formData, {
+    const response = await authInstance.post(`/parties`, formData, {
       headers: {
         "Content-Type": "multipart/form-data", // 파일 업로드 처리
       },
