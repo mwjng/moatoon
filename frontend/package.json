@@ -2,13 +2,12 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
-    "@stomp/stompjs": "^7.0.0",
     "@reduxjs/toolkit": "^2.5.1",
+    "@stomp/stompjs": "^7.0.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.9",
     "base-64": "^1.0.0",
@@ -26,6 +25,7 @@
     "react-konva": "^19.0.2",
     "react-redux": "^9.2.0",
     "react-router": "^7.1.5",
+    "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
     "sockjs-client": "^1.6.1",
     "tailwindcss": "^3.4.17"
@@ -54,7 +54,5 @@
     "prettier": "^3.4.2",
     "web-vitals": "^4.2.4"
   },
-
   "proxy": "http://localhost:8080"
-
 }
