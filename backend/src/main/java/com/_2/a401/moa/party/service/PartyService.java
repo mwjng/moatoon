@@ -8,8 +8,10 @@ import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
+
 import com._2.a401.moa.party.dto.request.PartySearchRequest;
 import com._2.a401.moa.party.dto.response.*;
+
 import com._2.a401.moa.party.repository.*;
 import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.schedule.domain.Schedule;
@@ -17,6 +19,7 @@ import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com.querydsl.core.Tuple;
 import com._2.a401.moa.party.dto.response.ApiResponse;
+
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,13 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com._2.a401.moa.common.exception.ExceptionCode.SCHEDULE_NOT_FOUND;
+import static com._2.a401.moa.common.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +46,7 @@ public class PartyService {
     private final InitialScheduleService initialScheduleService;
     private final ScheduleRepository scheduleRepository;
     private final PartyRepositoryCustom partyRepositoryCustom;
+
 
 
     @Transactional
@@ -147,7 +148,6 @@ public class PartyService {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 
-
     @Transactional(readOnly = true)
     public PartyDetailResponse getPartyDetail(Long partyId) {
         Party party = partyRepository.findById(partyId)
@@ -163,6 +163,7 @@ public class PartyService {
                         .managerId(pm.getMember().getManager() != null ? pm.getMember().getManager().getId() : null)
                         .build())
                 .collect(Collectors.toList());
+
 
         List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(partyId);
 
@@ -255,80 +256,60 @@ public class PartyService {
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse> addChildrenToParty(Long partyId, Long parentId, List<Long> childIds) {
-        Member parent = memberRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("부모 정보를 찾을 수 없습니다."));
-
+    public void addChildrenToParty(Long partyId, List<Long> childIds) {
         Party party = partyRepository.findById(partyId)
-                .orElseThrow(() -> new IllegalArgumentException("파티를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MoaException(INVALID_PARTY));
+
+        // 1시간 이상 남은 모임만 수정 가능
+        LocalDateTime now = LocalDateTime.now();
+        if (party.getStartDate().minusHours(1).isBefore(now)) {
+            throw new MoaException(SCHEDULE_NOT_ACTIVE);
+        }
+
+        int currentMemberCount = partyMemberRepository.countByParty(party);
+        int newTotalCount = currentMemberCount + childIds.size();
+
+        if (newTotalCount > 4) {
+            throw new MoaException(PARTY_FULL);
+        }
 
         List<PartyMember> newMembers = new ArrayList<>();
 
-        //1시간 이상 남은 모임만 모임원 수정 가능
-        LocalDateTime now = LocalDateTime.now();
-        if (party.getStartDate().minusHours(1).isBefore(now)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("파티 시작 1시간 이내에는 아동을 추가할 수 없습니다."));
-        }
-
         for (Long childId : childIds) {
             Member child = memberRepository.findById(childId)
-                    .orElseThrow(() -> new IllegalArgumentException("아동 정보를 찾을 수 없습니다."));
-
-            if (!child.getManager().getId().equals(parentId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("보호자 권한이 없습니다."));
-            }
+                    .orElseThrow(() -> new MoaException(INVALID_CHILD));
 
             boolean isAlreadyMember = partyMemberRepository.existsByPartyAndMember(party, child);
             if (isAlreadyMember) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body(new ApiResponse("이미 존재하는 아동입니다."));
+                throw new MoaException(DUPLICATED_CHILD);
             }
-
             PartyMember newPartyMember = PartyMember.builder()
                     .party(party)
                     .member(child)
                     .build();
             newMembers.add(newPartyMember);
         }
-
         partyMemberRepository.saveAll(newMembers);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("아동 등록 완료되었습니다."));
     }
 
     @Transactional
-    public ResponseEntity<ApiResponse> removeChildFromParty(Long partyId, Long parentId, Long childId) {
+    public void removeChildFromParty(Long partyId, Long childId) {
 
         Party party = partyRepository.findById(partyId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 파티입니다."));
-
-
-        Member parent = memberRepository.findById(parentId)
-                .orElseThrow(() -> new IllegalArgumentException("부모 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MoaException(INVALID_PARTY));
 
         Member child = memberRepository.findById(childId)
-                .orElseThrow(() -> new IllegalArgumentException("아동 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new MoaException(INVALID_MEMBER));
 
-        if (!child.getManager().getId().equals(parentId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("보호자 권한이 없습니다."));
-        }
-
-        //1시간 이상 남은 모임만 모임원 수정 가능
         LocalDateTime now = LocalDateTime.now();
         if (party.getStartDate().minusHours(1).isBefore(now)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("파티 시작 1시간 이내에는 아동을 삭제할 수 없습니다."));
+            throw new MoaException(SCHEDULE_NOT_ACTIVE);
         }
 
         PartyMember partyMember = partyMemberRepository.findByPartyAndMember(party, child)
-                .orElse(null);
-
-        if (partyMember == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("삭제할 아동이 없습니다."));
-        }
+                .orElseThrow(() -> new MoaException(DUPLICATED_CHILD));
 
         partyMemberRepository.delete(partyMember);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("아동 삭제가 완료되었습니다."));
     }
-
-
 
 }

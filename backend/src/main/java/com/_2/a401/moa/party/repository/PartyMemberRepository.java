@@ -17,7 +17,8 @@ public interface PartyMemberRepository extends JpaRepository<PartyMember, Long> 
 
     Optional<PartyMember> findByPartyAndMember(Party party, Member child);
 
-    long countByParty(Party party);
+    @Query("SELECT COUNT(pm) FROM PartyMember pm WHERE pm.party = :party")
+    int countByParty(@Param("party") Party party);
 
     boolean existsByPartyAndMember(Party party, Member member);
 

@@ -21,6 +21,9 @@ import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
+import CutAllPage from './pages/CutAllPage';
+import DrawingPage from './pages/DrawingPage';
+import DrawingEndPage from './pages/draw/DrawingEndPage';
 
 function App() {
     const location = useLocation();
@@ -31,6 +34,11 @@ function App() {
 
     useEffect(() => {
         let token = localStorage.getItem('accessToken');
+        const fromLogout = location.state?.fromLogout; // ✅ 로그아웃으로 이동했는지 확인
+
+        if (fromLogout) {
+            dispatch(clearUserInfo()); // ✅ 로그인 정보 초기화
+        }
 
         const fetchUserInfo = async () => {
             if (!token) {
@@ -73,18 +81,26 @@ function App() {
     }, [dispatch, navigate]);
 
     useEffect(() => {
+        const path = location.pathname;
         if (loading) return;
 
-        const path = location.pathname;
-
-        if (userInfo && (path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
+        if (
+            userInfo &&
+            (path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find') || path === '/')
+        ) {
             navigate('/home');
-        }
-
-        if (!userInfo && !(path.startsWith('/login') || path.startsWith('/regist') || path.startsWith('/find'))) {
+        } else if (
+            !userInfo &&
+            path !== '/' &&
+            !path.startsWith('/login') &&
+            !path.startsWith('/regist') &&
+            !path.startsWith('/find')
+        ) {
             navigate('/login');
+        } else {
+            navigate(path);
         }
-    }, [loading, userInfo, location, navigate]);
+    }, [loading, userInfo, location.pathname, navigate]);
 
     return (
         <div className="App">
@@ -106,6 +122,9 @@ function App() {
                     </Route>
                     <Route path="/session">
                         <Route path="search" />
+                        <Route path="overview" element={<CutAllPage />} />
+                        <Route path="draw" element={<DrawingPage />} />
+                        <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
