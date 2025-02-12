@@ -21,6 +21,8 @@ import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
+import CutAllPage from './pages/CutAllPage';
+import DrawingPage from './pages/DrawingPage';
 
 function App() {
     const location = useLocation();
@@ -114,6 +116,8 @@ function App() {
                     </Route>
                     <Route path="/session">
                         <Route path="search" />
+                        <Route path="overview" element={<CutAllPage />} />
+                        <Route path="draw" element={<DrawingPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />

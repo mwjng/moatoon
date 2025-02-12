@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import MyWordInfo from '../components/word/MyWordInfo';
 import charChick from '../assets/char-chick.png';
@@ -6,42 +6,42 @@ import charCado from '../assets/char-cado.png';
 import iconWord from '../assets/icon-word.png';
 import bracketLeft from '../assets/bracket-left.png';
 import bracketRight from '../assets/bracket-right.png';
+import { getMyWords, removeMyWord } from '../api/word';
 
 const MyWordPage = () => {
     const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [keyword, setKeyword] = useState('');
     const [words, setWords] = useState([
         {
             wordListId: 1,
-            word: '형태',
-            meaning: '사물의 생김새나 모양',
+            word: 'word',
+            meaning: 'meaning',
             failCount: 1,
-            example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            examples: ['example1', 'example2'],
         },
         {
             wordListId: 2,
-            word: '형태',
-            meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
+            word: 'word',
+            meaning: 'meaning',
             failCount: 2,
-            example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            examples: ['example1', 'example2'],
         },
         {
             wordListId: 3,
-            word: '형태',
-            meaning: '사물의 생김새나 모양',
+            word: 'word',
+            meaning: 'meaning',
             failCount: 3,
-            example: [
-                '옷 소매의 *형태*가 특이하다.',
-                '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
-            ],
+            examples: ['example1', 'example2'],
         },
         {
             wordListId: 4,
-            word: '형태',
-            meaning: '사물의 생김새나 모양',
+            word: 'word',
+            meaning: 'meaning',
             failCount: 4,
-            example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+            examples: ['example1', 'example2'],
         },
-    ]);
+    ]); // 스켈레톤 데이터
     const failColor = ['#000000', '#8AD8FF', '#FFD105', '#FF90E1', '#8B8DFD', '#FF4D4D'];
     const [showHint, setShowHint] = useState(false);
 
@@ -50,85 +50,12 @@ const MyWordPage = () => {
     };
 
     const updateWords = () => {
-        //api로 page에 맞는 단어 가져오기
-
-        //테스트용======
-        const newWords = [
-            {
-                wordListId: 8,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 5,
-                example: [
-                    '옷 소매의 *형태*가 특이하다.',
-                    '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
-                ],
-            },
-            {
-                wordListId: 9,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 1,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-            {
-                wordListId: 10,
-                word: '형태',
-                meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
-                failCount: 4,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-
-            {
-                wordListId: 11,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 4,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-        ];
-        const originWords = [
-            {
-                wordListId: 1,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 1,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-            {
-                wordListId: 2,
-                word: '형태',
-                meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
-                failCount: 2,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-            {
-                wordListId: 3,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 3,
-                example: [
-                    '옷 소매의 *형태*가 특이하다.',
-                    '우리나라 가족의 *형태*는 대부분 핵가족 형태이다핵가족 형태이다.',
-                ],
-            },
-            {
-                wordListId: 4,
-                word: '형태',
-                meaning: '사물의 생김새나 모양',
-                failCount: 4,
-                example: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
-            },
-        ];
-
         if (page < 1) {
             setPage(1);
-            setWords(originWords);
-        } else if (page > 2) {
-            setPage(2);
-            setWords(newWords);
+        } else if (page > totalPage) {
+            setPage(totalPage);
         }
-        //====테스트용
+        getMyWordWithPage();
     };
 
     const handlePrev = async () => {
@@ -141,9 +68,30 @@ const MyWordPage = () => {
         updateWords();
     };
 
-    const handleRemoveMyWord = myWordId => {
-        // 단어 삭제시 실행될 부분
+    const handleRemoveMyWord = wordId => {
+        removeWord(wordId);
     };
+
+    const removeWord = wordId => {
+        removeMyWord(wordId)
+            .then(getMyWordWithPage)
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const getMyWordWithPage = () => {
+        getMyWords(page, keyword)
+            .then(response => {
+                setTotalPage(response.data.totalPage);
+                setWords(response.data.myWordWithExamples);
+            })
+            .catch(error => console.error(error));
+    };
+
+    useEffect(() => {
+        getMyWordWithPage();
+    }, []);
 
     return (
         <div className="bg-[#FDFFE9] h-screen flex flex-col">
@@ -200,8 +148,8 @@ const MyWordPage = () => {
                 <div className="flex z-0 gap-8 items-center">
                     <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
                     <div className="relative z-10 p-4 grid grid-cols-2 gap-4">
-                        {words.map(word => (
-                            <MyWordInfo word={word} key={word.wordListId} removeMyWord={handleRemoveMyWord} />
+                        {words.map((word, index) => (
+                            <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
                         ))}
                     </div>
                     <img src={bracketRight} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handleNext} />
