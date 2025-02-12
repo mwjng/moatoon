@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 import CanvasAll from './CanvasAll';
 import { updateLines, handleDraw } from '../../utils/canvasUtils';
 
-const CanvasGrid = ({ partyId, cutIds }) => {
+const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
     const [canvasData, setCanvasData] = useState({}); // cutId별 캔버스 데이터 저장
 
     // WebSocket 연결 설정
@@ -88,8 +88,9 @@ const CanvasGrid = ({ partyId, cutIds }) => {
                         return (
                             <div key={cutId} className="border-2 border-gray-300 rounded aspect-square">
                                 <div className="w-full h-full">
-                                    <CanvasAll key={cutId} cutId={cutId} canvasData={cutData} />
+                                    <CanvasAll key={cutId} cutId={cutId} canvasData={cutData} toggleView={toggleView} />
                                 </div>
+                                <button onClick={toggleView}>클릭</button>
                             </div>
                         );
                     })}
