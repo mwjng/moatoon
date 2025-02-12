@@ -13,6 +13,7 @@ public class PartyDetailResponse {
     private String pinNumber;
     private String title;
     private String bookCover;
+    private String imageUrl;
     private LocalDateTime startDate;
     private List<Day> dayWeeks;
     private int level;
