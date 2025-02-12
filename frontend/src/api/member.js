@@ -2,9 +2,20 @@ import axios from 'axios';
 import { setUserInfo } from '../store/userSlice';
 import store from '../store/store';
 import { useSelector } from 'react-redux';
+import { authInstance } from './axios';
 
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
+
+export const refreshAccessToken = async () => {
+    try {
+        const res = await axios.post(AUTH_API_URL + '/refresh', {}, { withCredentials: true });
+        return res.data.accessToken;
+    } catch (err) {
+        console.error('토큰 갱신 실패:', err);
+        return null;
+    }
+};
 
 export const searchChildById = async childId => {
     try {
@@ -90,7 +101,7 @@ export const login = async (loginInfo, navigate) => {
         if (token) {
             localStorage.setItem('accessToken', token);
 
-            const userInfo = await getUserInfo(token);
+            const userInfo = await getUserInfo();
             if (userInfo.role == 'CHILD' && userInfo.managerId == null) {
                 localStorage.setItem('accessToken', null);
                 return null;
@@ -107,13 +118,9 @@ export const login = async (loginInfo, navigate) => {
     }
 };
 
-export const getUserInfo = async token => {
+export const getUserInfo = async () => {
     try {
-        const res = await axios.get(MEMBERS_API_URL, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const res = await authInstance.get(MEMBERS_API_URL);
         return res.data;
     } catch (err) {
         console.error('사용자 정보 가져오기 실패:', err);
