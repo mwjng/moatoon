@@ -6,6 +6,8 @@ import RegistInput from '../../components/member/RegistInput';
 import { regist, loginIdCheck, uploadImage } from '../../api/member';
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
+import { useSelector } from 'react-redux';
+import Navigation from '../../components/Navigation';
 
 export default function ChangeUserInfoPage() {
     const [imgFile, setImgFile] = useState('');
@@ -13,18 +15,27 @@ export default function ChangeUserInfoPage() {
     const [modalState, setModalState] = useState(false);
     const [registModalState, setRegistModalState] = useState(false);
     const imgRef = useRef();
+    const userInfo = useSelector(state => state.user.userInfo);
     const [registState, setRegistState] = useState([
         {
             id: 'loginId',
             value: '아이디',
             type: 'text',
-            required: true,
+            disabled: true,
             comment: '',
             cmtColor: '#000',
         },
         {
             id: 'password',
-            value: '비밀번호',
+            value: '기존 비밀번호',
+            type: 'password',
+            required: true,
+            comment: '',
+            cmtColor: '#FF0000',
+        },
+        {
+            id: 'newPassword',
+            value: '새로운 비밀번호',
             type: 'password',
             required: true,
             comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
@@ -42,7 +53,7 @@ export default function ChangeUserInfoPage() {
             id: 'name',
             value: '이름',
             type: 'text',
-            required: true,
+            disabled: true,
             comment: '',
             cmtColor: '#000',
         },
@@ -209,52 +220,55 @@ export default function ChangeUserInfoPage() {
         navigate('/login');
     };
     return (
-        <div className="relative bg-[#D9F0FE] w-full h-full">
-            <AuthModal title="회원정보 수정">
-                <div className="flex gap-2">
-                    <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
-                        <img
-                            src={imgFile ? imgFile : bbi}
-                            alt="프로필 이미지"
-                            className="w-full h-full object-cover rounded-3xl"
+        <>
+            <div className=" bg-[#D9F0FE] w-full h-screen">
+                <Navigation />
+                <AuthModal title="회원정보 수정">
+                    <div className="flex gap-2">
+                        <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
+                            <img
+                                src={imgFile ? imgFile : bbi}
+                                alt="프로필 이미지"
+                                className="w-full h-full object-cover rounded-3xl"
+                            />
+                        </div>
+                        <label
+                            htmlFor="profileImg"
+                            style={{
+                                margin: '5px 0 5px 0',
+                                fontWeight: 'bold',
+                                fontSize: '13px',
+                                color: '#8ECAE6',
+                                display: 'inline-block',
+                                cursor: 'pointer',
+                            }}
+                        >
+                            프로필 이미지 추가
+                        </label>
+                        <input
+                            style={{ display: 'none' }}
+                            type="file"
+                            accept="image/*"
+                            id="profileImg"
+                            onChange={saveImgFile}
+                            ref={imgRef}
                         />
                     </div>
-                    <label
-                        htmlFor="profileImg"
-                        style={{
-                            margin: '5px 0 5px 0',
-                            fontWeight: 'bold',
-                            fontSize: '13px',
-                            color: '#8ECAE6',
-                            display: 'inline-block',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        프로필 이미지 추가
-                    </label>
-                    <input
-                        style={{ display: 'none' }}
-                        type="file"
-                        accept="image/*"
-                        id="profileImg"
-                        onChange={saveImgFile}
-                        ref={imgRef}
+                    <RegistInput
+                        inputs={registState}
+                        width="300px"
+                        changeFunction={changeValue}
+                        checkDuplicate={checkDuplicate}
                     />
-                </div>
-                <RegistInput
-                    inputs={registState}
-                    width="300px"
-                    changeFunction={changeValue}
-                    checkDuplicate={checkDuplicate}
+                    <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
+                </AuthModal>
+                <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
+                <AlertModal
+                    text="회원가입이 완료되었습니다."
+                    modalState={registModalState}
+                    closeHandler={closeRegistModal}
                 />
-                <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
-            </AuthModal>
-            <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
-            <AlertModal
-                text="회원가입이 완료되었습니다."
-                modalState={registModalState}
-                closeHandler={closeRegistModal}
-            />
-        </div>
+            </div>
+        </>
     );
 }

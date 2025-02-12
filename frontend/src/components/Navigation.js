@@ -9,7 +9,8 @@ import arrowBack from '../assets/arrow-back.svg';
 import wordIcon from '../assets/icon-word.png';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUserInfo } from '../store/userSlice';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle }) {
@@ -17,6 +18,7 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
     const MINUTE = 60 * SECOND; //분
     const INITTIME = [10, 7, 0, 15, 3, 5]; //단계별 시간
     const userInfo = useSelector(state => state.user.userInfo);
+    const dispatch = useDispatch();
 
     const navigate = useNavigate();
     const handleBackClick = () => {
@@ -70,7 +72,8 @@ function Navigation({ stage, leaveSession, targetTime, sessionTime, bookTitle })
 
     //로그아웃 핸들러
     const logoutHandler = () => {
-        console.log('logout');
+        localStorage.removeItem('accessToken');
+        navigate('/login');
     };
 
     //시간 더하기
