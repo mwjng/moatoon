@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import React, { useRef } from 'react';
 import WordButton from '../../components/WordButton.js';
 import Canvas from '../../components/draw/Canvas.js';
 import Navigation from '../../components/Navigation.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function DrawingPage() {
+    const navigate = useNavigate();
     const stageRef = useRef(null);
 
     // SVG 변환 및 다운로드 함수

@@ -21,9 +21,10 @@ import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
-import CutAllPage from './pages/CutAllPage';
-import DrawingPage from './pages/DrawingPage';
+import CutAllPage from './pages/draw/CutAllPage';
+import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
+import EBookPage from './pages/EBookPage';
 
 function App() {
     const location = useLocation();
@@ -125,6 +126,7 @@ function App() {
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
                     <Route path="library" element={<LibraryPage />} />
+                    <Route path="ebook" element={<EBookPage />} />
                     <Route path="word">
                         <Route index element={<MyWordPage />} />
                     </Route>
