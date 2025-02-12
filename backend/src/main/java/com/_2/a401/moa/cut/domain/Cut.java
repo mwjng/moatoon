@@ -14,6 +14,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@Setter
 public class Cut extends BaseEntity {
 
     @Id

@@ -4,6 +4,8 @@ import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.schedule.domain.Day;
+import com._2.a401.moa.schedule.domain.Schedule;
+import com._2.a401.moa.schedule.domain.ScheduleState;
 import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -28,27 +30,13 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
     """, nativeQuery = true)
     Optional<EpisodeNumberAndLevel> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
 
-
-    @Query("SELECT DISTINCT p FROM Party p " +
-            "JOIN FETCH p.schedules s " +
-            "WHERE p.isPublic = true " +
-            "AND p.status = 'BEFORE' " +
-            "AND (:startDate IS NULL OR p.startDate >= :startDate) " +
-            "AND (:endDate IS NULL OR p.endDate <= :endDate) " +
-            "AND (:level IS NULL OR p.level = :level) " +
-            "AND (:episodeLength IS NULL OR p.episodeCount = :episodeLength) " +
-            "AND (:dayWeek IS NULL OR s.dayWeek IN :dayWeek) " +
-            "AND (:time IS NULL OR FUNCTION('TIME_FORMAT', s.sessionTime, '%H:%i') = :time) ")
-    List<Party> searchParties(
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            @Param("level") Integer level,
-            @Param("episodeLength") Integer episodeLength,
-            @Param("dayWeek") List<String> dayWeek,
-            @Param("time") String time
-    );
-
-    boolean existsByPinNumber(String pinNumber);
     Optional<Party> findByPinNumberAndStatus(String PinNumber, PartyState state);
 
+    @Query("SELECT p FROM Party p " +
+            "WHERE p.startDate BETWEEN :now AND :thirtyMinutesLater " +
+            "AND p.status = 'BEFORE'")
+    List<Party> findPartiesStartingSoon(
+            @Param("now") LocalDateTime now,
+            @Param("thirtyMinutesLater") LocalDateTime thirtyMinutesLater
+    );
 }

@@ -1,6 +1,9 @@
 package com._2.a401.moa.cut.repository;
 
 import com._2.a401.moa.cut.domain.Cut;
+import com._2.a401.moa.party.domain.Party;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +23,7 @@ public interface CutRepository extends JpaRepository<Cut, Long> {
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)
     List<Cut> getCutsByRange(@Param("partyId") Long partyId, @Param("startRange") int startRange, @Param("endRange") int endRange);
 
+    List<Cut> findByPartyOrderByRandomOrderAsc(Party party);
 
 
 }
