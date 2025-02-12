@@ -8,18 +8,6 @@ import BookGeneratorPage from './pages/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
 import './index.css';
-import WaitingRoom from './pages/WaitingRoom';
-import LibraryPage from './pages/ChildLibraryPage';
-import MainPage from './pages/main/MainPage';
-import WordLearning from './pages/WordLearning';
-import RegistPage from './pages/member/RegistPage';
-import ManagerRegistPage from './pages/member/ManagerRegistPage';
-import ChildRegistPage from './pages/member/ChildRegistPage';
-import FindInfo from './pages/member/FindInfo';
-import FindIdPage from './pages/member/FindIdPage';
-import FindPWPage from './pages/member/FindPWPage';
-import MyWordPage from './pages/MywordPage';
-import QuizPage from './pages/QuizPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import CutAllPage from './pages/CutAllPage';
