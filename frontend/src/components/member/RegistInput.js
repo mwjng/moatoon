@@ -11,7 +11,7 @@ export default function RegistInput(props) {
                         placeholder={input.value}
                         className="rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] "
                         required={input.required}
-                        disabled={input.id === 'emailCode' ? props.codeState : false}
+                        disabled={input.id === 'emailCode' ? props.codeState : input.disabled ? input.disabled : false}
                         style={{
                             width: props.width,
                             paddingRight:
