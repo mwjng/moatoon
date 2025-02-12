@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
 
-                        .requestMatchers("/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/ws/**","/auth/login", "/auth/refresh", "auth/id/check", "/auth/email/check", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**").permitAll()
 
                         .anyRequest().authenticated()
                 )

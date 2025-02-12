@@ -3,6 +3,7 @@ import Navigation from '../../components/Navigation';
 import WordInfo from '../../components/word/WordInfo';
 import CheckIcon from '../../assets/icon-check.png';
 import { getLearningWords } from '../../api/word';
+import { sessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
 
 // 카메라 연결 필요
@@ -38,6 +39,7 @@ const WordLearning = () => {
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
     const [checkedWords, setCheckedWords] = useState(new Set());
     const [partyId, setPartyId] = useState(1); //TODO: 임의 값
+    const [scheduleId, setScheduleId] = useState(1); //TODO: 임의 값
     const stageTime = 10; // TODO: 나중에 값 바꿔줘야함함
     const navigate = useNavigate();
 
@@ -54,7 +56,20 @@ const WordLearning = () => {
     };
 
     const handleStep = () => {
+        // TODO: 
+        // 사용자가 시간 조작해서 더 빨리 다음 단계를 요청할 경우를 대비해서,
+        // 서버에 현재 단계가 맞는지 요청 보내는 api 추가 예정
         navigate('/session/draw'); //다음 단계의 url로 수정 필요
+    };
+
+    const sendReadyRequest = async () => {
+        try {
+            await sessionStage.sendReady(scheduleId);
+            // 성공 로직
+        } catch (error) {
+            console.error('에러 발생:', error.message);
+            // 사용자에게 보여줄 수 있는 에러 처리
+        }
     };
 
     useEffect(() => {
@@ -65,8 +80,7 @@ const WordLearning = () => {
 
     useEffect(() => {
         if (checkedWords.size === 4) {
-            //서버에 이벤트 보내기 - 준비됐다!
-            
+            sendReadyRequest();
         }
     }, [checkedWords]);
 

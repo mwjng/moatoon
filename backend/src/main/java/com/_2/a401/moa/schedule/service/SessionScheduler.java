@@ -9,6 +9,7 @@ import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRepository;
 import com._2.a401.moa.schedule.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,7 @@ import static java.time.LocalDateTime.now;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class SessionScheduler {
 
     private final VideoConferenceManager videoConferenceManager;
@@ -43,6 +45,7 @@ public class SessionScheduler {
             return;
         }
         for (Schedule schedule : schedules) {
+            log.info("schedule: {}", schedule.getId());
             final String sessionId = videoConferenceManager.createSession();
             final Session session = new Session(schedule.getId(), sessionId, WAITING);
             sessionStageService.startSessionTimer(schedule.getId()); // 10분뒤 다음 단계로 넘어가기 위한 타이머 설정

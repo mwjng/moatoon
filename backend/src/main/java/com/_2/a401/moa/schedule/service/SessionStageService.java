@@ -8,6 +8,7 @@ import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
 import com._2.a401.moa.schedule.repository.SessionMemberRepository;
 import com._2.a401.moa.schedule.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
@@ -17,8 +18,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 
+import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
+
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class SessionStageService {
     private final SessionService sessionService;
     private final SessionRepository sessionRepository;
@@ -27,8 +31,16 @@ public class SessionStageService {
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
+    private void dummyRedis(){
+        final Session session = new Session(1L, "openviduSessionId", WAITING);
+        sessionRepository.save(session);
+        sessionMemberRepository.save(new SessionMember(1L));
+    }
+
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
-        sessionService.validateMemberPermission(memberId, scheduleId); // 권한 검증
+        dummyRedis();
+        log.info("updateReadyStatus: scheduleId={}, memberId={}", scheduleId, memberId);
+        //sessionService.validateMemberPermission(memberId, scheduleId); // 권한 검증
 
         // Redis에서 sessionMember 불러오기
         SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
@@ -43,6 +55,7 @@ public class SessionStageService {
 
     // 모두 레디가 안되었을 경우 : 각 멤버의 레디 상태 안내
     private void broadcastReadyStatus(Long scheduleId, Map<Long, Boolean> readyMembers) {
+        log.info("broadcastReadyStatus: scheduleId={}, readyMembers={}", scheduleId, readyMembers);
         WsReadyStatusResponse response = WsReadyStatusResponse.builder()
                 .type("READY_STATUS")
                 .readyMembers(readyMembers)
@@ -53,6 +66,7 @@ public class SessionStageService {
 
     // 모두 레디가 되었을 경우 : 다음 단계로 이동
     private void handleSessionTransfer(Long scheduleId) {
+        log.info("handleSessionTransfer: scheduleId={}", scheduleId);
         // 현재 세션 정보 조회
         Session session = sessionRepository.fetchByScheduleId(scheduleId);
         FullSessionStage currentSessionStage = session.getSessionStage(); // 현재 단계
