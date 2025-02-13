@@ -91,6 +91,23 @@ export default function ChildRegistPage() {
                 );
             }
         }
+        if (key === 'nickname') {
+            if (value.length > 20) {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'nickname'
+                            ? { ...input, comment: '닉네임은 20자 이내로 설정해주세요.', cmtColor: '#FF0000' }
+                            : input,
+                    ),
+                );
+            } else {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'nickname' ? { ...input, comment: '', cmtColor: '#000' } : input,
+                    ),
+                );
+            }
+        }
     };
 
     const checkDuplicate = async loginId => {
@@ -114,19 +131,18 @@ export default function ChildRegistPage() {
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
-            if (error.status == 409) {
-                setRegistState(prevState =>
-                    prevState.map(input =>
-                        input.id === 'loginId'
-                            ? {
-                                  ...input,
-                                  comment: '중복된 아이디입니다.',
-                                  cmtColor: '#FF0000',
-                              }
-                            : input,
-                    ),
-                );
-            }
+
+            setRegistState(prevState =>
+                prevState.map(input =>
+                    input.id === 'loginId'
+                        ? {
+                              ...input,
+                              comment: '중복된 아이디입니다.',
+                              cmtColor: '#FF0000',
+                          }
+                        : input,
+                ),
+            );
         }
     };
 

@@ -1,10 +1,10 @@
-import axios from 'axios';
+import { authInstance } from './axios';
 
 const APPLICATION_SERVER_URL = '/books';
 
 export const getEBookCover = async (partyId, token) => {
     try {
-        const response = await axios.get(`${APPLICATION_SERVER_URL}/ebook/${partyId}`, {
+        const response = await authInstance.get(`${APPLICATION_SERVER_URL}/ebook/${partyId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });
         console.log(response.data);

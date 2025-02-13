@@ -130,9 +130,8 @@ public class JwtUtil {
         return null;
     }
 
-    public void logout(String refreshToken) {
-        String username = getUserInfoFromToken(refreshToken).getSubject();
-        redisRefreshTokenService.delete(username);
+    public void logout(String loginId) {
+        redisRefreshTokenService.delete(loginId);
     }
 
 

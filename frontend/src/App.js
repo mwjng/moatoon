@@ -5,7 +5,7 @@ import { getUserInfo } from './api/member';
 import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router';
 
-import BookGeneratorPage from './pages/BookGeneratorPage';
+import BookGeneratorPage from './pages/book/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/WaitingRoom';
@@ -35,6 +35,11 @@ function App() {
 
     useEffect(() => {
         let token = localStorage.getItem('accessToken');
+        const fromLogout = location.state?.fromLogout; // ✅ 로그아웃으로 이동했는지 확인
+
+        if (fromLogout) {
+            dispatch(clearUserInfo()); // ✅ 로그인 정보 초기화
+        }
 
         const fetchUserInfo = async () => {
             if (!token) {

@@ -13,6 +13,8 @@ public class PartyDetailResponse {
     private String pinNumber;
     private String title;
     private String bookCover;
+    private String imageUrl;
+
     private LocalDateTime startDate;
     private List<Day> dayWeeks;
     private int level;
@@ -20,4 +22,6 @@ public class PartyDetailResponse {
     private int episodeCount;
     private String introduction;
     private List<KeywordResponse> keywords;
+    private List<PartyMemberResponse> members;
+
 }

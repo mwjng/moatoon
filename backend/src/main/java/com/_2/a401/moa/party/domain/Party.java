@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
+@Setter
 public class Party extends BaseEntity {
 
     @Id

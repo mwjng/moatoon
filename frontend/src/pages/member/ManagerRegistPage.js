@@ -131,7 +131,7 @@ export default function ManagerRegistPage() {
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
-            if (error.status == 409) {
+            if (error.response.data.code == 4014) {
                 setRegistState(prevState =>
                     prevState.map(input =>
                         input.id === 'loginId'

@@ -7,7 +7,7 @@ import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
 
-const Canvas = ({ stageRef }) => {
+const Canvas = ({ stageRef, toggleView }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
@@ -258,17 +258,20 @@ const Canvas = ({ stageRef }) => {
                     </Layer>
                 </Stage>
                 <div className="flex justify-center gap-4 mt-4">
-                    <Link to="/session/overview">
-                        <WordButton
-                            color="bg-light-orange"
-                            textColor="text-white"
-                            size="md"
-                            textSize="large"
-                            onClick={handleExportCanvasData}
-                        >
-                            전체 보기
-                        </WordButton>
-                    </Link>
+                    {/* <Link to="/session/overview"> */}
+                    <WordButton
+                        color="bg-light-orange"
+                        textColor="text-white"
+                        size="md"
+                        textSize="large"
+                        onClick={() => {
+                            handleExportCanvasData();
+                            toggleView();
+                        }}
+                    >
+                        전체 보기
+                    </WordButton>
+                    {/* </Link> */}
                     <WordButton
                         color="bg-light-orange hover:bg-yellow-400"
                         textColor="text-white"

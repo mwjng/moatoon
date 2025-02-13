@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class MemberCreate {
     MemberRole role;
 
     List<Long> children;
+
 
     public Member toChildMember(PasswordEncoder encoder) {
         return Member.builder()
