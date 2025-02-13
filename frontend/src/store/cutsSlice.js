@@ -1,10 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { authInstance } from '../api/axios';
 
-// 비동기 thunk 생성
 export const fetchCutsInfo = createAsyncThunk('cuts/fetchCutsInfo', async (scheduleId, { rejectWithValue }) => {
     try {
-        const response = await axios.get(`/cuts/info/${scheduleId}`);
+        const response = await authInstance.get(`/cuts/info/${scheduleId}`);
         console.log(response.data);
         return response.data; // 서버에서 받은 데이터 반환
     } catch (error) {
