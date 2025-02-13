@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/members").permitAll()
-                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/members/search", "members/managers/id", "/members/password", "/files/upload", "parties/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/refresh", "/auth/id/check/**", "/auth/email/**", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**", "/members/search", "members/managers/id", "/members/password", "/files/upload", "parties/**",  "/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -64,7 +64,7 @@ public class SecurityConfig {
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

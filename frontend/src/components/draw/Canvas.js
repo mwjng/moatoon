@@ -43,7 +43,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
 
     // 웹소켓 클라이언트 초기화
     useEffect(() => {
-        const socket = new SockJS('/ws');
+        const socket = new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws`);
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -222,9 +222,9 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
         return canvasState;
     };
 
-    const handleExportCanvasData = () => {
+    const handleExportCanvasData = async () => {
         const canvasState = exportCanvasState();
-        sendCanvasData(canvasState); // sendCanvasData 함수 호출로 변경
+        await sendCanvasData(canvasState); // sendCanvasData 함수 호출로 변경
     };
 
     return (
