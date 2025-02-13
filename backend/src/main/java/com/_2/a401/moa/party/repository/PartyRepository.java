@@ -7,6 +7,7 @@ import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
