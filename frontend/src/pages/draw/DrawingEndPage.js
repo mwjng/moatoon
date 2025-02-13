@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation.js';
 import ChildImg from '../../assets/child.svg';
 import bbi from '../../assets/bbi_normal.png';
-import axios from 'axios';
+import { authInstance } from '../../api/axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
 import { useNavigate } from 'react-router';
@@ -17,7 +17,7 @@ const DrawingEndPage = () => {
     useEffect(() => {
         const fetchPictures = async () => {
             try {
-                const response = await axios.get(`/cuts/final/${scheduledId}`);
+                const response = await authInstance.get(`/cuts/final/${scheduledId}`);
 
                 setFinalCuts(response.data);
             } catch (error) {
