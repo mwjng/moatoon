@@ -10,10 +10,10 @@ const WordInfo = ({ word, isChecked, onCheck }) => {
                 className="absolute top-[-50px] left-1/2 -translate-x-1/2 w-[400px] h-[80px]"
             />
             <div>
-                <h1 className="text-[40px] font-bold">{word.word}</h1>
+                <h1 className="text-[40px] font-bold">{word?.word}</h1>
                 <div className=" mt-4 text-left">
                     <p className="font-bold text-[28px]">뜻</p>
-                    {word.meaning.split('\\n').map((line, index) => (
+                    {word?.meaning.split('\\n').map((line, index) => (
                         <p key={index} className="my-4 text-[24px]">
                             {line}
                             <br />
@@ -22,7 +22,7 @@ const WordInfo = ({ word, isChecked, onCheck }) => {
                 </div>
                 <ul className="mt-12 text-left space-y-8 list-disc">
                     <p className="font-bold text-[28px]">예문</p>
-                    {word.examples.map((example, index) => (
+                    {word?.examples.map((example, index) => (
                         <li key={index} className="text-[24px]">
                             {example.split(/(\*.*?\*)/).map((part, index) =>
                                 part.startsWith('*') && part.endsWith('*') ? (
