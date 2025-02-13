@@ -12,36 +12,7 @@ const MyWordPage = () => {
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [keyword, setKeyword] = useState('');
-    const [words, setWords] = useState([
-        {
-            wordListId: 1,
-            word: 'word',
-            meaning: 'meaning',
-            failCount: 1,
-            examples: ['example1', 'example2'],
-        },
-        {
-            wordListId: 2,
-            word: 'word',
-            meaning: 'meaning',
-            failCount: 2,
-            examples: ['example1', 'example2'],
-        },
-        {
-            wordListId: 3,
-            word: 'word',
-            meaning: 'meaning',
-            failCount: 3,
-            examples: ['example1', 'example2'],
-        },
-        {
-            wordListId: 4,
-            word: 'word',
-            meaning: 'meaning',
-            failCount: 4,
-            examples: ['example1', 'example2'],
-        },
-    ]); // 스켈레톤 데이터
+    const [words, setWords] = useState([]);
     const failColor = ['#000000', '#8AD8FF', '#FFD105', '#FF90E1', '#8B8DFD', '#FF4D4D'];
     const [showHint, setShowHint] = useState(false);
 
