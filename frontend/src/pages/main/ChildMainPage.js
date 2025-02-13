@@ -6,6 +6,7 @@ import { getTodayAndUpComingSchedule } from '../../api/schedule';
 import { useSelector } from 'react-redux';
 
 
+
 function ChildMainPage() {
   // 오늘의 일정 & 다가오는 일정 조회 api
   const [scheduleData, setScheduleData] = useState({

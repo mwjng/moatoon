@@ -32,7 +32,9 @@ public class PartyRepositoryCustom implements PartyRepositoryCustomImpl {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(party.status.eq(PartyState.valueOf("BEFORE")))
+        LocalDateTime nowPlusOneHour = LocalDateTime.now().plusHours(1);
+
+        builder.and(party.startDate.after(nowPlusOneHour))
                 .and(party.isPublic.isTrue());
 
         if (request.getStartDate() != null && request.getEndDate() != null) {
