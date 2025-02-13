@@ -12,6 +12,7 @@ import { NavLink, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import WordButton from './WordButton';
 import ConfirmModal from './common/ConfirmModal';
+import { logout } from '../api/member';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
@@ -47,12 +48,18 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     };
 
     //로그아웃 핸들러
-    const logoutHandler = useCallback(() => {
+    const logoutHandler = async () => {
         setLogoutModal(false);
-        localStorage.removeItem('accessToken');
-
-        navigate('/login', { state: { fromLogout: true } });
-    }, [dispatch, navigate]);
+        try {
+            const res = await logout();
+            if (res.status == 200) {
+                localStorage.removeItem('accessToken');
+                navigate('/login', { state: { fromLogout: true } });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const logoutConfirmHandler = () => {
         setLogoutModal(true);
