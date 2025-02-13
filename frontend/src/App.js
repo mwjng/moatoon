@@ -5,7 +5,7 @@ import { getUserInfo } from './api/member';
 import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router';
 
-import BookGeneratorPage from './pages/BookGeneratorPage';
+import BookGeneratorPage from './pages/book/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/WaitingRoom';
