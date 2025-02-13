@@ -1,6 +1,6 @@
 package com._2.a401.moa.common.async;
 
-import com._2.a401.moa.auth.exception.AsyncExceptionHandler;
+import com._2.a401.moa.common.exception.AsyncExceptionHandler;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -241,8 +241,11 @@ export default function ManagerRegistPage() {
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
-            if (error.status == 500) {
+            if (error.response.data.code == 4015) {
                 setModalText('중복된 이메일입니다.');
+                setModalState(true);
+            } else if (error.status == 500) {
+                setModalText('이메일을 발송할 수 없습니다. 잠시 후 다시 시도해주세요.');
                 setModalState(true);
             }
         }

@@ -31,16 +31,16 @@ public class MailService {
             "<br><br>" +
             "임시 비밀번호 %s";
 
+    @Async
     public void sendCodeMail(String email) {
-        redisMailSevice.setCode(email, joinEmail(email));
+        String code = Integer.toString(makeRandomNumber());
+        joinEmail(email, code);
+        redisMailSevice.setCode(email, code);
     }
 
-    @Async
-    public String joinEmail(String email) {
-        String code = Integer.toString(makeRandomNumber());
+    public void joinEmail(String email, String code) {
         String content = String.format(EMAIL_CONTENT_TEMPLATE, code);
         mailSend(email, EMAIL_TITLE, content);
-        return code;
     }
 
 
@@ -71,25 +71,9 @@ public class MailService {
         return Integer.parseInt(randomNumber.toString());
     }
 
-    public String getTempPassword(){
-        char[] charSet = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
-
-        String str = "";
-
-        int idx = 0;
-        for (int i = 0; i < 10; i++) {
-            idx = (int) (charSet.length * Math.random());
-            str += charSet[idx];
-        }
-        return str;
-    }
-
     @Async
-    public String sendPwMail(String email) {
-        String newPw = getTempPassword();
-        String content = String.format(EMAIL_CONTENT_FOR_TEMP_TEMPLATE, newPw);
+    public void sendPwMail(String email, String code) {
+        String content = String.format(EMAIL_CONTENT_FOR_TEMP_TEMPLATE, code);
         mailSend(email, EMAIL_TITLE_FOR_TEMP_PW, content);
-        return newPw;
     }
 }
