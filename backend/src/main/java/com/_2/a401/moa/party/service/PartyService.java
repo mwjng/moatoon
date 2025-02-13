@@ -207,7 +207,17 @@ public class PartyService {
     }
 
     public PartyDetailResponse getPartyFindByPin(String pinNumber) {
-        Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT, "해당 핀번호로 조회된 입장 가능한 파티가 없습니다."));
+
+
+        Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE)
+                .orElseThrow(()-> new MoaException(SCHEDULE_NOT_FOUND));
+
+
+        LocalDateTime now = LocalDateTime.now();
+        if (party.getStartDate().minusHours(1).isBefore(now)) {
+            throw new MoaException(SCHEDULE_NOT_FOUND);
+        }
+
 
         List<PartyMemberResponse> members = party.getPartyMembers().stream()
                 .map(pm -> PartyMemberResponse.builder()
