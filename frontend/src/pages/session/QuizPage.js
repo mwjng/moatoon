@@ -140,7 +140,7 @@ const QuizPage = () => {
 
     return (
         <div className="bg-[#ACDB33] bg-opacity-30 h-screen flex flex-col">
-            <Navigation stage={'quiz'} stageTime={stageTime} onTimeOut={handleTimeOut} />
+            <Navigation stage={'quiz'} stageDuration={stageTime} onTimeOut={handleTimeOut} />
             <div className="flex grow px-20 gap-20">
                 <DndProvider backend={HTML5Backend}>
                     <div
