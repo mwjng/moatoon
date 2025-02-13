@@ -4,21 +4,21 @@ import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
-import com._2.a401.moa.party.dto.response.KeywordResponse;
-import com._2.a401.moa.party.dto.response.PartyDetailResponse;
+
+import com._2.a401.moa.party.dto.request.PartyMemberRequest;
+import com._2.a401.moa.party.dto.request.PartySearchRequest;
+import com._2.a401.moa.party.dto.response.*;
 import com._2.a401.moa.party.repository.KeywordRepository;
 import com._2.a401.moa.party.service.PartyService;
-import com._2.a401.moa.schedule.domain.Schedule;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/parties")
@@ -26,12 +26,11 @@ import java.util.stream.Collectors;
 public class PartyController {
     private final PartyService partyService;
     private final KeywordRepository keywordRepository;
-
     private final S3Service s3Service;
+
 
     @PostMapping
     public ResponseEntity<Long> createParty(
-
             @RequestParam("imageUrl") String imageUrl,
             @RequestPart("jsonData") CreatePartyRequest request) throws IOException {
 
@@ -50,6 +49,17 @@ public class PartyController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/pin")
+    public ResponseEntity<PartyDetailResponse> getPartyFindByPin(@RequestParam String pinNumber) {
+        PartyDetailResponse response = partyService.getPartyFindByPin(pinNumber);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping
+    public List<PartySearchResponse> searchParties(@ModelAttribute PartySearchRequest request) {
+        return partyService.searchParties(request);
+
+    }
+
 
     @GetMapping("/keyword")
     public List<KeywordResponse> getKeywords() {
@@ -58,5 +68,24 @@ public class PartyController {
                 .map(KeywordResponse::fromEntity)  // 엔티티 -> DTO 변환
                 .collect(Collectors.toList());
     }
+
+
+    @PostMapping("/{partyId}/members")
+    public ResponseEntity<Void> addChildrenToParty(
+            @PathVariable Long partyId,
+            @RequestBody PartyMemberRequest childIds){
+
+            partyService.addChildrenToParty(partyId, childIds.getChildIds());
+            return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{partyId}/members")
+    public ResponseEntity<Void> removeChildFromParty(
+            @PathVariable Long partyId,
+            @RequestParam Long childId) {
+            partyService.removeChildFromParty(partyId, childId);
+        return ResponseEntity.ok().build();
+    }
+
 
 }

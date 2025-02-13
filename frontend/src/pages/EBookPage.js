@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PaginationButton from '../components/PaginationButton';
 import backgroundImage from '../assets/ebook1.png';
-import CutCard from '../components/CutCard';
+import CutCard from '../components/CutSvgCard';
 
 const formatDate = dateString => {
     const date = new Date(dateString);

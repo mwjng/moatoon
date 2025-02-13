@@ -5,7 +5,7 @@ import { getUserInfo } from './api/member';
 import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router';
 
-import BookGeneratorPage from './pages/BookGeneratorPage';
+import BookGeneratorPage from './pages/book/BookGeneratorPage';
 import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/session/WaitingRoom';
@@ -21,10 +21,11 @@ import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
 import QuizPage from './pages/session/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
-import CutAllPage from './pages/CutAllPage';
-import DrawingPage from './pages/DrawingPage';
+import CutAllPage from './pages/draw/CutAllPage';
+import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
 import SessionContainer from './pages/session/SessionContainer';
+import EBookPage from './pages/EBookPage';
 
 function App() {
     const location = useLocation();
@@ -35,6 +36,11 @@ function App() {
 
     useEffect(() => {
         let token = localStorage.getItem('accessToken');
+        const fromLogout = location.state?.fromLogout; // ✅ 로그아웃으로 이동했는지 확인
+
+        if (fromLogout) {
+            dispatch(clearUserInfo()); // ✅ 로그인 정보 초기화
+        }
 
         const fetchUserInfo = async () => {
             if (!token) {
@@ -119,7 +125,6 @@ function App() {
                     <Route path="/session" element={<SessionContainer/>}/>
                     <Route path="/session">
                         <Route path="search" />
-                        <Route path="waiting" element={<WaitingRoom />}/>
                         <Route path="overview" element={<CutAllPage />} />
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
@@ -128,12 +133,14 @@ function App() {
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
                     <Route path="library" element={<LibraryPage />} />
+                    <Route path="ebook" element={<EBookPage />} />
                     <Route path="word">
                         <Route index element={<MyWordPage />} />
                     </Route>
                     <Route path="user">
                         <Route index element={<ChangeUserInfoPage />} />
                     </Route>
+                    <Route path="waiting" element={<WaitingRoom />}></Route>
                     <Route path="home" element={<MainPage />}></Route>
                 </Routes>
             )}

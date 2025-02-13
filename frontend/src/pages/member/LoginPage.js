@@ -22,8 +22,8 @@ export default function LoginPage() {
         password: '',
     });
 
-    const [alertModal, setAlertModal] = useState(false);
-    const [checkModal, setCheckModal] = useState(false);
+    const [modalText, setModalText] = useState('');
+    const [modalState, setModalState] = useState(false);
 
     const changeValue = (key, value) => {
         setLoginState(prevState => ({
@@ -33,21 +33,30 @@ export default function LoginPage() {
     };
 
     const loginHandler = async () => {
+        if (!loginState.loginId || !loginState.password) {
+            setModalText('입력값을 확인해주세요.');
+            setModalState(true);
+            return;
+        }
         try {
             const res = await login(loginState, navigate);
         } catch (error) {
-            if (error.status == 400) {
-                setCheckModal(true);
+            if (error.response.data.code == 4018) {
+                setModalText('보호자 계정에서 등록 후 로그인 해주세요');
+                setModalState(true);
+            } else if (error.response.data.code == 4012) {
+                setModalText('유효하지 않은 회원정보입니다.');
+                setModalState(true);
             } else {
-                setAlertModal(true);
+                setModalText('아이디 또는 비밀번호가 일치하지 않습니다.');
+                setModalState(true);
             }
             console.error('로그인 중 에러 발생:', error);
         }
     };
 
-    const closeAlertModal = () => {
-        setAlertModal(false);
-        setCheckModal(false);
+    const closeModal = () => {
+        setModalState(false);
     };
 
     return (
@@ -66,12 +75,8 @@ export default function LoginPage() {
                     </Link>
                 </div>
             </AuthModal>
-            <AlertModal
-                text="아이디 또는 비밀번호가 일치하지 않습니다."
-                modalState={alertModal}
-                closeHandler={closeAlertModal}
-            />
-            <AlertModal text="보호자 계정에서 등록해주세요" modalState={checkModal} closeHandler={closeAlertModal} />
+
+            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 package com._2.a401.moa.member.repository;
 
 import com._2.a401.moa.member.domain.Member;
+import com._2.a401.moa.member.domain.MemberState;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -23,4 +24,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByIdAndManagerId(Long memberId, Long managerId);
 
     Optional<Member> findByEmailAndName(String email, String name);
+
+    Optional<Member> findById(long id);
+
+    List<Member> findByManagerIdAndStatus(long memberId, MemberState memberState);
+
+    Optional<Member> findByIdAndStatus(Long childId, MemberState memberState);
+
+    Optional<Member> findByLoginIdAndStatus(String loginId, MemberState memberState);
 }

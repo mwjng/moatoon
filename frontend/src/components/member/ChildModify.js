@@ -1,32 +1,37 @@
 import React, { useRef, useState } from 'react';
-import Background from '../../components/member/Backround';
-import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
 import bbi from '../../assets/bbi.png';
-import RegistInput from '../../components/member/RegistInput';
-import { regist, loginIdCheck, uploadImage } from '../../api/member';
+import AuthModal from '../../components/member/AuthModal';
+import ModifyInput from '../../components/member/ModifyInput';
+import { uploadImage, modify, removeMember } from '../../api/member';
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
+import { useSelector } from 'react-redux';
+import Navigation from '../../components/Navigation';
+import ConfirmModal from '../common/ConfirmModal';
 
-export default function ChildRegistPage() {
+export default function ChildModify(props) {
     const navigate = useNavigate();
+    const userInfo = useSelector(state => state.user.userInfo);
     const [imgFile, setImgFile] = useState('');
-    const [canRegist, setCanRegist] = useState(false);
     const [modalState, setModalState] = useState(false);
-    const [registModalState, setRegistModalState] = useState(false);
-    const imgRef = useRef();
-    const [registState, setRegistState] = useState([
+    const [confirmModalState, setConfirmModalState] = useState(false);
+    const [modalText, setModalText] = useState('');
+    const imgRef = useRef(userInfo.imageUrl);
+    const [modifyState, setModifyState] = useState([
         {
             id: 'loginId',
-            value: '아이디',
+            label: '아이디',
+            default: userInfo.loginId,
             type: 'text',
-            required: true,
+            disabled: true,
             comment: '',
             cmtColor: '#000',
         },
         {
             id: 'password',
-            value: '비밀번호',
+            value: '',
+            placeholder: '새로운 비밀번호',
             type: 'password',
             required: true,
             comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
@@ -34,7 +39,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'confirmPassword',
-            value: '비밀번호 확인',
+            value: '',
+            placeholder: '비밀번호 확인',
             type: 'password',
             required: true,
             comment: '',
@@ -42,15 +48,18 @@ export default function ChildRegistPage() {
         },
         {
             id: 'name',
-            value: '이름',
+            label: '이름',
+            default: userInfo.name,
             type: 'text',
-            required: true,
+            disabled: true,
             comment: '',
             cmtColor: '#000',
         },
         {
             id: 'nickname',
-            value: '닉네임',
+            label: '닉네임',
+            value: userInfo.nickname,
+            default: userInfo.nickname,
             type: 'text',
             required: true,
             comment: '',
@@ -59,14 +68,7 @@ export default function ChildRegistPage() {
     ]);
 
     const changeValue = (key, value) => {
-        setRegistState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
-
-        if (key === 'loginId') {
-            setRegistState(prevState =>
-                prevState.map(input => (input.id === 'loginId' ? { ...input, comment: '' } : input)),
-            );
-            setCanRegist(false);
-        }
+        setModifyState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
 
         if (key === 'password') {
             validatePassword(value);
@@ -75,25 +77,9 @@ export default function ChildRegistPage() {
         if (key === 'confirmPassword') {
             checkPasswordMatch(value);
         }
-
-        if (key === 'name') {
-            if (value.length < 2 || value.length > 10) {
-                setRegistState(prevState =>
-                    prevState.map(input =>
-                        input.id === 'name'
-                            ? { ...input, comment: '이름은 2자 이상 10자 이하여야 합니다.', cmtColor: '#FF0000' }
-                            : input,
-                    ),
-                );
-            } else {
-                setRegistState(prevState =>
-                    prevState.map(input => (input.id === 'name' ? { ...input, comment: '', cmtColor: '#000' } : input)),
-                );
-            }
-        }
         if (key === 'nickname') {
             if (value.length > 20) {
-                setRegistState(prevState =>
+                setModifyState(prevState =>
                     prevState.map(input =>
                         input.id === 'nickname'
                             ? { ...input, comment: '닉네임은 20자 이내로 설정해주세요.', cmtColor: '#FF0000' }
@@ -101,48 +87,12 @@ export default function ChildRegistPage() {
                     ),
                 );
             } else {
-                setRegistState(prevState =>
+                setModifyState(prevState =>
                     prevState.map(input =>
                         input.id === 'nickname' ? { ...input, comment: '', cmtColor: '#000' } : input,
                     ),
                 );
             }
-        }
-    };
-
-    const checkDuplicate = async loginId => {
-        if (!loginId) return;
-
-        try {
-            const res = await loginIdCheck(loginId);
-            if (res.status == 204) {
-                setCanRegist(true);
-                setRegistState(prevState =>
-                    prevState.map(input =>
-                        input.id === 'loginId'
-                            ? {
-                                  ...input,
-                                  comment: '사용 가능한 아이디입니다.',
-                                  cmtColor: '#009951',
-                              }
-                            : input,
-                    ),
-                );
-            }
-        } catch (error) {
-            console.error('아이디 중복 확인 오류:', error);
-
-            setRegistState(prevState =>
-                prevState.map(input =>
-                    input.id === 'loginId'
-                        ? {
-                              ...input,
-                              comment: '중복된 아이디입니다.',
-                              cmtColor: '#FF0000',
-                          }
-                        : input,
-                ),
-            );
         }
     };
 
@@ -154,7 +104,7 @@ export default function ChildRegistPage() {
             /[0-9]/.test(password) &&
             /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-        setRegistState(prevState =>
+        setModifyState(prevState =>
             prevState.map(input =>
                 input.id === 'password'
                     ? {
@@ -170,10 +120,10 @@ export default function ChildRegistPage() {
     };
 
     const checkPasswordMatch = confirmPassword => {
-        const password = registState.find(input => input.id === 'password').value;
+        const password = modifyState.find(input => input.id === 'password').value;
         const isMatch = password === confirmPassword;
 
-        setRegistState(prevState =>
+        setModifyState(prevState =>
             prevState.map(input =>
                 input.id === 'confirmPassword'
                     ? {
@@ -194,14 +144,14 @@ export default function ChildRegistPage() {
         setImgFile(imgUrl);
     };
 
-    const registHandler = async () => {
+    const modifyHandler = async () => {
         if (
-            canRegist &&
-            registState.find(input => input.id === 'password').value ===
-                registState.find(input => input.id === 'confirmPassword').value &&
-            registState.find(input => input.id === 'name').comment == ''
+            modifyState.find(input => input.id === 'password').value ===
+                modifyState.find(input => input.id === 'confirmPassword').value &&
+            modifyState.find(input => input.id === 'nickname').comment == '' &&
+            modifyState.find(input => input.id === 'nickname').value.length > 0
         ) {
-            const registInfo = registState.reduce(
+            const modifyInfo = modifyState.reduce(
                 (acc, input) => {
                     acc[input.id] = input.value;
                     return acc;
@@ -209,28 +159,48 @@ export default function ChildRegistPage() {
                 { role: 'CHILD', imgUrl: imgFile ? imgFile : null },
             );
 
-            const res = await regist(registInfo, navigate);
-
-            if (res.status === 201) {
-                setRegistModalState(true);
+            const res = await modify(modifyInfo);
+            console.log(res);
+            if (res.status === 200) {
+                setModalText('회원정보 수정이 완료되었습니다.');
+                setModalState(true);
             }
         } else {
+            setModalText('입력값을 확인해주세요');
             setModalState(true);
         }
     };
 
     const closeModal = () => {
         setModalState(false);
+        if (modalText === '회원정보 수정이 완료되었습니다.') {
+            props.changeState();
+        }
     };
-    const closeRegistModal = () => {
-        setRegistModalState(false);
-        navigate('/login');
+
+    const removeHandler = () => {
+        setConfirmModalState(true);
+    };
+
+    const deleteConfirm = async () => {
+        try {
+            const res = await removeMember();
+            if (res.status == 200) {
+                localStorage.removeItem('accessToken');
+                navigate('/', { state: { fromLogout: true } });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const closeConfirm = () => {
+        setConfirmModalState(false);
     };
 
     return (
-        <div style={{ position: 'relative' }}>
-            <Background />
-            <AuthModal title="아동 회원가입">
+        <>
+            <AuthModal title="회원정보 수정">
                 <div className="flex gap-2">
                     <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
                         <img
@@ -261,20 +231,19 @@ export default function ChildRegistPage() {
                         ref={imgRef}
                     />
                 </div>
-                <RegistInput
-                    inputs={registState}
-                    width="300px"
-                    changeFunction={changeValue}
-                    checkDuplicate={checkDuplicate}
-                />
-                <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
+                <ModifyInput inputs={modifyState} width="300px" changeFunction={changeValue} />
+                <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="변경하기" onClickHandler={modifyHandler} />
+                <p style={{ cursor: 'pointer', fontSize: '14px' }} onClick={removeHandler}>
+                    탈퇴하기
+                </p>
             </AuthModal>
-            <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
-            <AlertModal
-                text="회원가입이 완료되었습니다."
-                modalState={registModalState}
-                closeHandler={closeRegistModal}
+            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
+            <ConfirmModal
+                text="정말 탈퇴하시겠습니까?"
+                confirmHandler={deleteConfirm}
+                cancelHandler={closeConfirm}
+                modalState={confirmModalState}
             />
-        </div>
+        </>
     );
 }
