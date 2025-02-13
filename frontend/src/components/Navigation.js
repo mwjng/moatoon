@@ -12,6 +12,8 @@ import { NavLink, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import WordButton from './WordButton';
 import ConfirmModal from './common/ConfirmModal';
+import { getLearningWords } from '../api/word';
+import WordModal from './WordModal';
 import { logout } from '../api/member';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
@@ -99,6 +101,17 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
         return `${hours}:${minutes}`;
     };
 
+    //단어 불러오기
+    const [words, setWords] = useState([]);
+
+    const [selectedWord, setSelectedWord] = useState(null);
+
+    useEffect(() => {
+        getLearningWords(1).then(response => {
+            setWords(response.data.words);
+        });
+    }, []);
+
     // 남은 시간 형식 변환
     const getRemainingTimeFormatted = () => {
         if (remainTime <= 0) return '00:00'; // 시간이 지났다면 "00:00" 반환
@@ -107,6 +120,14 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
         const seconds = Math.floor((remainTime % MINUTE) / SECOND);
 
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+    const handleWordClick = wordData => {
+        setSelectedWord(wordData); // 단어를 클릭하면 해당 단어 정보를 설정
+    };
+
+    const handleCloseModal = () => {
+        setSelectedWord(null); // 모달 닫을 때 selectedWord를 null로 설정
     };
 
     useEffect(() => {
@@ -201,18 +222,17 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
                                 <div className="flex items-center gap-8">
                                     <span className="text-2xl font-bold">오늘의 단어</span>
                                     <div className="flex gap-8">
-                                        <WordButton color="bg-dark-yellow" size="md">
-                                            단어1
-                                        </WordButton>
-                                        <WordButton color="bg-dark-yellow" size="md">
-                                            단어2
-                                        </WordButton>
-                                        <WordButton color="bg-dark-yellow" size="md">
-                                            단어3
-                                        </WordButton>
-                                        <WordButton color="bg-dark-yellow" size="md">
-                                            단어4
-                                        </WordButton>
+                                        {words.map(wordData => (
+                                            <WordButton
+                                                key={wordData.wordId}
+                                                color="bg-dark-yellow"
+                                                size="large"
+                                                onClick={() => handleWordClick(wordData)}
+                                            >
+                                                {wordData.word}
+                                            </WordButton>
+                                        ))}
+                                        {selectedWord && <WordModal word={selectedWord} onClose={handleCloseModal} />}
                                     </div>
                                 </div>
                                 <div></div>

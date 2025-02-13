@@ -1,8 +1,6 @@
-import axios from 'axios';
 import { setUserInfo } from '../store/userSlice';
 import store from '../store/store';
-import { useSelector } from 'react-redux';
-import { authInstance } from './axios';
+import { authInstance, publicInstance } from './axios';
 
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
@@ -40,7 +38,7 @@ export const modify = async modifyInfo => {
 
 export const refreshAccessToken = async () => {
     try {
-        const res = await axios.post(AUTH_API_URL + '/refresh', {}, { withCredentials: true });
+        const res = await publicInstance.post(AUTH_API_URL + '/refresh', {}, { withCredentials: true });
         return res.data.accessToken;
     } catch (err) {
         console.error('토큰 갱신 실패:', err);
@@ -50,7 +48,7 @@ export const refreshAccessToken = async () => {
 
 export const searchChildById = async childId => {
     try {
-        const res = await axios.get(`${MEMBERS_API_URL}/search`, {
+        const res = await publicInstance.get(`${MEMBERS_API_URL}/search`, {
             params: {
                 loginId: childId,
             },
@@ -64,7 +62,7 @@ export const searchChildById = async childId => {
 
 export const checkEmailCode = async (email, code) => {
     try {
-        const res = await axios.post(`${AUTH_API_URL}/email/code`, { email, code });
+        const res = await publicInstance.post(`${AUTH_API_URL}/email/code`, { email, code });
         return res;
     } catch (err) {
         console.error(err);
@@ -74,7 +72,7 @@ export const checkEmailCode = async (email, code) => {
 
 export const sendEmailCode = async email => {
     try {
-        const res = await axios.post(`${AUTH_API_URL}/email/check`, { email });
+        const res = await publicInstance.post(`${AUTH_API_URL}/email/check`, { email });
         return res;
     } catch (err) {
         console.error(err);
@@ -106,7 +104,7 @@ export const uploadImage = async file => {
 
 export const regist = async (registInfo, navigate) => {
     try {
-        const res = await axios.post(MEMBERS_API_URL, registInfo);
+        const res = await publicInstance.post(MEMBERS_API_URL, registInfo);
         return res;
     } catch (err) {
         console.error(err);
@@ -116,7 +114,7 @@ export const regist = async (registInfo, navigate) => {
 
 export const loginIdCheck = async loginId => {
     try {
-        const res = await axios.get(`${AUTH_API_URL}/id/check/${loginId}`);
+        const res = await publicInstance.get(`${AUTH_API_URL}/id/check/${loginId}`);
         return res;
     } catch (err) {
         console.error(err);
@@ -126,7 +124,7 @@ export const loginIdCheck = async loginId => {
 
 export const login = async (loginInfo, navigate) => {
     try {
-        const res = await axios.post(AUTH_API_URL + '/login', loginInfo);
+        const res = await publicInstance.post(AUTH_API_URL + '/login', loginInfo);
         const token = res.data.accessToken;
 
         if (token) {
@@ -161,7 +159,7 @@ export const getUserInfo = async () => {
 
 export const findId = async userInfo => {
     try {
-        const res = await axios.post(MEMBERS_API_URL + '/managers/id', userInfo);
+        const res = await publicInstance.post(MEMBERS_API_URL + '/managers/id', userInfo);
         return res;
     } catch (err) {
         console.error(err);
@@ -170,7 +168,7 @@ export const findId = async userInfo => {
 };
 export const findPw = async userInfo => {
     try {
-        const res = await axios.post(MEMBERS_API_URL + '/password', userInfo);
+        const res = await publicInstance.post(MEMBERS_API_URL + '/password', userInfo);
         return res;
     } catch (err) {
         console.error(err);

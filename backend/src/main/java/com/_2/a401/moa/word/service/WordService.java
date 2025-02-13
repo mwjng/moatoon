@@ -45,7 +45,7 @@ public class WordService {
         int totalPage = (int) (totalCount % 4) == 0 ? (int) (totalCount / 4) : (int) (totalCount / 4) + 1;
         int searchPage;
 
-        if (page == null || page < 1) {
+        if (page == null || page < 1 || totalPage == 0) {
             searchPage = 1;
         } else if (page > totalPage) {
             searchPage = totalPage;

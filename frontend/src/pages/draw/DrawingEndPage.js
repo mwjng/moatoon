@@ -8,13 +8,15 @@ import WordButton from '../../components/WordButton.js';
 
 const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
     const [finalCuts, setFinalCuts] = useState([]);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-    const scheduledId = 11;
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
+    const scheduledId = 12;
 
+    //완성된 네컷 이미지 불러오기
     useEffect(() => {
         const fetchPictures = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/cuts/final/${scheduledId}`);
+                const response = await axios.get(`/cuts/final/${scheduledId}`);
+
                 setFinalCuts(response.data);
             } catch (error) {
                 console.error('그림 데이터를 불러오는 중 오류 발생:', error);
@@ -22,12 +24,13 @@ const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
         };
         fetchPictures();
 
+        // 1분 후에 버튼 활성화
         const timer = setTimeout(() => {
             console.log('버튼 활성화');
             setIsButtonDisabled(false);
-        }, 5000); // 테스트를 위해 5초로 설정
+        }, 60000);
 
-        return () => clearTimeout(timer);
+        return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 제거
     }, [scheduledId]);
 
     const handleClick = () => {

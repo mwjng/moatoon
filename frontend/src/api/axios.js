@@ -3,7 +3,10 @@ import { refreshAccessToken } from './member';
 import store from '../store/store';
 
 // 인증이 필요한 요청을 위한 axios 인스턴스 생성
-const authInstance = axios.create();
+const authInstance = axios.create({
+    baseURL: process.env.REACT_APP_SERVER_URL,
+    withCredentials: true,
+});
 
 // 요청 인터셉터 추가
 authInstance.interceptors.request.use(config => {
@@ -38,6 +41,9 @@ authInstance.interceptors.response.use(
 );
 
 // 인증이 필요없는 요청을 위한 axios 인스턴스 생성
-const publicInstance = axios.create();
+const publicInstance = axios.create({
+    baseURL: process.env.REACT_APP_SERVER_URL,
+    withCredentials: true,
+});
 
 export { authInstance, publicInstance };

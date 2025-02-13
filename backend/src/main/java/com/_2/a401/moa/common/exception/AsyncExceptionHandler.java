@@ -1,4 +1,4 @@
-package com._2.a401.moa.auth.exception;
+package com._2.a401.moa.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;

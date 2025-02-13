@@ -25,7 +25,6 @@ import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 @Service
 @Slf4j
 public class SessionStageService {
-    private final SessionService sessionService;
     private final SessionRedisRepository sessionRedisRepository;
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final SimpMessagingTemplate messagingTemplate;
