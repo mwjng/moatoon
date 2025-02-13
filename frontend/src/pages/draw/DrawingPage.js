@@ -4,7 +4,7 @@ import { fetchCutsInfo } from '../../store/cutsSlice';
 import Overview from '../../components/draw/Overview';
 import Drawing from '../../components/draw/Drawing';
 import Navigation from '../../components/Navigation';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 
 const DrawingPage = () => {

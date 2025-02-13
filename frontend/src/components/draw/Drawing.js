@@ -4,7 +4,6 @@ import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
-import { useSelector } from 'react-redux';
 
 const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
     const stageRef = useRef(null);
