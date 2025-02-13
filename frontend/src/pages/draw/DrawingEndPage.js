@@ -11,7 +11,7 @@ const DrawingEndPage = () => {
     const navigate = useNavigate();
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
-    const scheduledId = 11;
+    const scheduledId = 12;
 
     //완성된 네컷 이미지 불러오기
     useEffect(() => {

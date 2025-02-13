@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import Navigation from '../Navigation.js';
 import CanvasGrid from '../draw/CanvasGrid.js';
 
-const Overview = ({ toggleView }) => {
-    const [partyId, setpartyId] = useState(2); // 현재 방 ID
-    const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
+const Overview = ({ toggleView, cutsInfo }) => {
+    const partyId = cutsInfo[0].partyId;
+    const cutIds = cutsInfo.map(item => item.cutId);
 
     return (
         <div className="h-screen bg-light-cream-yellow">
