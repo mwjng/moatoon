@@ -34,8 +34,8 @@ const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
     }, [scheduledId]);
 
     const handleClick = () => {
-        console.log('마무리 버튼 클릭');
         if (typeof onTimeout === 'function') {
+            console.log('마무리 버튼 클릭');
             onTimeout();
         }
     };

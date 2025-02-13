@@ -29,7 +29,6 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
-    let timeoutNotEvented = true;
 
     // 서버와 클라이언트의 시간 차이 계산
     useEffect(() => {
@@ -132,6 +131,8 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
 
     useEffect(() => {
         if (stage && sessionStartTime) {
+            let timeoutNotEvented = true;
+            
             // 타이머 초기화
             const updateRemainTime = () => {
                 const sessionStartTimestamp = new Date(sessionStartTime).getTime();
@@ -158,7 +159,7 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
 
     return (
         <>

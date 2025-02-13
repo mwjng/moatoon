@@ -43,7 +43,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
 
     // 웹소켓 클라이언트 초기화
     useEffect(() => {
-        const socket = new SockJS('/ws');
+        const socket = new SockJS('http://localhost:8080/ws');
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {

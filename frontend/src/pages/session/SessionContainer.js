@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import WaitingRoom from './WaitingRoom';
 import WordLearning from './WordLearning';
-import CutAllPage from '../draw/CutAllPage';
 import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
@@ -69,6 +68,7 @@ const SessionContainer = () => {
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     useEffect(() => {
         console.log("세션 stage 업데이트됨: ", sessionStageData);
+        renderStage();
     }, [sessionStageData]);
 
     const { 

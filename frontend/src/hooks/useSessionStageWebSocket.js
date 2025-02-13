@@ -10,7 +10,7 @@ export const useSessionStageWebSocket = (scheduleId) => {
 
   useEffect(() => {
     const client = new Client({
-      webSocketFactory: () => new SockJS('/ws'),
+      webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
       connectHeaders: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`
       },
