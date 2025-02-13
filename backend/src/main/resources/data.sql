@@ -197,7 +197,7 @@ INSERT INTO PARTY_MEMBER (member_id, party_id, created_at, modified_at) VALUES
 -----------------------------------------------------------
 -- [BEFORE] 파티 1-3: 에피소드 수 10개
 INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) VALUES
-(1, '2025-02-12 08:00:00', 'THURSDAY', 1, 'BEFORE'),
+(1, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
 (1, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),
 (2, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
 (2, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),

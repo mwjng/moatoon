@@ -5,13 +5,19 @@ import com._2.a401.moa.schedule.dto.request.ReadyRequest;
 import com._2.a401.moa.schedule.service.SessionStageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@Controller
+@RestController
 public class SessionStageController {
     private final JwtUtil jwtUtil;
     private final SessionStageService sessionStageService;
+
+    @GetMapping("/test-redis")
+    public void testRedis() {
+        sessionStageService.dummyRedis();
+    }
 
     @MessageMapping("/ready")
     public void updateReadyStatus(ReadyRequest request) {

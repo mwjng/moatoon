@@ -3,12 +3,11 @@ package com._2.a401.moa.schedule.service;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
-import com._2.a401.moa.schedule.domain.SessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
 import com._2.a401.moa.schedule.dto.response.*;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
-import com._2.a401.moa.schedule.repository.SessionMemberRepository;
-import com._2.a401.moa.schedule.repository.SessionRepository;
+import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
+import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,7 @@ public class ScheduleService {
     private final MemberRepository memberRepository;
 
     private static final int MAX_UPCOMING_SCHEDULES = 3;
-    private final SessionMemberRepository sessionMemberRepository;
-    private final SessionRepository sessionRepository;
+    private final SessionRedisRepository sessionRedisRepository;
 
 
     public MonthlyChildrenSchedulesResponse getMonthlyChildrenSchedules(Long memberId, int year, int month) {
@@ -93,7 +91,7 @@ public class ScheduleService {
             // 만약 DB에 Schedule status가 BEFORE라면 redis에 올라가지 않은 상태!
             return FullSessionStage.WAITING;
         }
-        return sessionRepository.fetchByScheduleId(schedule.scheduleId()).getSessionStage();
+        return sessionRedisRepository.fetchByScheduleId(schedule.scheduleId()).getSessionStage();
     }
 
     private boolean isToday(LocalDateTime dateTime) {

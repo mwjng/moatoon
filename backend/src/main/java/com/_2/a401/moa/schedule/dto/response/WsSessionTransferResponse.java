@@ -10,6 +10,7 @@ public record WsSessionTransferResponse(
         String type,
         FullSessionStage currentSessionStage,
         FullSessionStage nextSessionStage,
+        LocalDateTime severTime,
         LocalDateTime sessionStartTime,
         Long sessionDuration
 ) {

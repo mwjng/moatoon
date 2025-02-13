@@ -9,8 +9,8 @@ import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.dto.response.SessionTokenResponse;
 import com._2.a401.moa.schedule.manager.VideoConferenceManager;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
-import com._2.a401.moa.schedule.repository.SessionMemberRepository;
-import com._2.a401.moa.schedule.repository.SessionRepository;
+import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
+import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,21 +32,21 @@ public class SessionService {
     private final VideoConferenceManager videoConferenceManager;
     private final ScheduleRepository scheduleRepository;
     private final PartyMemberRepository partyMemberRepository;
-    private final SessionRepository sessionRepository;
-    private final SessionMemberRepository sessionMemberRepository;
+    private final SessionRedisRepository sessionRedisRepository;
+    private final SessionMemberRedisRepository sessionMemberRedisRepository;
 
     public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
         validateSessionJoin(member, scheduleId);
-        final String sessionId = sessionRepository.fetchByScheduleId(scheduleId).getSessionId();
+        final String sessionId = sessionRedisRepository.fetchByScheduleId(scheduleId).getSessionId();
         final String token = videoConferenceManager.createConnection(sessionId);
 
-        final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.addMember(member.getId());
         return new SessionTokenResponse(token);
     }
 
     public synchronized void leave(final Member member, final Long scheduleId) {
-        final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.removeMember(member.getId());
     }
 
@@ -54,11 +54,11 @@ public class SessionService {
         scheduleRepository.validateExistsById(scheduleId);
         scheduleRepository.completeScheduleById(scheduleId);
 
-        final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
-        sessionMemberRepository.delete(sessionMember);
+        final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
+        sessionMemberRedisRepository.delete(sessionMember);
 
-        final Session session = sessionRepository.fetchByScheduleId(scheduleId);
-        sessionRepository.delete(session);
+        final Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
+        sessionRedisRepository.delete(session);
     }
 
     private void validateSessionJoin(final Member member, final Long scheduleId) {
@@ -77,14 +77,14 @@ public class SessionService {
     }
 
     private void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
-        final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         if (sessionMember.isMemberExists(member.getId())) {
             throw new MoaException(INVALID_REQUEST);
         }
     }
 
     private void validateSessionCapacity(final Long scheduleId) {
-        final SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         final int memberCount = sessionMember.getMemberCount();
         if(memberCount >= MAX_SESSION_CAPACITY) {
             throw new MoaException(SESSION_CAPACITY_EXCEEDED);
@@ -103,14 +103,6 @@ public class SessionService {
         final Schedule schedule = scheduleRepository.fetchById(scheduleId);
         final List<Long> memberIds = partyMemberRepository.findMemberIdsByPartyId(schedule.getParty().getId());
         if (!memberIds.contains(member.getId())) {
-            throw new MoaException(INVALID_REQUEST);
-        }
-    }
-
-    public void validateMemberPermission(Long memberId, final Long scheduleId) {
-        final Schedule schedule = scheduleRepository.fetchById(scheduleId);
-        final List<Long> memberIds = partyMemberRepository.findMemberIdsByPartyId(schedule.getParty().getId());
-        if (!memberIds.contains(memberId)) {
             throw new MoaException(INVALID_REQUEST);
         }
     }

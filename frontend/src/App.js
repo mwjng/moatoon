@@ -24,6 +24,7 @@ import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
 import CutAllPage from './pages/CutAllPage';
 import DrawingPage from './pages/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
+import SessionContainer from './pages/session/SessionContainer';
 
 function App() {
     const location = useLocation();
@@ -115,8 +116,10 @@ function App() {
                         <Route path="id" element={<FindIdPage />} />
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
+                    <Route path="/session" element={<SessionContainer/>}/>
                     <Route path="/session">
                         <Route path="search" />
+                        <Route path="waiting" element={<WaitingRoom />}/>
                         <Route path="overview" element={<CutAllPage />} />
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
@@ -131,7 +134,6 @@ function App() {
                     <Route path="user">
                         <Route index element={<ChangeUserInfoPage />} />
                     </Route>
-                    <Route path="waiting" element={<WaitingRoom />}></Route>
                     <Route path="home" element={<MainPage />}></Route>
                 </Routes>
             )}

@@ -5,8 +5,8 @@ import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.dto.response.WsReadyStatusResponse;
 import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
-import com._2.a401.moa.schedule.repository.SessionMemberRepository;
-import com._2.a401.moa.schedule.repository.SessionRepository;
+import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
+import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,29 +25,31 @@ import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 @Slf4j
 public class SessionStageService {
     private final SessionService sessionService;
-    private final SessionRepository sessionRepository;
-    private final SessionMemberRepository sessionMemberRepository;
+    private final SessionRedisRepository sessionRedisRepository;
+    private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final SimpMessagingTemplate messagingTemplate;
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
-    private void dummyRedis(){
-        // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WAITING 상태임(세션 시작 30분전부터)
-        final Session session = new Session(1L, "openviduSessionId", WAITING);
-        sessionRepository.save(session);
+    public void dummyRedis(){
+        // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WORD 상태임(세션 시작 30분전부터)
+        final Session session = new Session(1L, "openviduSessionId", WAITING, LocalDateTime.now().minusMinutes(9));
+        sessionRedisRepository.save(session);
 
         SessionMember sessionMember = new SessionMember(1L);
         sessionMember.addMember(13L);
-        sessionMemberRepository.save(sessionMember);
+        sessionMemberRedisRepository.save(sessionMember);
+
+        setWaitingRoomTimer(1L);
     }
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
-        dummyRedis();
+        //dummyRedis();
         log.info("updateReadyStatus: scheduleId={}, memberId={}", scheduleId, memberId);
         //sessionService.validateMemberPermission(memberId, scheduleId); // 권한 검증
 
         // Redis에서 sessionMember 불러오기
-        SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.setReadyStatus(memberId, isReady); // 준비 상태 변경
 
         if (sessionMember.checkAllMembersReady()) {
@@ -68,11 +70,10 @@ public class SessionStageService {
         messagingTemplate.convertAndSend("/topic/session-stage/" + scheduleId, response);
     }
 
-    // 모두 레디가 되었을 경우 : 다음 단계로 이동
+    // 다음 단계로 이동
     private void handleSessionTransfer(Long scheduleId) {
-        log.info("handleSessionTransfer: scheduleId={}", scheduleId);
         // 현재 세션 정보 조회
-        Session session = sessionRepository.fetchByScheduleId(scheduleId);
+        Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
         FullSessionStage currentSessionStage = session.getSessionStage(); // 현재 단계
 
         // 다음 단계 및 시작시간 계산
@@ -81,14 +82,17 @@ public class SessionStageService {
 
         // [Redis- session:scheduleId 정보 변경]  다음 세션으로 넘어가면서, sessionStage 및 startTime 갱신
         session.updateSessionStageAndStartTime(nextSessionStage, now);
+        sessionRedisRepository.save(session);  // 변경사항을 Redis에 저장
 
         // [Redis- sessionMember:scheduleId 정보 변경] Ready 상태 초기화
-        SessionMember sessionMember = sessionMemberRepository.fetchByScheduleId(scheduleId);
+        SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.resetReadyStatus();
+        sessionMemberRedisRepository.save(sessionMember);
+        log.info("handleSessionTransfer: scheduleId={}, ", scheduleId);
 
         // 다음 타이머 예약
         if (nextSessionStage != FullSessionStage.DONE) {
-            setEndTimeTimer(scheduleId, now.plusSeconds(nextSessionStage.getDuration()), currentSessionStage);
+            setEndTimeTimer(scheduleId, now.plusSeconds(nextSessionStage.getDuration()), nextSessionStage);
         }
 
         // 세션 전환 메시지 생성
@@ -102,19 +106,24 @@ public class SessionStageService {
 
         // 세션 전환 메시지 브로드캐스트
         messagingTemplate.convertAndSend("/topic/session-stage/" + scheduleId, response);
-        log.info("세션 전환 메세지 전송 완료", scheduleId);
+        log.info("세션 {} 전환 메세지 전송 완료", scheduleId);
     }
 
     // 종료시간에 실행될 타이머
     private void setEndTimeTimer(Long scheduleId, LocalDateTime endTime, FullSessionStage expectedStage) {
+        log.info("[SessionStageService] setEndTimeTimer 설정됨: scheduleId={}, endTime={}, 현재단계 expectedStage={}", scheduleId, endTime, expectedStage);
         taskScheduler.schedule(
                 () -> {
+                    log.info("타이머 완료!!!");
                     // 현재 세션 정보 조회
-                    Session session = sessionRepository.fetchByScheduleId(scheduleId);
+                    Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
                     FullSessionStage currentStage = session.getSessionStage();
+                    log.info(String.valueOf(session));
 
                     // 예상했던 단계와 현재 단계가 같을 때만 전환
+                    log.info("{} == {}??", currentStage, expectedStage);
                     if (currentStage == expectedStage) {
+                        log.info("{} 에서 다음 단계로 이동~", expectedStage);
                         handleSessionTransfer(scheduleId);
                     }
                 },
@@ -122,9 +131,9 @@ public class SessionStageService {
         );
     }
 
-    // 외부(WaitingRoom)에서 호출할  최초 타이머 설정
-    public void startSessionTimer(Long scheduleId) {
-        Session session = sessionRepository.fetchByScheduleId(scheduleId);
+    // 외부(WaitingRoom)에서 호출할  최초 타이머(대기방에서 10분 뒤 울릴 알람) 설정
+    public void setWaitingRoomTimer(Long scheduleId) {
+        Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
         FullSessionStage currentStage = session.getSessionStage();
         LocalDateTime startTime = session.getStartTime();
 
