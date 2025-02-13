@@ -7,6 +7,37 @@ import { authInstance } from './axios';
 const AUTH_API_URL = '/auth';
 const MEMBERS_API_URL = '/members';
 
+export const logout = async () => {
+    try {
+        const res = await authInstance.post(`${AUTH_API_URL}/logout`);
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const removeMember = async () => {
+    try {
+        const res = await authInstance.delete(MEMBERS_API_URL);
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
+export const modify = async modifyInfo => {
+    try {
+        const res = await authInstance.patch(MEMBERS_API_URL, modifyInfo);
+        store.dispatch(setUserInfo(res.data));
+        return res;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
 export const refreshAccessToken = async () => {
     try {
         const res = await axios.post(AUTH_API_URL + '/refresh', {}, { withCredentials: true });
