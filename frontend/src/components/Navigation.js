@@ -15,15 +15,19 @@ import ConfirmModal from './common/ConfirmModal';
 import { getLearningWords } from '../api/word';
 import WordModal from './WordModal';
 import { logout } from '../api/member';
+import bbi from '../assets/bbi.png';
+import duck from '../assets/duckduck.png';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
+    const userInfo = useSelector(state => state.user.userInfo);
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const targetTime = Date.now() + stageTime * MINUTE;
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
     const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
     const [logoutModal, setLogoutModal] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -35,14 +39,6 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
             navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
-
-    //사용자 정보
-    const [user, setUser] = useState({
-        userName: '김싸피',
-        userIcon:
-            'https://i.namu.wiki/i/KUM2tQX1XioB6nLXb1hNgb47SQkzckA4LAbfCUWej7_opVso4ebnkijBdglFek7Dn2FzcKoGgOjOlm_UeIAYdQ3_i-CmhnnYc-PiI3erJmqqWI03S5ci3WZBbaqENJ90FcL3FtIjpnxFB8kNEynbag.webp',
-        role: 'manager',
-    });
 
     //페이지 이동 핸들러
     const navigationHandler = path => {
@@ -263,15 +259,15 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
                         )}
                     </div>
                 ) : (
-                    <div className="flex flex-row justify-between py-4 px-10 items-center">
+                    <div className="flex flex-row justify-between py-4 px-10 items-center ">
                         <div className="flex flex-row justify-around items-center gap-20">
-                            <img
-                                src={`${user.userIcon == '' ? accountCircle : user.userIcon}`}
-                                alt="user-icon"
-                                width="50"
-                                height="50"
-                                className="w-12 h-12 rounded-full object-cover border-2"
-                            ></img>
+                            <div className="w-14 h-14 bg-[#ddd5] rounded-full">
+                                <img
+                                    src={previewUrl || (userInfo.role === 'CHILD' ? bbi : duck)}
+                                    alt="프로필 이미지"
+                                    className="w-full h-full object-cover rounded-3xl"
+                                />
+                            </div>
                             <button
                                 className="flex flex-col text-center gap-3 items-center"
                                 onClick={() => navigationHandler('home')}
@@ -286,7 +282,7 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
                                 <img src={`${booksIcon}`} alt="library" width="50"></img>
                                 <span>도서관</span>
                             </button>
-                            {user.role === 'manager' ? (
+                            {userInfo.role === 'manager' ? (
                                 <>
                                     <button
                                         className="flex flex-col text-center gap-3 items-center"
