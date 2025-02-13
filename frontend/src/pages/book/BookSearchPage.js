@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Navigation from '../../components/Navigation';
 import { DayPicker } from 'react-day-picker';
-import axios from 'axios';
 import defaultBookCover from '../../assets/images/book1.png';
-import { getPartyDetail } from '../../api/party'
+import { fetchAllParties } from '../../api/party'
 
 const BookSearchPage = () => {
-  const navigate = useNavigate();
   const [parties, setParties] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showBookDetail, setShowBookDetail] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [currentPartyId, setCurrentPartyId] = useState(null);
+
   const [searchParams, setSearchParams] = useState({
     startDate: null,
     endDate: null,
@@ -19,65 +20,107 @@ const BookSearchPage = () => {
     level: '',
     canJoin: false
   });
-  const [loading, setLoading] = useState(false);
-  
 
   const timeOptions = generateTimeOptions();
   const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
   const weekDayValues = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
   const levels = [1, 2, 3, 4, 5];
+  const [filter, setFilter] = useState({canJoin:false});
+ 
 
   useEffect(() => {
-    fetchAllParties();
-  }, []);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchAllParties(filter);
+        setParties(data);
+      } catch (error) {
+        console.error("방 목록 가져오기 실패", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
+  }, [filter]);  // ✅ filter가 변경될 때만 실행
+  
 
-  const fetchAllParties = async () => {
+  const loadParties = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/parties?canJoin=false');
-      setParties(response.data);
+      const data = await fetchAllParties(filter);
+      setParties(data);
     } catch (error) {
-      console.error('Error fetching parties:', error);
+      console.error('방 목록 가져오기 실패', error);
     } finally {
       setLoading(false);
     }
   };
+
+    // 📌 특정 책 클릭 시 상세 보기 모달 열기
+  const openBookDetail = (partyId) => {
+    setCurrentPartyId(partyId);
+    setShowBookDetail(true);
+  };
+
+  // 📌 모달 닫기
+  const closeBookDetail = () => {
+    setShowBookDetail(false);
+    setCurrentPartyId(null);
+  };
+
+  // const handleSearch = async () => {
+  //   try {
+  //     setLoading(true);
+      
+  //     if (searchParams.startDate) {
+  //       setFilter(prev => ({...prev, startDate:formatDate(searchParams.startDate)}))
+  //     }
+  //     if (searchParams.endDate) {
+  //       setFilter(prev => ({...prev, endDate:formatDate(searchParams.endDate)}))
+  //     }
+  //     if (searchParams.time) {
+  //       setFilter(prev => ({...prev, time:formatDate(searchParams.time)}))
+  //     }
+  //     if (searchParams.dayWeek.length > 0) {
+  //       setFilter(prev => ({...prev, dayWeek:formatDate(searchParams.dayWeek.join(','))}))
+  //     }
+  //     if (searchParams.episodeLength) {
+  //       setFilter(prev => ({...prev, episodeLength:formatDate(searchParams.episodeLengthe)}))
+  //     }
+  //     if (searchParams.level) {
+  //       setFilter(prev => ({...prev, level:formatDate(searchParams.level)}))
+  //     }
+
+  //     const response = fetchAllParties(filter)
+  //     setParties(response.data);
+  //   } catch (error) {
+  //     console.error('Error searching parties:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
 
   const handleSearch = async () => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams();
-      
-      if (searchParams.startDate) {
-        queryParams.append('startDate', formatDate(searchParams.startDate));
-      }
-      if (searchParams.endDate) {
-        queryParams.append('endDate', formatDate(searchParams.endDate));
-      }
-      if (searchParams.time) {
-        queryParams.append('time', searchParams.time);
-      }
-      if (searchParams.dayWeek.length > 0) {
-        queryParams.append('dayWeek', searchParams.dayWeek.join(','));
-      }
-      if (searchParams.episodeLength) {
-        queryParams.append('episodeLength', searchParams.episodeLength);
-      }
-      if (searchParams.level) {
-        queryParams.append('level', searchParams.level);
-      }
-      queryParams.append('canJoin', searchParams.canJoin);
-
-      const response = await axios.get(`/parties?${queryParams.toString()}`);
-      setParties(response.data);
-    } catch (error) {
-      console.error('Error searching parties:', error);
-    } finally {
-      setLoading(false);
-    }
+    const updatedFilter = { 
+      ...filter, 
+      startDate: searchParams.startDate ? formatDate(searchParams.startDate) : undefined,
+      endDate: searchParams.endDate ? formatDate(searchParams.endDate) : undefined,
+      time: searchParams.time || undefined,
+      dayWeek: searchParams.dayWeek.length > 0 ? searchParams.dayWeek.join(',') : undefined,
+      episodeLength: searchParams.episodeLength || undefined,
+      level: searchParams.level || undefined
+    };
+  
+    setFilter(updatedFilter);
   };
+  
+  
 
   const handleReset = () => {
+    // searchParams 초기화
     setSearchParams({
       startDate: null,
       endDate: null,
@@ -87,7 +130,9 @@ const BookSearchPage = () => {
       level: '',
       canJoin: false
     });
-    fetchAllParties();
+    
+    // filter 상태도 초기화
+    setFilter({ canJoin: false });
   };
 
   const handleDaySelect = (range) => {
@@ -111,14 +156,20 @@ const BookSearchPage = () => {
     }));
   };
 
+  const navigateToBookDetail = (partyId) => {
+    navigate(`/book/${partyId}`);
+  };
 
   const groupPartysByLevel = () => {
+    if (!parties || !Array.isArray(parties)) return {}; // ✅ parties가 없거나 배열이 아닐 경우 빈 객체 반환
+  
     const grouped = {};
     levels.forEach(level => {
       grouped[level] = parties.filter(party => party.level === level);
     });
     return grouped;
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -206,7 +257,10 @@ const BookSearchPage = () => {
                 type="checkbox"
                 className="checkbox checkbox-sm"
                 checked={searchParams.canJoin}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, canJoin: e.target.checked }))}
+                onChange={(e) => {
+                  setSearchParams(prev => ({ ...prev, canJoin: e.target.checked }))
+                  setFilter(prev=>({...prev, canJoin:e.target.checked}))
+                }}
               />
               <span className="text-sm">빈자리만 보기</span>
             </label>
@@ -230,15 +284,21 @@ const BookSearchPage = () => {
           </div>
         </div>
 
-        {/* Results Section */}
-        {/* 책 상세 모달달 */}
         {showBookDetail && currentPartyId && (
-                        <BookDetail 
-                            partyId={currentPartyId}
-                            onClose={handleBookDetailClose}
-                        />
-                    )}
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-3xl relative">
+              <button 
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowBookDetail(false)}
+              >
+                ✕
+              </button>
+              <BookDetail partyId={currentPartyId} />
+            </div>
+          </div>
+        )}
 
+        {/* Results Section */}
         {loading ? (
           <div className="text-center py-8">
             <span className="loading loading-spinner loading-lg"></span>

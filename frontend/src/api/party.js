@@ -76,5 +76,15 @@ export const removePartyMember = async (partyId, childId) => {
   }
 };
 
+export const fetchAllParties = async (query) => {
+  try {console.log(query , "여기!!!")
+    const response = await authInstance.get('/parties', {params:query});
+    return response.data;
+  } catch (error) {
+    console.error('방 전체 조회 실패', error);
+    throw error;
+  } 
+};
+
 
 
