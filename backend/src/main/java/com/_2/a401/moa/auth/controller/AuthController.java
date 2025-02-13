@@ -3,6 +3,7 @@ package com._2.a401.moa.auth.controller;
 import com._2.a401.moa.auth.dto.AuthToken;
 import com._2.a401.moa.auth.dto.LoginInfo;
 import com._2.a401.moa.auth.dto.request.CheckEmailRequest;
+import com._2.a401.moa.auth.dto.request.PasswordRequest;
 import com._2.a401.moa.auth.exception.InvalidTokenException;
 import com._2.a401.moa.auth.service.AuthService;
 import com._2.a401.moa.auth.service.MailService;
@@ -10,10 +11,12 @@ import com._2.a401.moa.auth.service.RedisRefreshTokenService;
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.jwt.JwtUtil;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +45,12 @@ public class AuthController {
     @GetMapping("/id/check/{loginId}")
     public ResponseEntity<Void> checkLoginId(@PathVariable("loginId") String loginId) {
         authService.checkLoginId(loginId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/pw/check")
+    public ResponseEntity<Void> checkPassword(@RequestBody PasswordRequest passwordRequest, HttpServletRequest req){
+        authService.checkPassword(passwordRequest.password(), req);
         return ResponseEntity.noContent().build();
     }
 
@@ -95,5 +104,11 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(Map.of("accessToken",newAccessToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest req){
+        authService.logout(req);
+        return ResponseEntity.ok().build();
     }
 }

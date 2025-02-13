@@ -7,6 +7,7 @@ import com._2.a401.moa.schedule.domain.Day;
 import com._2.a401.moa.word.dto.EpisodeNumberAndLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -26,17 +27,13 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
     """, nativeQuery = true)
     Optional<EpisodeNumberAndLevel> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
 
-    @Query("SELECT DISTINCT p FROM Party p " +
-            "JOIN FETCH p.schedules s " +
-            "WHERE p.isPublic = true " +
-            "AND p.status = 'BEFORE' " +
-            "AND (:startDate IS NULL OR p.startDate >= :startDate) " +
-            "AND (:endDate IS NULL OR p.endDate <= :endDate) " +
-            "AND (:level IS NULL OR p.level = :level) " +
-            "AND (:episodeLength IS NULL OR p.episodeCount = :episodeLength) " +
-            "AND (:dayWeek IS NULL OR s.dayWeek IN :dayWeek) " +
-            "AND (:time IS NULL OR FUNCTION('TIME_FORMAT', s.sessionTime, '%H:%i') = :time) ")
-
     Optional<Party> findByPinNumberAndStatus(String PinNumber, PartyState state);
 
+    @Query("SELECT p FROM Party p " +
+            "WHERE p.startDate BETWEEN :now AND :thirtyMinutesLater " +
+            "AND p.status = 'BEFORE'")
+    List<Party> findPartiesStartingSoon(
+            @Param("now") LocalDateTime now,
+            @Param("thirtyMinutesLater") LocalDateTime thirtyMinutesLater
+    );
 }

@@ -4,6 +4,8 @@ import com._2.a401.moa.common.jwt.JwtUtil;
 import com._2.a401.moa.member.dto.request.FindIdRequest;
 import com._2.a401.moa.member.dto.request.FindPwRequest;
 import com._2.a401.moa.member.dto.request.MemberCreate;
+import com._2.a401.moa.member.dto.request.MemberModify;
+import com._2.a401.moa.member.dto.response.ChildInfo;
 import com._2.a401.moa.member.dto.response.FindIdInfo;
 import com._2.a401.moa.member.dto.response.SearchChildInfo;
 import com._2.a401.moa.member.dto.response.MemberInfoResponse;
@@ -13,6 +15,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -36,6 +40,24 @@ public class MemberController {
 
         MemberInfoResponse memberInfoResponse = memberService.getUserInfo(jwtUtil.getMemberId(token));
         return ResponseEntity.ok().body(memberInfoResponse);
+    }
+
+    @PatchMapping
+    public ResponseEntity<MemberInfoResponse> modifyMember(HttpServletRequest req, @Valid @RequestBody MemberModify memberModify){
+        MemberInfoResponse memberInfoResponse = memberService.modifyMember(memberModify, req);
+        return ResponseEntity.ok().body(memberInfoResponse);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteMember(HttpServletRequest req){
+        memberService.deleteMember(req);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/children")
+    public ResponseEntity<List<ChildInfo>> getChildrenInfo(HttpServletRequest req){
+        List<ChildInfo> childrenList =  memberService.getChildrenInfo(req);
+        return ResponseEntity.ok().body(childrenList);
     }
 
     @GetMapping("/search")
