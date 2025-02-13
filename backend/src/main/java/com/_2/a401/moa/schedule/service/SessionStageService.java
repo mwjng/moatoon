@@ -3,6 +3,7 @@ package com._2.a401.moa.schedule.service;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
+import com._2.a401.moa.schedule.dto.response.CurrentSessionStageResponse;
 import com._2.a401.moa.schedule.dto.response.WsReadyStatusResponse;
 import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
@@ -41,6 +42,13 @@ public class SessionStageService {
         sessionMemberRedisRepository.save(sessionMember);
 
         setWaitingRoomTimer(1L);
+    }
+
+    // 현재 세션 상태 얻어오기
+    public CurrentSessionStageResponse getCurrentSessionStage(Long scheduleId) {
+        Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
+        log.info("세션 {}의 sessionRedisStage = {}", scheduleId, session.toString());
+        return CurrentSessionStageResponse.from(session);
     }
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {

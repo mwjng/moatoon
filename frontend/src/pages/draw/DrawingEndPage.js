@@ -5,20 +5,16 @@ import bbi from '../../assets/bbi_normal.png';
 import axios from 'axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
-import { useNavigate } from 'react-router';
 
-const DrawingEndPage = ({sessionTransferResponse}) => {
-    const navigate = useNavigate();
+const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
     const [finalCuts, setFinalCuts] = useState([]);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const scheduledId = 11;
 
-    //완성된 네컷 이미지 불러오기
     useEffect(() => {
         const fetchPictures = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/cuts/final/${scheduledId}`);
-
                 setFinalCuts(response.data);
             } catch (error) {
                 console.error('그림 데이터를 불러오는 중 오류 발생:', error);
@@ -26,16 +22,19 @@ const DrawingEndPage = ({sessionTransferResponse}) => {
         };
         fetchPictures();
 
-        // 1분 후에 버튼 활성화
         const timer = setTimeout(() => {
+            console.log('버튼 활성화');
             setIsButtonDisabled(false);
-        }, 60000);
+        }, 5000); // 테스트를 위해 5초로 설정
 
-        return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 제거
+        return () => clearTimeout(timer);
     }, [scheduledId]);
 
-    const handleTimeOut = () => {
-        navigate('/session/quiz');
+    const handleClick = () => {
+        console.log('마무리 버튼 클릭');
+        if (typeof onTimeout === 'function') {
+            onTimeout();
+        }
     };
 
     return (
@@ -44,9 +43,9 @@ const DrawingEndPage = ({sessionTransferResponse}) => {
                 <Navigation
                     stage="endDrawing"
                     stageDuration={3}
-                    sessionStartTime={sessionTransferResponse.sessionStartTime}
-                    serverTime={sessionTransferResponse.serverTime}
-                    onTimeOut={handleTimeOut} />
+                    sessionStartTime={sessionTransferResponse?.sessionStartTime}
+                    serverTime={sessionTransferResponse?.serverTime}
+                    onTimeOut={onTimeout} />
             </div>
 
             <div className="flex p-5">
@@ -59,7 +58,7 @@ const DrawingEndPage = ({sessionTransferResponse}) => {
                     </div>
                 </div>
 
-                <div className="max-w-2xl mx-auto  flex flex-col items-center">
+                <div className="max-w-2xl mx-auto flex flex-col items-center">
                     <div className="comic-grid grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid mb-2">
                         {finalCuts.map(cut => (
                             <div
@@ -72,17 +71,17 @@ const DrawingEndPage = ({sessionTransferResponse}) => {
                     </div>
 
                     <WordButton
-                        color={isButtonDisabled ? 'bg-gray-400' : 'bg-light-orange'} // Disabled state uses gray color
+                        color={isButtonDisabled ? 'bg-gray-400' : 'bg-light-orange'}
                         textColor="text-white"
                         size="small"
                         textSize="large"
-                        onClick={handleTimeOut}
-                        disabled={isButtonDisabled} // Disable the button when isButtonDisabled is true
+                        onClick={handleClick}
+                        disabled={isButtonDisabled}
                     >
                         마무리
                     </WordButton>
                 </div>
-                <img src={bbi} className="absolute w-36 bottom-0 right-0 object-contain" />
+                <img src={bbi} className="absolute w-36 bottom-0 right-0 object-contain" alt="bbi character" />
             </div>
         </div>
     );

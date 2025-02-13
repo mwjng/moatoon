@@ -1,34 +1,11 @@
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { authInstance } from './axios';
 
-export const sessionStage = {
-  sendReady: (scheduleId) => {
-    return new Promise((resolve, reject) => {
-      const socket = new SockJS('/ws');
-      const stompClient = new Client({
-        webSocketFactory: () => socket,
-        connectHeaders: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        onConnect: () => {
-          stompClient.publish({
-            destination: '/app/ready',
-            body: JSON.stringify({
-              scheduleId
-            })
-          });
-
-          resolve();
-          stompClient.deactivate();
-        },
-        onStompError: (frame) => {
-          console.error('WebSocket 연결 오류:', frame);
-          reject(new Error('WebSocket 연결 실패'));
-          stompClient.deactivate();
-        }
-      });
-
-      stompClient.activate();
-    });
+export const getCurrentSessionStage = async (scheduleId) => {
+  try {
+      const response = await authInstance.get(`/schedules/${scheduleId}/session/current-stage`);
+      return response;
+  } catch (error) {
+      console.error('세션 스테이지 조회 중 오류 발생:', error.response);
+      return error.response;
   }
 };

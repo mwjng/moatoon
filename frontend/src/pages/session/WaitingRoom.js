@@ -13,6 +13,12 @@ import base64 from 'base-64';
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
 function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime}) {
+    console.log("WaitingRoom props:", {
+        scheduleId,
+        bookTitle,
+        sessionTime: sessionTime ? sessionTime.toString() : null,
+        serverTime: serverTime ? serverTime.toString() : null
+    });
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);

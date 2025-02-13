@@ -6,19 +6,71 @@ import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
-
+import { getCurrentSessionStage } from '../../api/sessionStage'; 
+import { useNavigate } from 'react-router';
 
 const SessionContainer = () => {
-    const [currentStage, setCurrentStage] = useState('WAITING'); // 초기 페이지는 WAITING
+    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
     const [sessionData, setSessionData] = useState({
         scheduleId: 1,
         partyId: 1,
-        bookTitle: '용감한 기사',
-        sessionTime: new Date(Date.now() - 9 * 60 * 1000), // 9분을 밀리초로 변환하여 뺌, // TODO: 이걸 session시작 시간으로 가져오면, 새로고침해도 타이머 10분 갱신 안됨.
-        serverTime: new Date()
+        bookTitle: '용감한 기사'
     });
 
-    // 웹소켓 연결 사용
+    const [sessionStageData, setSessionStageData] = useState({
+        currentStage: "NONE",
+        sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
+        serverTime: new Date(),
+        sessionDuration: 60
+    });
+
+    // 초기 세션 스테이지 정보를 가져오는 함수
+    const fetchCurrentStage = async () => {
+        setIsLoading(true);
+        try {
+            const response = await getCurrentSessionStage(sessionData.scheduleId);
+            if (response.status === 200) {
+                if(response.data.currentSessionStage === 'DONE'){ // 새로고침했을때 DONE이면 접근 금지
+                    navigate('/home');
+                    return;
+                }
+
+                console.log("세션 stage 조회 요청 성공(값): ", response.data);
+                setSessionStageData({
+                    currentStage: response.data.currentSessionStage,  
+                    sessionStartTime: new Date(response.data.sessionStageStartTime),  
+                    serverTime: new Date(response.data.serverTime),
+                    sessionDuration: response.data.sessionDuration
+                });
+            }
+        } catch (error) {
+            console.error('현재 세션 스테이지 조회 실패:', error);
+            navigate('/home');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 타임아웃 처리 함수
+    const handleTimeout = () => {
+        console.log('타임아웃 처리: QUIZ 스테이지로 전환');
+        setSessionStageData(prev => ({
+            ...prev,
+            currentStage: 'QUIZ'
+        }));
+    };
+
+    // 초기 로딩 시 스테이지 정보 가져오기
+    useEffect(() => {
+        fetchCurrentStage();
+    }, [sessionData.scheduleId]);
+
+    // 상태 업데이트를 확인하기 위한 별도의 useEffect
+    useEffect(() => {
+        console.log("세션 stage 업데이트됨: ", sessionStageData);
+    }, [sessionStageData]);
+
     const { 
         sendReady, 
         readyStatusResponse, 
@@ -29,44 +81,52 @@ const SessionContainer = () => {
     // sessionTransferResponse 변경시 stage 업데이트
     useEffect(() => {
         if (sessionTransferResponse?.nextSessionStage) {
-            setCurrentStage(sessionTransferResponse.nextSessionStage);
+            setSessionStageData(prev => ({
+                currentStage: sessionTransferResponse.nextSessionStage,
+                sessionStartTime: sessionTransferResponse.sessionStartTime,
+                serverTime: sessionTransferResponse.severTime,
+                sessionDuration: sessionTransferResponse.sessionDuration
+            }));
         }
     }, [sessionTransferResponse]);
 
-
     const renderStage = () => {
-        console.log("화면 전환!!")
-        console.log(currentStage)
-        switch (currentStage) {
+        console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
+        switch (sessionStageData.currentStage) {
             case 'WAITING':
-                console.log(sessionData);
                 return (
                     <WaitingRoom 
                         scheduleId={sessionData.scheduleId}
                         bookTitle={sessionData.bookTitle}
-                        sessionTime={sessionData.sessionTime}
-                        serverTime ={sessionData.serverTime}
+                        sessionTime={sessionStageData.sessionTime}
+                        serverTime={sessionStageData.serverTime}
                     />
                 );
             case 'WORD':
                 return (
                     <WordLearning
-                    sessionTransferResponse={sessionTransferResponse}
-                     />
+                        sessionTransferResponse={sessionTransferResponse}
+                    />
                 );
             case 'DRAWING':
                 return (
                     <DrawingPage 
-                    sessionTransferResponse={sessionTransferResponse}
+                        sessionTransferResponse={sessionTransferResponse}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage 
-                    sessionTransferResponse={sessionTransferResponse}
+                        sessionTransferResponse={sessionTransferResponse}
+                        onTimeout={handleTimeout}
                     />
                 );
+            case 'QUIZ':
+                return(
+                    <QuizPage/>
+                );
             default:
+                navigate('/home');
                 return null;
         }
     };
@@ -74,14 +134,25 @@ const SessionContainer = () => {
     // 만약 웹소켓 연결이 끊어졌다면 재연결 시도
     useEffect(() => {
         if (!isConnected) {
-            // 웹소켓 재연결 로직
             console.log('웹소켓 연결 끊김. 재연결 시도...');
         }
     }, [isConnected]);
 
+    const CurrentStage = () => {
+        if (isLoading) {
+            return (
+                <div className="min-h-screen flex items-center justify-center">
+                    <p>로딩 중...</p>
+                </div>
+            );
+        }
+
+        return renderStage();
+    };
+
     return (
         <div className="min-h-screen">
-            {renderStage()}
+            <CurrentStage />
         </div>
     );
 };

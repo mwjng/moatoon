@@ -15,7 +15,7 @@ import ConfirmModal from './common/ConfirmModal';
 import { logout } from '../api/member';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime, serverTime, bookTitle, onTimeOut }) {
+function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=Date.now(), serverTime=Date.now(), bookTitle, onTimeOut }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
 
@@ -32,7 +32,6 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime, 
     // 서버와 클라이언트의 시간 차이 계산
     useEffect(() => {
         if (serverTime) {
-            console.log("serverTime {}", serverTime);
             const serverTimestamp = new Date(serverTime).getTime();
             const offset = serverTimestamp - Date.now();
             setTimeOffset(offset);
