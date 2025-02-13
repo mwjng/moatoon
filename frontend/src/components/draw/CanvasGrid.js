@@ -3,13 +3,14 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import CanvasAll from './CanvasAll';
 import { updateLines, handleDraw } from '../../utils/canvasUtils';
+import { authInstance } from '../../api/axios';
 
 const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
     const [canvasData, setCanvasData] = useState({}); // cutId별 캔버스 데이터 저장
 
     // WebSocket 연결 설정
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS(`${process.env.REACT_APP_SERVER_URL}/ws`);
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -54,16 +55,14 @@ const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
         const fetchCanvasData = async () => {
             try {
                 for (let cutId of cutIds) {
-                    const response = await fetch(`/cuts/${cutId}`);
+                    const response = await authInstance.get(`/cuts/${cutId}`);
 
-                    if (!response.ok) {
-                        throw new Error(`cutId ${cutId}의 데이터 조회 실패`);
+                    if (response.status !== 200) {
+                        throw new Error(`${cutId}의 데이터 조회 실패`);
                     } else {
-                        const data = await response.json();
-                        //console.log(data.canvasData);
+                        const data = response.data;
                         if (data.canvasData) {
                             const savedLines = JSON.parse(data.canvasData);
-                            //console.log(cutId + ' ' + savedLines);
                             setCanvasData(prevData => ({
                                 ...prevData,
                                 [cutId]: savedLines,
