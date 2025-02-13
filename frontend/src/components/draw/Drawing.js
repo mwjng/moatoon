@@ -42,7 +42,7 @@ const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
         formData.append('file', file);
 
         try {
-            const response = await axios.patch(`http://localhost:8080/cuts/save-final/${cutId}`, formData, {
+            const response = await axios.patch(`/cuts/save-final/${cutId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log('서버 응답:', response.data);
@@ -93,12 +93,6 @@ const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
                     )}
                 </div>
             </div>
-            <button
-                onClick={exportToSVGAndUpload}
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
-            >
-                SVG로 내보내기
-            </button>
         </div>
     );
 });

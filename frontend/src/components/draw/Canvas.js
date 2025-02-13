@@ -22,7 +22,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
     useEffect(() => {
         const initializeCanvasData = async () => {
             try {
-                const response = await authInstance.post('http://localhost:8080/cuts/init-canvas', cutIds, {
+                const response = await authInstance.post('/cuts/init-canvas', cutIds, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -43,7 +43,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
 
     // 웹소켓 클라이언트 초기화
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS('/ws');
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -78,7 +78,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
         };
 
         try {
-            const response = await authInstance.post('http://localhost:8080/cuts/save-temp', requestData, {
+            const response = await authInstance.post('/cuts/save-temp', requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -111,7 +111,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
     useEffect(() => {
         const fetchCanvasData = async () => {
             try {
-                const response = await authInstance.get(`http://localhost:8080/cuts/${cutId}`);
+                const response = await authInstance.get(`/cuts/${cutId}`);
                 if (response.status !== 200) throw new Error('캔버스 데이터 조회 실패');
 
                 const data = response.data;

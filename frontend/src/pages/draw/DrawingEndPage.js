@@ -17,7 +17,7 @@ const DrawingEndPage = () => {
     useEffect(() => {
         const fetchPictures = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/cuts/final/${scheduledId}`);
+                const response = await axios.get(`/cuts/final/${scheduledId}`);
 
                 setFinalCuts(response.data);
             } catch (error) {
