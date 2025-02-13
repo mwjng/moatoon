@@ -6,6 +6,7 @@ import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.cut.domain.Cut;
 import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
+import com._2.a401.moa.cut.dto.response.CutInfoResponse;
 import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
 import com._2.a401.moa.party.domain.Party;
@@ -159,5 +160,17 @@ public class CutService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Redis 초기 데이터 설정 실패", e);
         }
+    }
+
+    public List<CutInfoResponse> getCutsInfo(Long scheduleId) {
+        ScheduleInfoResponse scheduleInfo = scheduleRepository.getScheduleInfo(scheduleId)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + scheduleId));;
+
+        int startRange = scheduleInfo.getEpisodeNumber() * 4 - 3;
+        int endRange = scheduleInfo.getEpisodeNumber() * 4;
+
+        List<CutInfoResponse> cuts=cutRepository.getCutsAndMemberByRange(scheduleInfo.getPartyId(), startRange, endRange);
+
+        return cuts;
     }
 }
