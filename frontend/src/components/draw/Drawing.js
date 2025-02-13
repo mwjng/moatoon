@@ -1,13 +1,13 @@
-import React, { useRef } from 'react';
-import WordButton from '../components/WordButton.js';
-import Canvas from '../components/draw/Canvas.js';
-import Navigation from '../components/Navigation.js';
-import ChildImg from '../assets/child.svg';
-import StoryCard from '../components/draw/StoryCard';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import WordButton from '../WordButton.js';
+import Canvas from '../draw/Canvas.js';
+import Navigation from '../Navigation.js';
+import ChildImg from '../../assets/child.svg';
+import StoryCard from '../../components/draw/StoryCard.js';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
-function DrawingPage() {
+const Drawing = forwardRef(({ toggleView }, ref) => {
     const navigate = useNavigate();
     const stageRef = useRef(null);
 
@@ -22,47 +22,43 @@ function DrawingPage() {
                     .find('Line')
                     .map(line => {
                         const points = line.attrs.points.join(' ');
-                        return `<polyline points="${points}" fill="none" stroke="black" stroke-width="2" />`;
+                        const stroke = line.attrs.stroke || 'black'; // 기본 선 색을 black으로 설정
+                        const strokeWidth = line.attrs.strokeWidth || 2; // 기본 선 굵기를 2로 설정
+                        return `<polyline points="${points}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
                     })
                     .join('\n')}
             </svg>
         `;
 
-        console.log('🔍 생성된 SVG 코드:', svgString); // 디버깅용 콘솔 출력
-
-        //SVG 데이터를 Blob으로 변환
+        // SVG 데이터를 Blob으로 변환
         const blob = new Blob([svgString], { type: 'image/svg+xml' });
         const file = new File([blob], 'drawing.svg', { type: 'image/svg+xml' });
 
-        //FormData 생성 후 파일 추가
+        // FormData 생성 후 파일 추가
         const formData = new FormData();
         formData.append('file', file);
 
-        //API 요청 (cutId는 예시로 12 사용, 실제 값으로 변경 필요)
-        const cutId = 1; // 실제 cutId 값으로 변경 필요
+        // API 요청
+        const cutId = 1;
         try {
             const response = await axios.patch(`http://localhost:8080/cuts/save-final/${cutId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log('서버 응답:', response.data);
-            //alert('SVG 파일이 성공적으로 업로드되었습니다!');
+            // alert('SVG 파일이 성공적으로 업로드되었습니다!');
         } catch (error) {
             console.error('업로드 실패:', error);
-            //alert('업로드에 실패했습니다.');
+            // alert('업로드에 실패했습니다.');
         }
     };
 
-    const handleTimeOut = () => {
-        exportToSVGAndUpload();
-        navigate('/session/draw-end');
-    };
+    // handleTimeOut 함수를 외부에서 호출할 수 있도록 설정
+    useImperativeHandle(ref, () => ({
+        exportToSVGAndUpload,
+    }));
 
     return (
         <div className="h-screen bg-light-cream-yellow">
-            <div className="w-full mb-5">
-                <Navigation stage="drawing" onTimeOut={handleTimeOut} />
-            </div>
-
             <div className="flex gap-4 p-5">
                 <div className="w-72 mr-5">
                     <div className="rounded-lg overflow-hidden mb-4">
@@ -76,7 +72,7 @@ function DrawingPage() {
                         </div>
                     </div>
                 </div>
-                <Canvas stageRef={stageRef} />
+                <Canvas stageRef={stageRef} toggleView={toggleView} />
             </div>
             <button
                 onClick={exportToSVGAndUpload}
@@ -86,6 +82,6 @@ function DrawingPage() {
             </button>
         </div>
     );
-}
+});
 
-export default DrawingPage;
+export default Drawing;
