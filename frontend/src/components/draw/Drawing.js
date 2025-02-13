@@ -3,7 +3,7 @@ import WordButton from '../WordButton.js';
 import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
-import axios from 'axios';
+import { authInstance } from '../../api/axios';
 
 const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
     const stageRef = useRef(null);
@@ -42,7 +42,7 @@ const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
         formData.append('file', file);
 
         try {
-            const response = await axios.patch(`/cuts/save-final/${cutId}`, formData, {
+            const response = await authInstance.patch(`/cuts/save-final/${cutId}`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log('서버 응답:', response.data);
