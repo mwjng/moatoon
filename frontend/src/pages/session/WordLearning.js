@@ -71,7 +71,7 @@ const WordLearning = ({sessionTransferResponse}) => {
             sendReady(scheduleId);
             // 성공 로직
         } catch (error) {
-            console.error('에러 발생:', error.message);
+            console.error('레디 요청 중 에러 발생:', error.message);
             // 사용자에게 보여줄 수 있는 에러 처리
         }
     };

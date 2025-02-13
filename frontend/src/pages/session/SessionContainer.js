@@ -56,7 +56,7 @@ const SessionContainer = () => {
                 );
             case 'DRAWING':
                 return (
-                    <CutAllPage 
+                    <DrawingPage 
                     sessionTransferResponse={sessionTransferResponse}
                     />
                 );

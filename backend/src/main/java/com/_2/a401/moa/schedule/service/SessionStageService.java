@@ -45,6 +45,7 @@ public class SessionStageService {
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
         //dummyRedis();
+        log.info("[서버] 레디 요청 날라옴");
         log.info("updateReadyStatus: scheduleId={}, memberId={}", scheduleId, memberId);
         //sessionService.validateMemberPermission(memberId, scheduleId); // 권한 검증
 
