@@ -5,6 +5,7 @@ import Overview from '../../components/draw/Overview';
 import Drawing from '../../components/draw/Drawing';
 import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router-dom';
+import Loading from '../../components/Loading';
 
 const DrawingPage = () => {
     const navigate = useNavigate();
@@ -28,16 +29,14 @@ const DrawingPage = () => {
         setIsDrawing(prev => !prev);
     };
 
-    const handleTimeOut = () => {
+    const handleTimeOut = async () => {
+        setIsLoading(true);
         if (drawingRef.current) {
-            drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
+            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
         }
-        navigate('/session/draw-end', { state: { scheduleId } });
-    };
+        setIsLoading(false);
 
-    // 로딩 상태 관리
-    const handleLoadingState = state => {
-        setIsLoading(state); // 로딩 상태 변경
+        navigate('/session/draw-end', { state: { scheduleId } });
     };
 
     return (
@@ -55,13 +54,7 @@ const DrawingPage = () => {
                 ) : (
                     <Overview toggleView={toggleView} cutsInfo={cutsState.cuts} />
                 ))}
-            {isLoading && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white p-6 rounded-lg shadow-lg">
-                        <p>로딩 중...</p>
-                    </div>
-                </div>
-            )}
+            {isLoading && <Loading />}
         </div>
     );
 };

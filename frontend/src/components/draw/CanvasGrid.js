@@ -9,7 +9,7 @@ const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
 
     // WebSocket 연결 설정
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS('/ws');
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -54,7 +54,7 @@ const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
         const fetchCanvasData = async () => {
             try {
                 for (let cutId of cutIds) {
-                    const response = await fetch(`http://localhost:8080/cuts/${cutId}`);
+                    const response = await fetch(`/cuts/${cutId}`);
 
                     if (!response.ok) {
                         throw new Error(`cutId ${cutId}의 데이터 조회 실패`);
