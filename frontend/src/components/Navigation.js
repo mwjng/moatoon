@@ -17,7 +17,7 @@ import WordModal from './WordModal';
 import { logout } from '../api/member';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
+function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitle, onTimeOut }) {
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
     const targetTime = Date.now() + stageTime * MINUTE;
