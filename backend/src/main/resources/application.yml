@@ -4,19 +4,6 @@ spring:
   profiles:
     default: local
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-
   servlet:
     multipart:
       enabled: true
@@ -25,7 +12,7 @@ spring:
 
   mail:
     host: smtp.gmail.com
-    port:
+    port: 587
     username: ${SMTP_EMAIL}
     password: ${SMTP_PW}
     properties:
@@ -66,9 +53,13 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:mysql://localhost:3306/Moa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/moa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
     hibernate:
       ddl-auto: create
@@ -78,6 +69,11 @@ spring:
         highlight_sql: true
         format_sql: true
         show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
   sql:
     init:
@@ -99,9 +95,13 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://mysql:3306/Moa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://mysql:3306/moa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
 
   jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: false
     hibernate:
       ddl-auto: validate
@@ -111,6 +111,11 @@ spring:
         highlight_sql: false
         format_sql: false
         show-sql: false
+
+  data:
+    redis:
+      host: redis
+      port: 6379
 
   sql:
     init:
@@ -124,3 +129,20 @@ logging:
   level:
     org.hibernate.SQL: warn
     org.hibernate.orm.jdbc.bind: warn
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:~/MoaApplication
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
