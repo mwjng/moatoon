@@ -10,29 +10,32 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
     const observerRef = useRef(null);
 
     // fetchBooks를 useCallback으로 메모이제이션
-    const fetchBooks = useCallback(async () => {
-        if (loading || !hasMore || error || !memberId) return;
-        setLoading(true);
+    const fetchBooks = useCallback(
+        async (page = currentPage) => {
+            if (loading || !hasMore || error || !memberId) return;
+            setLoading(true);
 
-        try {
-            const response = await authInstance.get(`/books/${memberId}`, {
-                params: { isCompleted, page: currentPage, size: pageSize },
-            });
+            try {
+                const response = await authInstance.get(`/books/${memberId}`, {
+                    params: { isCompleted, page, size: pageSize },
+                });
 
-            const newBooks = response.data.bookList || [];
-            setBookList(prevBooks => [...prevBooks, ...newBooks]);
+                const newBooks = response.data.bookList || [];
+                setBookList(prevBooks => [...prevBooks, ...newBooks]);
 
-            if (newBooks.length === 0 || response.data.bookList.length < pageSize) {
+                if (newBooks.length === 0 || response.data.bookList.length < pageSize) {
+                    setHasMore(false);
+                }
+            } catch (err) {
+                setError(err);
                 setHasMore(false);
+                console.error('Error fetching books:', err);
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            setError(err);
-            setHasMore(false);
-            console.error('Error fetching books:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [memberId, isCompleted, currentPage, pageSize, loading, hasMore, error]);
+        },
+        [memberId, isCompleted, pageSize, loading, hasMore, error],
+    );
 
     // resetError를 useCallback으로 메모이제이션
     const resetError = useCallback(() => {
@@ -52,9 +55,9 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
     // 데이터 페칭
     useEffect(() => {
         if (memberId) {
-            fetchBooks();
+            fetchBooks(currentPage);
         }
-    }, [memberId, currentPage, fetchBooks]);
+    }, [memberId, currentPage]); // fetchBooks를 의존성에서 제거
 
     // Intersection Observer 설정
     useEffect(() => {
@@ -66,7 +69,7 @@ const useFetchBooks = (memberId, isCompleted, pageSize = 10) => {
                     setCurrentPage(prev => prev + 1);
                 }
             },
-            { threshold: 1.0 }
+            { threshold: 1.0 },
         );
 
         observer.observe(observerRef.current);
