@@ -12,7 +12,26 @@ const MyWordPage = () => {
     const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [keyword, setKeyword] = useState('');
-    const [words, setWords] = useState([]);
+    // const [words, setWords] = useState([]);
+    const [words, setWords] = useState([
+        {
+            id: 1,
+            word: '형태',
+            meaning: '사물의 생김새나 모양',
+            failCount: 1,
+            examples: ['옷 소매의 *형태*가 특이하다.', '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.'],
+        },
+        {
+            id: 2,
+            word: '형태',
+            meaning: '사물의 생김새나 모양\\n사물의 생김새나 모양\\n사물의 생김새나 모양',
+            failCount: 2,
+            examples: [
+                '옷 소매의 *형태*가 특이하다. 옷 소매의 *형태*가 특이하다. 옷 소매의 *형태*가 특이하다.',
+                '우리나라 가족의 *형태*는 대부분 핵가족 형태이다.',
+            ],
+        },
+    ]);
     const failColor = ['#000000', '#8AD8FF', '#FFD105', '#FF90E1', '#8B8DFD', '#FF4D4D'];
     const [showHint, setShowHint] = useState(false);
 
@@ -61,7 +80,7 @@ const MyWordPage = () => {
     };
 
     useEffect(() => {
-        getMyWordWithPage();
+        // getMyWordWithPage();
     }, []);
 
     return (
@@ -118,7 +137,7 @@ const MyWordPage = () => {
                 </div>
                 <div className="flex z-0 gap-8 items-center">
                     <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
-                    <div className="relative z-10 p-4 grid grid-cols-2 gap-4">
+                    <div className="relative z-10 p-4 gap-4 flex ">
                         {words.map((word, index) => (
                             <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
                         ))}
