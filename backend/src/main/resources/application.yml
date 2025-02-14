@@ -128,6 +128,9 @@ spring:
     console:
       enabled: false
 
+  flyway:
+    enabled: true
+
 logging:
   level:
     org.hibernate.SQL: warn
