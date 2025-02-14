@@ -23,11 +23,19 @@ function Navigation({
     stage,
     leaveSession,
     stageDuration = 1,
-    sessionStartTime = Date.now(),
-    serverTime = Date.now(),
+    sessionStartTime,
+    serverTime,
     bookTitle,
     onTimeOut,
 }) {
+    console.log('Navigation 렌더링:', {
+        stage,
+        stageDuration,
+        sessionStartTime,
+        serverTime,
+        currentTime: Date.now()
+    });
+
     const userInfo = useSelector(state => state.user.userInfo);
 
     const SECOND = 1000; //초
@@ -192,8 +200,8 @@ function Navigation({
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(sessionStartTime)} ~{' '}
-                                        {getTimeFormatted(addTime(sessionStartTime, 1))}
+                                        오늘의 일정 : {getTimeFormatted(sessionStartTime, 10/60)} ~{' '}
+                                        {getTimeFormatted(addTime(sessionStartTime, 10/60+1))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">

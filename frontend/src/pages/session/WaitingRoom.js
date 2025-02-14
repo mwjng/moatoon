@@ -35,7 +35,7 @@ function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime}) {
         if (token) {
             try {
                 const payloadBase64 = token.split('.')[1];
-                const decodedPayload = JSON.parse(base64.decodeㅇ(payloadBase64));
+                const decodedPayload = JSON.parse(base64.decode(payloadBase64));
                 setNickname(decodedPayload.nickname || '게스트');
             } catch (error) {
                 console.error('JWT 파싱 에러', error);

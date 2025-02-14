@@ -71,7 +71,7 @@ spring:
         globally_quoted_identifiers: true
         highlight_sql: true
         format_sql: true
-        show-sql: true
+        show-sql: false
 
   data:
     redis:

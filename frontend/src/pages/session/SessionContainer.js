@@ -91,14 +91,17 @@ const SessionContainer = () => {
     }, [sessionTransferResponse]);
 
     const renderStage = () => {
+        console.log("=========[SessionContainer의 renderStage => WaitingRoom]===============");
+        console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
         console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
+        console.log("sessionStageData.sessionStartTime : ", sessionStageData.sessionStartTime)
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
                     <WaitingRoom 
                         scheduleId={sessionData.scheduleId}
                         bookTitle={sessionData.bookTitle}
-                        sessionTime={sessionStageData.sessionTime}
+                        sessionTime={sessionStageData.sessionStartTime} // 이게 안넘어옴
                         serverTime={sessionStageData.serverTime}
                     />
                 );
