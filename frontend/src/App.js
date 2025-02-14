@@ -10,7 +10,8 @@ import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/WaitingRoom';
 import MainPage from './pages/main/MainPage';
-import LibraryPage from './pages/ChildLibraryPage';
+import ChildLibraryPage from './components/library/ChildLibrary';
+import ManagerLibraryPage from './components/library/ManagerLibrary';
 import WordLearning from './pages/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
@@ -24,6 +25,7 @@ import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
 import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
 import EBookPage from './pages/EBookPage';
+import LibraryPage from './pages/library/LibraryPage';
 
 function App() {
     const location = useLocation();
