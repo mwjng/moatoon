@@ -1,5 +1,6 @@
 package com._2.a401.moa.schedule.dto.response;
 
+import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.SessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
 import lombok.Builder;
@@ -13,10 +14,10 @@ public record TodaySchedule(
         String bookCover,
         Integer episodeNumber,
         LocalDateTime sessionTime,
-        SessionStage sessionStage
+        FullSessionStage sessionStage
 
 ) {
-    public static TodaySchedule of(ScheduleInfo schedule, SessionStage sessionStage) {
+    public static TodaySchedule of(ScheduleInfo schedule, FullSessionStage sessionStage) {
         return TodaySchedule.builder()
                 .scheduleId(schedule.scheduleId())
                 .bookTitle(schedule.bookTitle())
