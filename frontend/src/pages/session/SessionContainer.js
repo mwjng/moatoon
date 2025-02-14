@@ -7,7 +7,7 @@ import QuizPage from './QuizPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
-import { OpenViduProvider } from '../../utils/OpenviduContext';
+import { SessionProvider } from '../../hooks/SessionProvider';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -70,7 +70,7 @@ const SessionContainer = () => {
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     useEffect(() => {
         console.log('세션 stage 업데이트됨: ', sessionStageData);
-        //renderStage();
+        renderStage();
     }, [sessionStageData]);
 
     const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
@@ -123,12 +123,6 @@ const SessionContainer = () => {
     }, [isConnected]);
 
     const CurrentStage = () => {
-        const [stageComponent, setStageComponent] = useState(null);
-
-        useEffect(() => {
-            setStageComponent(renderStage()); // ✅ useEffect 내에서 상태 업데이트
-        }, [sessionStageData]);
-
         if (isLoading) {
             return (
                 <div className="min-h-screen flex items-center justify-center">
@@ -137,13 +131,15 @@ const SessionContainer = () => {
             );
         }
 
-        return stageComponent;
+        return renderStage();
     };
 
     return (
-        <div className="min-h-screen">
-            <CurrentStage />
-        </div>
+        <SessionProvider scheduleId={sessionData.scheduleId}>
+            <div className="min-h-screen">
+                <CurrentStage />
+            </div>
+        </SessionProvider>
     );
 };
 

@@ -123,15 +123,15 @@ function App() {
                         <Route path="id" element={<FindIdPage />} />
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
-                    <Route path="/session" element={<SessionContainer/>}/>
-                    <Route path="/session">
+                    <Route path="/session" element={<SessionContainer />} />
+                    {/* <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="search" element={<BookSearchPage/>} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
-                    </Route>
+                    </Route> */}
                     <Route path="library" element={<LibraryPage />} />
                     <Route path="ebook" element={<EBookPage />} />
                     <Route path="word">

@@ -4,8 +4,9 @@ import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
+import MyCamera from '../MyCamera.js';
 
-const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
+const Drawing = forwardRef(({ toggleView, cutsInfo, userId, publisher, nickname }, ref) => {
     const stageRef = useRef(null);
     //const [userId, setUserId] = useState(3);
     console.log(userId);
@@ -63,7 +64,8 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
             <div className="flex gap-4 p-5">
                 <div className="w-72 mr-5">
                     <div className="rounded-lg overflow-hidden mb-4">
-                        <img src={ChildImg} alt="참고 이미지" className="w-full" />
+                        {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
+                        <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" />
                         <WordButton color="bg-dark-yellow w-full mt-5" size="md">
                             지난 이야기 전체 보기
                         </WordButton>

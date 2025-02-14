@@ -1,20 +1,18 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { OpenVidu } from 'openvidu-browser';
-import { getSessionToken } from '../api/room';
 import base64 from 'base-64';
+import { getSessionToken } from '../api/room';
+import axios from 'axios';
 
-const OpenViduContext = createContext();
+const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-export const useOpenVidu = () => useContext(OpenViduContext);
-
-export const OpenViduProvider = ({ children }) => {
+const useOpenViduSession = scheduleId => {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
     const [nickname, setNickname] = useState('게스트');
     const token = localStorage.getItem('accessToken');
 
-    // JWT에서 닉네임 가져오기
     useEffect(() => {
         if (token) {
             try {
@@ -27,8 +25,7 @@ export const OpenViduProvider = ({ children }) => {
         }
     }, [token]);
 
-    // OpenVidu 세션 초기화
-    const initializeSession = async () => {
+    const joinSession = async () => {
         const openVidu = new OpenVidu();
         const newSession = openVidu.initSession();
 
@@ -42,8 +39,8 @@ export const OpenViduProvider = ({ children }) => {
         });
 
         try {
-            const sessionToken = await getSessionToken();
-            await newSession.connect(sessionToken, { clientData: nickname });
+            const token = await getSessionToken();
+            await newSession.connect(token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
                 audioSource: undefined,
@@ -64,30 +61,26 @@ export const OpenViduProvider = ({ children }) => {
         }
     };
 
-    // 세션 정리
     const leaveSession = async () => {
         if (session) {
-            await session.disconnect();
+            await axios.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            session.disconnect();
         }
         setSession(null);
         setPublisher(null);
         setSubscribers([]);
     };
 
-    useEffect(() => {
-        initializeSession();
-        return () => {
-            leaveSession();
-        };
-    }, []);
-
-    const value = {
+    return {
         session,
         publisher,
         subscribers,
         nickname,
+        joinSession,
         leaveSession,
     };
-
-    return <OpenViduContext.Provider value={value}>{children}</OpenViduContext.Provider>;
 };
+
+export default useOpenViduSession;

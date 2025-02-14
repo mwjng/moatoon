@@ -1,19 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
 import Navigation from '../../components/Navigation';
 import MyCamera from '../../components/MyCamera';
 import CameraMicControls from '../../components/CameraMicControls';
 import BookDisplay from '../../components/BookDisplay';
 import FooterNotice from '../../components/FooterNotice';
-import { getSessionToken } from '../../api/room';
-import base64 from 'base-64';
-import { useOpenVidu } from '../../utils/OpenviduContext';
+import { useSession } from '../../hooks/SessionProvider';
+import SubscriberVideo from '../../components/SubscriberVideo';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
 function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime }) {
-    const { session, publisher, subscribers, nickname, leaveSession } = useOpenVidu();
+    const [bookInfo, setBookInfo] = useState({
+        partyId: 1,
+        bookTitle: '용감한 기사',
+        bookCover: 'cover.jpg',
+        cuts: [],
+    });
+
+    const handleTimeOut = () => {
+        // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
+    };
+
+    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession();
+    }, []);
 
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
@@ -39,7 +52,11 @@ function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime }) {
                             <MyCamera streamManager={publisher} nickname={nickname} />
                             <CameraMicControls publisher={publisher} />
                         </div>
-                        <OtherCameras subscribers={subscribers} />
+                        <div className="flex flex-col mt-4 grid grid-rows-3 gap-8 content-evenly mx-auto">
+                            {subscribers.map((subscriber, index) => (
+                                <SubscriberVideo key={index} streamManager={subscriber} />
+                            ))}
+                        </div>
                     </div>
                     <BookDisplay bookInfo={bookInfo} />
                 </div>

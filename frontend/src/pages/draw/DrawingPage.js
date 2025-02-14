@@ -6,8 +6,9 @@ import Drawing from '../../components/draw/Drawing';
 import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
+import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = (session, publisher, subscribers, leaveSession) => {
+const DrawingPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleId = 12;
@@ -42,6 +43,14 @@ const DrawingPage = (session, publisher, subscribers, leaveSession) => {
         navigate('/session/draw-end', { state: { scheduleId } });
     };
 
+    //openvidu;
+    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession();
+    }, []);
+
     return (
         <div className="h-screen bg-light-cream-yellow">
             <div className="w-full mb-5">
@@ -53,9 +62,22 @@ const DrawingPage = (session, publisher, subscribers, leaveSession) => {
                 !cutsState.error &&
                 cutsState.cuts.length > 0 &&
                 (isDrawing ? (
-                    <Drawing ref={drawingRef} toggleView={toggleView} cutsInfo={cutsState.cuts} userId={userId} />
+                    <Drawing
+                        ref={drawingRef}
+                        toggleView={toggleView}
+                        cutsInfo={cutsState.cuts}
+                        userId={userId}
+                        publisher={publisher}
+                        nickname={nickname}
+                    />
                 ) : (
-                    <Overview toggleView={toggleView} cutsInfo={cutsState.cuts} />
+                    <Overview
+                        toggleView={toggleView}
+                        cutsInfo={cutsState.cuts}
+                        subscribers={subscribers}
+                        publisher={publisher}
+                        nickname={nickname}
+                    />
                 ))}
             {isLoading && <Loading />}
         </div>
