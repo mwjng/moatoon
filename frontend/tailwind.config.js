@@ -33,7 +33,7 @@ module.exports = {
                 'light-yellow': '#FBEF9D',
                 'burnt-sienna': '#F07167',
                 'light-cream-blue': '#F7FCFE',
-                'light-blud': '#D9F0FE',
+                'light-blue': '#D9F0FE',
             },
         },
     },
