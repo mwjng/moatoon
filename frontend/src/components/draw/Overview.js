@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CanvasGrid from '../draw/CanvasGrid.js';
 import ChildImg from '../../assets/child.svg';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const Overview = ({ toggleView, cutsInfo }) => {
     const partyId = cutsInfo[0].partyId;
@@ -10,6 +11,7 @@ const Overview = ({ toggleView, cutsInfo }) => {
 
     return (
         <div className="h-screen bg-light-cream-yellow">
+            <AudioPlayer audioType="FULLCUT" />
             <div className="flex p-5">
                 <div className="w-1/5 flex-shrink-0">
                     <div className="rounded-2xs overflow-hidden mb-4">

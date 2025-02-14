@@ -9,7 +9,7 @@ import BookDisplay from '../../components/BookDisplay';
 import FooterNotice from '../../components/FooterNotice';
 import {getSessionToken} from '../../api/room';
 import base64 from 'base-64';
-import AudioPlayer from '../components/audio/AudioPlayer'
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 

@@ -4,6 +4,7 @@ import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
     const stageRef = useRef(null);
@@ -60,6 +61,7 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
 
     return (
         <div className="h-screen bg-light-cream-yellow">
+            <AudioPlayer audioType="MYCUT" />
             <div className="flex gap-4 p-5">
                 <div className="w-72 mr-5">
                     <div className="rounded-lg overflow-hidden mb-4">

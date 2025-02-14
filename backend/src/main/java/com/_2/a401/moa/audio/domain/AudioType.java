@@ -8,7 +8,7 @@ public enum AudioType {
     MYCUT("04.내컷보기.mp3"),
     SHARING("14.완성그림보기.mp3"),
     QUIZ("15.퀴즈.mp3"),
-    MYPAGE("16.세션종료.mp3"),
+    QUIZEND("16.세션종료.mp3"),
 
     // 랜덤 재생
     TEN_LEFT,
