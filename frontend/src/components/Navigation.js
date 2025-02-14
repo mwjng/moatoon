@@ -312,7 +312,7 @@ function Navigation({
                                 <img src={`${booksIcon}`} alt="library" width="50"></img>
                                 <span>도서관</span>
                             </button>
-                            {userInfo.role === 'manager' ? (
+                            {userInfo.role === 'MANAGER' ? (
                                 <>
                                     <button
                                         className="flex flex-col text-center gap-3 items-center"
