@@ -6,6 +6,7 @@ import Drawing from '../../components/draw/Drawing';
 import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
+import { useSession } from '../../hooks/SessionProvider';
 
 const DrawingPage = () => {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ const DrawingPage = () => {
     const cutsState = useSelector(state => state.cuts);
     // const userId = useSelector(state => state.user.userInfo.id);
     const userId = 3;
+
     useEffect(() => {
         if (scheduleId) {
             dispatch(fetchCutsInfo(scheduleId)); // API 호출

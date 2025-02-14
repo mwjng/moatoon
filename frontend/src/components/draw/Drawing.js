@@ -4,6 +4,8 @@ import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
+import { useSession } from '../../hooks/SessionProvider.js';
+import MyCamera from '../MyCamera.js';
 
 const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
     const stageRef = useRef(null);
@@ -58,12 +60,19 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
         exportToSVGAndUpload,
     }));
 
+    //openvidu
+    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession();
+    }, []);
+
     return (
         <div className="h-screen bg-light-cream-yellow">
             <div className="flex gap-4 p-5">
                 <div className="w-72 mr-5">
                     <div className="rounded-lg overflow-hidden mb-4">
-                        <img src={ChildImg} alt="참고 이미지" className="w-full" />
                         <WordButton color="bg-dark-yellow w-full mt-5" size="md">
                             지난 이야기 전체 보기
                         </WordButton>
