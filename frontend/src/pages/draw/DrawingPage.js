@@ -7,15 +7,17 @@ import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 
-const DrawingPage = () => {
+const DrawingPage = (session, publisher, subscribers, leaveSession) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleId = 12;
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
+
     // const userId = useSelector(state => state.user.userInfo.id);
     const userId = 3;
+
     useEffect(() => {
         if (scheduleId) {
             dispatch(fetchCutsInfo(scheduleId)); // API 호출

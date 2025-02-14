@@ -5,8 +5,9 @@ import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
-import { getCurrentSessionStage } from '../../api/sessionStage'; 
+import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
+import { OpenViduProvider } from '../../utils/OpenviduContext';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -14,14 +15,14 @@ const SessionContainer = () => {
     const [sessionData, setSessionData] = useState({
         scheduleId: 1,
         partyId: 1,
-        bookTitle: '용감한 기사'
+        bookTitle: '용감한 기사',
     });
 
     const [sessionStageData, setSessionStageData] = useState({
-        currentStage: "NONE",
+        currentStage: 'NONE',
         sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
         serverTime: new Date(),
-        sessionDuration: 60
+        sessionDuration: 60,
     });
 
     // 초기 세션 스테이지 정보를 가져오는 함수
@@ -30,17 +31,18 @@ const SessionContainer = () => {
         try {
             const response = await getCurrentSessionStage(sessionData.scheduleId);
             if (response.status === 200) {
-                if(response.data.currentSessionStage === 'DONE'){ // 새로고침했을때 DONE이면 접근 금지
+                if (response.data.currentSessionStage === 'DONE') {
+                    // 새로고침했을때 DONE이면 접근 금지
                     navigate('/home');
                     return;
                 }
 
-                console.log("세션 stage 조회 요청 성공(값): ", response.data);
+                console.log('세션 stage 조회 요청 성공(값): ', response.data);
                 setSessionStageData({
-                    currentStage: response.data.currentSessionStage,  
-                    sessionStartTime: new Date(response.data.sessionStageStartTime),  
+                    currentStage: response.data.currentSessionStage,
+                    sessionStartTime: new Date(response.data.sessionStageStartTime),
                     serverTime: new Date(response.data.serverTime),
-                    sessionDuration: response.data.sessionDuration
+                    sessionDuration: response.data.sessionDuration,
                 });
             }
         } catch (error) {
@@ -56,7 +58,7 @@ const SessionContainer = () => {
         console.log('타임아웃 처리: QUIZ 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
-            currentStage: 'QUIZ'
+            currentStage: 'QUIZ',
         }));
     };
 
@@ -67,16 +69,13 @@ const SessionContainer = () => {
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     useEffect(() => {
-        console.log("세션 stage 업데이트됨: ", sessionStageData);
-        renderStage();
+        console.log('세션 stage 업데이트됨: ', sessionStageData);
+        //renderStage();
     }, [sessionStageData]);
 
-    const { 
-        sendReady, 
-        readyStatusResponse, 
-        sessionTransferResponse, 
-        isConnected 
-    } = useSessionStageWebSocket(sessionData.scheduleId);
+    const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
+        sessionData.scheduleId,
+    );
 
     // sessionTransferResponse 변경시 stage 업데이트
     useEffect(() => {
@@ -85,7 +84,7 @@ const SessionContainer = () => {
                 currentStage: sessionTransferResponse.nextSessionStage,
                 sessionStartTime: sessionTransferResponse.sessionStartTime,
                 serverTime: sessionTransferResponse.severTime,
-                sessionDuration: sessionTransferResponse.sessionDuration
+                sessionDuration: sessionTransferResponse.sessionDuration,
             }));
         }
     }, [sessionTransferResponse]);
@@ -95,7 +94,7 @@ const SessionContainer = () => {
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
-                    <WaitingRoom 
+                    <WaitingRoom
                         scheduleId={sessionData.scheduleId}
                         bookTitle={sessionData.bookTitle}
                         sessionTime={sessionStageData.sessionTime}
@@ -103,28 +102,13 @@ const SessionContainer = () => {
                     />
                 );
             case 'WORD':
-                return (
-                    <WordLearning
-                        sessionTransferResponse={sessionTransferResponse}
-                    />
-                );
+                return <WordLearning sessionTransferResponse={sessionTransferResponse} />;
             case 'DRAWING':
-                return (
-                    <DrawingPage 
-                        sessionTransferResponse={sessionTransferResponse}
-                    />
-                );
+                return <DrawingPage sessionTransferResponse={sessionTransferResponse} />;
             case 'DONE':
-                return (
-                    <DrawingEndPage 
-                        sessionTransferResponse={sessionTransferResponse}
-                        onTimeout={handleTimeout}
-                    />
-                );
+                return <DrawingEndPage sessionTransferResponse={sessionTransferResponse} onTimeout={handleTimeout} />;
             case 'QUIZ':
-                return(
-                    <QuizPage/>
-                );
+                return <QuizPage />;
             default:
                 navigate('/home');
                 return null;
@@ -139,6 +123,12 @@ const SessionContainer = () => {
     }, [isConnected]);
 
     const CurrentStage = () => {
+        const [stageComponent, setStageComponent] = useState(null);
+
+        useEffect(() => {
+            setStageComponent(renderStage()); // ✅ useEffect 내에서 상태 업데이트
+        }, [sessionStageData]);
+
         if (isLoading) {
             return (
                 <div className="min-h-screen flex items-center justify-center">
@@ -147,7 +137,7 @@ const SessionContainer = () => {
             );
         }
 
-        return renderStage();
+        return stageComponent;
     };
 
     return (
