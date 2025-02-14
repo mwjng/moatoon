@@ -131,7 +131,7 @@ function App() {
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
                     <Route path="library" element={<LibraryPage />} />
-                    <Route path="ebook" element={<EBookPage />} />
+                    <Route path="ebook/:partyId" element={<EBookPage />} />
                     <Route path="word">
                         <Route index element={<MyWordPage />} />
                     </Route>

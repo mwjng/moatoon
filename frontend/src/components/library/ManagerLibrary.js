@@ -93,7 +93,11 @@ function ManagerLibraryPage() {
                                 {/* 책 리스트 컨테이너 (가로 제한 및 중앙 정렬) */}
                                 <div className="max-w-[1000px] mx-auto grid grid-cols-5 gap-2">
                                     {row.map(book => (
-                                        <div key={book.id} className="w-36 h-64">
+                                        <div
+                                            key={book.id}
+                                            className="w-36 h-64 cursor-pointer"
+                                            onClick={() => window.open(`/ebook/${book.id}`, '_blank')}
+                                        >
                                             <LibraryBookCard item={book} />
                                         </div>
                                     ))}

@@ -39,7 +39,11 @@ function ChildLibraryPage() {
                             className={`flex justify-center gap-6 py-4 ${backgroundColors[rowIndex % 3]}`}
                         >
                             {row.map(book => (
-                                <div key={book.id} className="w-36 h-64">
+                                <div
+                                    key={book.id}
+                                    className="w-36 h-64 cursor-pointer"
+                                    onClick={() => window.open(`/ebook/${book.id}`, '_blank')}
+                                >
                                     <LibraryBookCard item={book} />
                                 </div>
                             ))}
