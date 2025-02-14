@@ -162,7 +162,8 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const showPreviousStory = partyDetails.progressCount > 0;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+
+    <div className="min-h-screen bg-gray-100 p-4" >
       <div className="card max-w-3xl mx-auto bg-blue-50/80 shadow-xl backdrop-blur-sm">
         <div className="card-body p-6">
           {/* 헤더 및 기본 정보 */}
@@ -177,7 +178,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
           <h2 className="card-title text-2xl font-bold text-center my-2">{partyDetails.title}</h2>
           
           {/* 정보 바 */}
-          <div className="flex justify-between items-center bg-white rounded-xl p-4 mt-2 shadow-sm">
+          <div className="flex justify-between items-center bg-white rounded-xl p-4 mt-2 shadow-sm" style={{ fontFamily: 'S-CoreDream-3Light', color: 'red' }}>
             <div className="flex items-center gap-4 text-gray-600">
               <span className="text-sm">시작일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
               <span className="text-sm">요일: {partyDetails.dayWeeks.join(", ")}</span>
