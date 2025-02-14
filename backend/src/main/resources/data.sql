@@ -68,8 +68,8 @@ INSERT INTO `KEYWORD` (`keyword`, `option`) VALUES
 -----------------------------------------------------------
 INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, episode_count, progress_count, status, start_date, is_public, end_date, created_at, modified_at) VALUES
   -- [BEFORE] 아직 시작 전 파티 (파티 1 ~ 3 / 모두 레벨 1/ 모두 에피소드 수 2개 / 3번만 비공개방 / 매주 목 : 2/13일에 시작 '2025-02-13 08:00:00' ~ '2025-02-20 08:00:00' )
-  ('미래 모험의 시작, 용감한 기사 이야기', '1001', 'cover.jpg', '용감한 기사', 1, 2, 0, 'BEFORE', '2025-02-13 08:00:00', 1, '2025-02-20 08:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  ('마법사들의 비밀과 예언', '1002', 'cover.jpg', '마법사들의 예언', 1, 2, 0, 'BEFORE', '2025-02-13 08:00:00', 1, '2025-02-20 08:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  ('미래 모험의 시작, 용감한 기사 이야기', '1001', 'cover.jpg', '용감한 기사', 1, 2, 0, 'BEFORE', '2025-02-13 18:00:00', 1, '2025-02-20 18:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  ('마법사들의 비밀과 예언', '1002', 'cover.jpg', '마법사들의 예언', 1, 2, 0, 'BEFORE', '2025-02-13 18:00:00', 1, '2025-02-20 18:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('전설의 바다 괴물과 해적', '1003', 'cover.jpg', '바다의 전설', 1, 2, 0, 'BEFORE', '2025-02-13 08:00:00', 0, '2025-02-20 08:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 
   -- [ING] 진행 중인 파티 (파티 4 ~ 5 / 2개 에피소드 중 1개 진행 / 매주 목 '2025-02-06 08:00:00' ~ '2025-02-13 08:00:00')
@@ -197,8 +197,8 @@ INSERT INTO PARTY_MEMBER (member_id, party_id, created_at, modified_at) VALUES
 -----------------------------------------------------------
 -- [BEFORE] 파티 1-3: 에피소드 수 10개
 INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) VALUES
-  (1, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
-  (1, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),
+  (1, '2025-02-13 18:00:00', 'THURSDAY', 1, 'BEFORE'),
+  (1, '2025-02-20 18:00:00', 'THURSDAY', 2, 'BEFORE'),
   (2, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
   (2, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),
   (3, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),

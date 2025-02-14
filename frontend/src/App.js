@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, useLocation } from 'react-router';
 
 import BookGeneratorPage from './pages/book/BookGeneratorPage';
+import BookSearchPage from './pages/book/BookSearchPage';
+
 import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/WaitingRoom';
@@ -121,10 +123,10 @@ function App() {
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
                     <Route path="/session">
-                        <Route path="search" />
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
+                        <Route path="search" element={<BookSearchPage/>} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
