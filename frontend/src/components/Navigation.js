@@ -15,19 +15,47 @@ import ConfirmModal from './common/ConfirmModal';
 import { getLearningWords } from '../api/word';
 import WordModal from './WordModal';
 import { logout } from '../api/member';
+import bbi from '../assets/bbi.png';
+import duck from '../assets/duckduck.png';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitle, onTimeOut }) {
+function Navigation({
+    stage,
+    leaveSession,
+    stageDuration = 1,
+    sessionStartTime = Date.now(),
+    serverTime = Date.now(),
+    bookTitle,
+    onTimeOut,
+}) {
+    const userInfo = useSelector(state => state.user.userInfo);
+
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
-    const targetTime = Date.now() + stageTime * MINUTE;
+
+    const [timeOffset, setTimeOffset] = useState(0); // 시간 오차 - serverTime과 현재시간의 차이
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
     const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
+
     const [logoutModal, setLogoutModal] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
-    let timeoutNotEvented = true;
+
+    // 서버와 클라이언트의 시간 차이 계산
+    useEffect(() => {
+        if (serverTime) {
+            const serverTimestamp = new Date(serverTime).getTime();
+            const offset = serverTimestamp - Date.now();
+            setTimeOffset(offset);
+        }
+    }, [serverTime]);
+
+    // 현재 서버 시간 추정
+    const getServerNow = () => {
+        return Date.now() + timeOffset;
+    };
 
     const handleBackClick = () => {
         if (stage === 'waiting') {
@@ -35,14 +63,6 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
             navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
-
-    //사용자 정보
-    const [user, setUser] = useState({
-        userName: '김싸피',
-        userIcon:
-            'https://i.namu.wiki/i/KUM2tQX1XioB6nLXb1hNgb47SQkzckA4LAbfCUWej7_opVso4ebnkijBdglFek7Dn2FzcKoGgOjOlm_UeIAYdQ3_i-CmhnnYc-PiI3erJmqqWI03S5ci3WZBbaqENJ90FcL3FtIjpnxFB8kNEynbag.webp',
-        role: 'manager',
-    });
 
     //페이지 이동 핸들러
     const navigationHandler = path => {
@@ -115,10 +135,16 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
     };
 
     useEffect(() => {
-        if (stage) {
+        if (stage && sessionStartTime) {
+            let timeoutNotEvented = true;
+
             // 타이머 초기화
             const updateRemainTime = () => {
-                let remaining = targetTime - Date.now();
+                const sessionStartTimestamp = new Date(sessionStartTime).getTime();
+                const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
+                const totalDuration = stageDuration * MINUTE; // 현재 스테이지에 주어진 전체 시간
+                let remaining = totalDuration - elapsedTime; // 남은 시간 계산
+
                 if (remaining <= 0) {
                     remaining = 0;
                     if (timeoutNotEvented) {
@@ -126,7 +152,7 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
                         timeoutNotEvented = false;
                     }
                 }
-                let percent = (remaining / (stageTime * MINUTE)) * 100;
+                let percent = (remaining / (stageDuration * MINUTE)) * 100;
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);
@@ -138,7 +164,7 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
 
     return (
         <>
@@ -159,8 +185,8 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(sessionTime)} ~{' '}
-                                        {getTimeFormatted(addTime(sessionTime, 1))}
+                                        오늘의 일정 : {getTimeFormatted(sessionStartTime)} ~{' '}
+                                        {getTimeFormatted(addTime(sessionStartTime, 1))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">
@@ -263,15 +289,15 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
                         )}
                     </div>
                 ) : (
-                    <div className="flex flex-row justify-between py-4 px-10 items-center">
+                    <div className="flex flex-row justify-between py-4 px-10 items-center ">
                         <div className="flex flex-row justify-around items-center gap-20">
-                            <img
-                                src={`${user.userIcon == '' ? accountCircle : user.userIcon}`}
-                                alt="user-icon"
-                                width="50"
-                                height="50"
-                                className="w-12 h-12 rounded-full object-cover border-2"
-                            ></img>
+                            <div className="w-14 h-14 bg-[#ddd5] rounded-full">
+                                <img
+                                    src={previewUrl || (userInfo.role === 'CHILD' ? bbi : duck)}
+                                    alt="프로필 이미지"
+                                    className="w-full h-full object-cover rounded-3xl"
+                                />
+                            </div>
                             <button
                                 className="flex flex-col text-center gap-3 items-center"
                                 onClick={() => navigationHandler('home')}
@@ -286,7 +312,7 @@ function Navigation({ stage, leaveSession, stageTime = 10, sessionTime, bookTitl
                                 <img src={`${booksIcon}`} alt="library" width="50"></img>
                                 <span>도서관</span>
                             </button>
-                            {user.role === 'manager' ? (
+                            {userInfo.role === 'manager' ? (
                                 <>
                                     <button
                                         className="flex flex-col text-center gap-3 items-center"

@@ -22,7 +22,7 @@ const DrawingPage = () => {
         }
     }, [dispatch, scheduleId]);
 
-    const [isDrawing, setIsDrawing] = useState(true);
+    const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const drawingRef = useRef(null);
 

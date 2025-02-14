@@ -13,7 +13,8 @@ import ConfirmModal from '../common/ConfirmModal';
 
 export default function ManagerModify(props) {
     const userInfo = useSelector(state => state.user.userInfo);
-    const [imgFile, setImgFile] = useState('');
+    const [imgFile, setImgFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const [modalState, setModalState] = useState(false);
     const [confirmModalState, setConfirmModalState] = useState(false);
     const [modalText, setModalText] = useState('');
@@ -148,15 +149,30 @@ export default function ManagerModify(props) {
         );
     };
 
-    const saveImgFile = async () => {
-        const file = imgRef.current.files[0];
+    const saveImgFile = event => {
+        const file = event.target.files[0];
         if (!file) return;
-        const imgUrl = await uploadImage(file);
 
-        setImgFile(imgUrl);
+        const fileURL = URL.createObjectURL(file);
+        setPreviewUrl(fileURL); // 미리보기 이미지 변경
+        setImgFile(file); // 업로드할 파일 저장 (업로드는 아직 안 함)
     };
 
     const modifyHandler = async () => {
+        let uploadedImgUrl = userInfo.imageUrl; // 기본적으로 기존 이미지 유지
+
+        if (imgFile && imgFile !== userInfo.imageUrl) {
+            // 새 이미지가 선택된 경우만 업로드
+            try {
+                uploadedImgUrl = await uploadImage(imgFile); // 실제 업로드 수행
+            } catch (error) {
+                console.error('이미지 업로드 실패:', error);
+                setModalText('이미지 업로드에 실패했습니다.');
+                setModalState(true);
+                return;
+            }
+        }
+
         if (
             modifyState.find(input => input.id === 'password').value ===
                 modifyState.find(input => input.id === 'confirmPassword').value &&
@@ -169,11 +185,10 @@ export default function ManagerModify(props) {
                     acc[input.id] = input.value;
                     return acc;
                 },
-                { role: 'CHILD', imgUrl: imgFile ? imgFile : null, children },
+                { role: 'CHILD', imgUrl: uploadedImgUrl, children }, // ✅ 업로드된 이미지 사용
             );
 
             const res = await modify(modifyInfo);
-            console.log(res);
             if (res.status === 200) {
                 setModalText('회원정보 수정이 완료되었습니다.');
                 setModalState(true);
@@ -254,11 +269,11 @@ export default function ManagerModify(props) {
 
     return (
         <>
-            <AuthModal title="회원정보 수정">
+            <AuthModal title="회원정보 수정" top={true}>
                 <div className="flex gap-2">
                     <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
                         <img
-                            src={imgFile ? imgFile : duck}
+                            src={previewUrl || duck}
                             alt="프로필 이미지"
                             className="w-full h-full object-cover rounded-3xl"
                         />
@@ -274,7 +289,7 @@ export default function ManagerModify(props) {
                             cursor: 'pointer',
                         }}
                     >
-                        프로필 이미지 추가
+                        프로필 이미지 변경
                     </label>
                     <input
                         style={{ display: 'none' }}

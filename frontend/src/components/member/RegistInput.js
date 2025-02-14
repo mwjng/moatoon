@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Timer from './Timer';
 
 export default function RegistInput(props) {
     return (
@@ -37,11 +38,18 @@ export default function RegistInput(props) {
                     )}
                     {input.id === 'email' && (
                         <button
-                            onClick={() => props.checkEmail(input.value)}
+                            onClick={() => {
+                                props.checkEmail(input.value);
+                            }}
                             className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#8ECAE6] text-white px-2 py-1 rounded-xl text-xs"
                         >
-                            인증
+                            {props.firstCheck ? '인증' : '재인증'}
                         </button>
+                    )}
+                    {input.id === 'emailCode' && props.isTimer && (
+                        <div className="absolute right-14 top-1/2 transform -translate-y-1/2 text-xs text-red-500">
+                            <Timer count={props.count} setCount={props.setCount} />
+                        </div>
                     )}
                     {input.id === 'emailCode' && (
                         <button
