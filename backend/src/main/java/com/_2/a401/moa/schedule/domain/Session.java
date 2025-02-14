@@ -19,7 +19,7 @@ public class Session {
 
     private FullSessionStage sessionStage;
 
-    private LocalDateTime startTime; // 재접속시, 타이머를 위함
+    private LocalDateTime startTime; // 각 단계의 시작시간. 갱신됨.
 
     public Session(final Long scheduleId, final String sessionId, final FullSessionStage sessionStage, final LocalDateTime startTime) {
         this.scheduleId = scheduleId;

@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = ({sessionTransferResponse}) => {
+// partyId, scheduleId 받아와야함
+const WordLearning = ({sessionStageData}) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
@@ -70,9 +71,9 @@ const WordLearning = ({sessionTransferResponse}) => {
         <div className="bg-seashell h-screen">
             <Navigation
                 stage={'learning'}
-                stageDuration={sessionTransferResponse.sessionDuration}
-                sessionStartTime={sessionTransferResponse.sessionStartTime}
-                serverTime={sessionTransferResponse.serverTime}
+                stageDuration={sessionStageData.sessionDuration}
+                sessionStartTime={sessionStageData.sessionStartTime}
+                serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
             />
             <div className="flex m-8 justify-between h-[600px]">

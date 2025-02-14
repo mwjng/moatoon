@@ -33,7 +33,7 @@ public class SessionStageService {
 
     public void dummyRedis(){
         // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WORD 상태임(세션 시작 30분전부터)
-        final Session session = new Session(1L, "openviduSessionId", WAITING, LocalDateTime.now().minusMinutes(9));
+        final Session session = new Session(1L, "openviduSessionId", WAITING, LocalDateTime.now());
         sessionRedisRepository.save(session);
 
         SessionMember sessionMember = new SessionMember(1L);
@@ -109,7 +109,7 @@ public class SessionStageService {
                 .currentSessionStage(currentSessionStage)
                 .nextSessionStage(nextSessionStage)
                 .sessionStartTime(now)
-                .sessionDuration(nextSessionStage.getDuration())
+                .sessionDuration(nextSessionStage.getDuration()) // !!
                 .build();
 
         // 세션 전환 메시지 브로드캐스트

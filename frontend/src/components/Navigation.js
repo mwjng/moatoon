@@ -28,13 +28,13 @@ function Navigation({
     bookTitle,
     onTimeOut,
 }) {
-    console.log('Navigation 렌더링:', {
-        stage,
-        stageDuration,
-        sessionStartTime,
-        serverTime,
-        currentTime: Date.now()
-    });
+    // console.log('Navigation 렌더링:', {
+    //     stage,
+    //     stageDuration,
+    //     sessionStartTime,
+    //     serverTime,
+    //     currentTime: Date.now()
+    // });
 
     const userInfo = useSelector(state => state.user.userInfo);
 
@@ -104,10 +104,10 @@ function Navigation({
         setLogoutModal(false);
     };
 
-    //시간 더하기
-    const addTime = (timestamp, addHour = 0) => {
+   // 시간 더하기 함수 (분 단위로 처리)
+    const addMinutes = (timestamp, minutes = 0) => {
         const time = new Date(timestamp);
-        return time.setHours(time.getHours() + addHour);
+        return new Date(time.getTime() + minutes * 60000);
     };
 
     //hh:mm 형식 반환
@@ -125,6 +125,7 @@ function Navigation({
 
     useEffect(() => {
         if (cutsState.cuts.length > 0) {
+            console.log(cutsState.cuts[0].partyId);
             getLearningWords(cutsState.cuts[0].partyId).then(response => {
                 setWords(response.data.words);
             });
@@ -157,7 +158,7 @@ function Navigation({
             const updateRemainTime = () => {
                 const sessionStartTimestamp = new Date(sessionStartTime).getTime();
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
-                const totalDuration = stageDuration * MINUTE; // 현재 스테이지에 주어진 전체 시간
+                const totalDuration = (stageDuration/60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
 
                 if (remaining <= 0) {
@@ -200,8 +201,8 @@ function Navigation({
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(sessionStartTime, 10/60)} ~{' '}
-                                        {getTimeFormatted(addTime(sessionStartTime, 10/60+1))}
+                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime, 10))} ~{' '}
+                                        {getTimeFormatted(addMinutes(sessionStartTime, 70))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">

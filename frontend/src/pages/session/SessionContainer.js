@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WaitingRoom from './WaitingRoom';
 import WordLearning from './WordLearning';
+import RandomPage from '../RandomPage';
 import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
@@ -101,26 +102,33 @@ const SessionContainer = () => {
                     <WaitingRoom 
                         scheduleId={sessionData.scheduleId}
                         bookTitle={sessionData.bookTitle}
-                        sessionTime={sessionStageData.sessionStartTime} // 이게 안넘어옴
+                        sessionTime={sessionStageData.sessionStartTime}
                         serverTime={sessionStageData.serverTime}
+                        sessionDuration = {sessionStageData.sessionDuration}
                     />
                 );
             case 'WORD':
                 return (
                     <WordLearning
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData={sessionStageData}
+                    />
+                );
+            case 'CUT_ASSIGN':
+                return (
+                    <RandomPage
+                        sessionStageData={sessionStageData}
                     />
                 );
             case 'DRAWING':
                 return (
                     <DrawingPage 
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData={sessionStageData}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage 
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData={sessionStageData}
                         onTimeout={handleTimeout}
                     />
                 );

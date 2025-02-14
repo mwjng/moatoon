@@ -6,7 +6,7 @@ import { authInstance } from '../../api/axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
 
-const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
+const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
     const scheduledId = 12;
@@ -45,9 +45,9 @@ const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"
-                    stageDuration={3}
-                    sessionStartTime={sessionTransferResponse?.sessionStartTime}
-                    serverTime={sessionTransferResponse?.serverTime}
+                    stageDuration={sessionStageData.sessionDuration}
+                    sessionStartTime={sessionStageData.sessionStartTime}
+                    serverTime={sessionStageData.serverTime}
                     onTimeOut={onTimeout} />
             </div>
 
