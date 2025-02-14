@@ -19,7 +19,15 @@ import bbi from '../assets/bbi.png';
 import duck from '../assets/duckduck.png';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=Date.now(), serverTime=Date.now(), bookTitle, onTimeOut }) {
+function Navigation({
+    stage,
+    leaveSession,
+    stageDuration = 1,
+    sessionStartTime = Date.now(),
+    serverTime = Date.now(),
+    bookTitle,
+    onTimeOut,
+}) {
     const userInfo = useSelector(state => state.user.userInfo);
 
     const SECOND = 1000; //초

@@ -1,14 +1,14 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import WordButton from '../WordButton.js';
 import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
 
-const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
+const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
     const stageRef = useRef(null);
-    const userId = 3; // 받아오기
-
+    //const [userId, setUserId] = useState(3);
+    console.log(userId);
     const partyId = cutsInfo[0].partyId;
     const cutIds = cutsInfo.map(item => item.cutId);
     const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
@@ -80,17 +80,8 @@ const Drawing = forwardRef(({ toggleView, cutsInfo }, ref) => {
                         partyId={partyId}
                         cutId={cutId}
                         cutIds={cutIds}
+                        userStory={userStory}
                     />
-                    {userStory && (
-                        <div className="absolute bottom-0 w-full text-center py-2.5 text-black text-xs">
-                            <p
-                                className="text-md text-gray-700"
-                                dangerouslySetInnerHTML={{
-                                    __html: userStory[0].content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
-                                }}
-                            />
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ const StoryCard = ({ story }) => {
                 {index + 1}/{story.length}
             </p>
             <p
-                className="mt-4 text-md text-center text-gray-700"
+                className="mt-4 text-md text-center text-gray-700 leading-relaxed p-5"
                 dangerouslySetInnerHTML={{
                     __html: story[index].content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
                 }}

@@ -32,6 +32,7 @@ module.exports = {
                 'light-orange': '#F5BD40',
                 'light-yellow': '#FBEF9D',
                 'burnt-sienna': '#F07167',
+                'light-green': '#ACDB33',
             },
         },
     },
