@@ -14,7 +14,8 @@ const DrawingPage = () => {
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
-
+    // const userId = useSelector(state => state.user.userInfo.id);
+    const userId = 3;
     useEffect(() => {
         if (scheduleId) {
             dispatch(fetchCutsInfo(scheduleId)); // API 호출
@@ -50,7 +51,7 @@ const DrawingPage = () => {
                 !cutsState.error &&
                 cutsState.cuts.length > 0 &&
                 (isDrawing ? (
-                    <Drawing ref={drawingRef} toggleView={toggleView} cutsInfo={cutsState.cuts} />
+                    <Drawing ref={drawingRef} toggleView={toggleView} cutsInfo={cutsState.cuts} userId={userId} />
                 ) : (
                     <Overview toggleView={toggleView} cutsInfo={cutsState.cuts} />
                 ))}

@@ -7,7 +7,7 @@ import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
 
-const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
+const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
@@ -252,6 +252,16 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
                         ))}
                     </Layer>
                 </Stage>
+                {userStory && userStory.length > 0 && (
+                    <div className="absolute bottom-0 w-full text-center p-2.5 text-black text-md">
+                        <p
+                            className="text-md text-gray-700 leading-relaxed"
+                            dangerouslySetInnerHTML={{
+                                __html: userStory[0].content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
+                            }}
+                        />
+                    </div>
+                )}
                 <div className="flex justify-center gap-4 mt-4">
                     {/* <Link to="/session/overview"> */}
                     <WordButton

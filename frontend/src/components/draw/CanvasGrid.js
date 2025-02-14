@@ -4,9 +4,14 @@ import SockJS from 'sockjs-client';
 import CanvasAll from './CanvasAll';
 import { updateLines, handleDraw } from '../../utils/canvasUtils';
 import { authInstance } from '../../api/axios';
+import { useSelector } from 'react-redux';
 
-const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
+const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo }) => {
     const [canvasData, setCanvasData] = useState({}); // cutId별 캔버스 데이터 저장
+
+    //본인에게만 편집 버튼이 활성화되어야함
+    //const userId = useSelector(state => state.user.userInfo.id);
+    const userId = 3;
 
     // WebSocket 연결 설정
     useEffect(() => {
@@ -79,17 +84,22 @@ const CanvasGrid = ({ partyId, cutIds, toggleView }) => {
     }, []);
 
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center">
             <div className="p-4 border-2 border-black bg-white" style={{ border: '2px solid black' }}>
                 <div className="grid grid-cols-2 gap-4 w-full h-full">
-                    {cutIds.map(cutId => {
-                        const cutData = canvasData[cutId] || [];
+                    {cutsInfo.map(cut => {
+                        const cutData = canvasData[cut.cutId] || [];
                         return (
-                            <div key={cutId} className="border-2 border-gray-300 rounded aspect-square">
-                                <div className="w-full h-full">
-                                    <CanvasAll key={cutId} cutId={cutId} canvasData={cutData} toggleView={toggleView} />
-                                </div>
-                                <button onClick={toggleView}>클릭</button>
+                            <div key={cut.cutId} className="border-2 border-gray-300 rounded aspect-square">
+                                <CanvasAll
+                                    key={cut.cutId}
+                                    cutId={cut.cutId}
+                                    nickname={cut.nickname}
+                                    canvasData={cutData}
+                                    toggleView={toggleView}
+                                    edit={userId === cut.memberId}
+                                    content={cut.content}
+                                />
                             </div>
                         );
                     })}
