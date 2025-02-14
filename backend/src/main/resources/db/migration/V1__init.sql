@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS member (
 
 CREATE TABLE IF NOT EXISTS my_word (
     fail_count INTEGER NOT NULL,
-    is_deleted BIT NOT NULL,
+    is_deleted TINYINT(1) NOT NULL,
     created_at DATETIME(6) NOT NULL,
     id BIGINT NOT NULL AUTO_INCREMENT,
     member_id BIGINT NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS my_word (
 
 CREATE TABLE IF NOT EXISTS party (
     episode_count INTEGER NOT NULL,
-    is_public BIT NOT NULL,
+    is_public TINYINT(1) NOT NULL,
     level INTEGER NOT NULL,
     progress_count INTEGER NOT NULL,
     created_at DATETIME(6) NOT NULL,

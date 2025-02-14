@@ -86,6 +86,9 @@ spring:
     console:
       enabled: true
 
+  flyway:
+    enabled: false
+
 logging:
   level:
     org.hibernate.SQL: debug
@@ -127,6 +130,9 @@ spring:
   h2:
     console:
       enabled: false
+
+  flyway:
+    enabled: true
 
 logging:
   level:
