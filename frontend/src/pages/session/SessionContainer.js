@@ -7,6 +7,7 @@ import QuizPage from './QuizPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage'; 
 import { useNavigate } from 'react-router';
+import RandomPage from '../RandomPage';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -65,12 +66,6 @@ const SessionContainer = () => {
         fetchCurrentStage();
     }, [sessionData.scheduleId]);
 
-    // 상태 업데이트를 확인하기 위한 별도의 useEffect
-    useEffect(() => {
-        console.log("세션 stage 업데이트됨: ", sessionStageData);
-        renderStage();
-    }, [sessionStageData]);
-
     const { 
         sendReady, 
         readyStatusResponse, 
@@ -92,6 +87,13 @@ const SessionContainer = () => {
 
     const renderStage = () => {
         console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
+        
+        // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
+        if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
+            console.log('현재 스테이지와 동일하여 렌더링 스킵');
+            return null;
+        }
+
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
@@ -105,19 +107,19 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData = {sessionStageData}
                     />
                 );
             case 'DRAWING':
                 return (
                     <DrawingPage 
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData = {sessionStageData}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage 
-                        sessionTransferResponse={sessionTransferResponse}
+                        sessionStageData = {sessionStageData}
                         onTimeout={handleTimeout}
                     />
                 );
@@ -146,7 +148,6 @@ const SessionContainer = () => {
                 </div>
             );
         }
-
         return renderStage();
     };
 
