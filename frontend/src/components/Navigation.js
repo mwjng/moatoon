@@ -44,6 +44,10 @@ function Navigation({
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setPreviewUrl(userInfo.imageUrl); // userInfo가 변경될 때 previewUrl 업데이트
+    }, [userInfo.imageUrl]);
+
     // 서버와 클라이언트의 시간 차이 계산
     useEffect(() => {
         if (serverTime) {
