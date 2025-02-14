@@ -17,7 +17,7 @@ const EBookPage = () => {
 
     useEffect(() => {
         axios
-            .get(`http://localhost:8080/books/ebook/${partyId}`)
+            .get(`/books/ebook/${partyId}`)
             .then(response => {
                 console.log('Fetched Data:', response.data);
                 setComicData(response.data);

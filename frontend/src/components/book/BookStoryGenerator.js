@@ -223,13 +223,14 @@ const BookStoryGenerator = ({
 
       const result = await sendStoryToBackend(payload, generatedCover);
       console.log("스토리 전송 성공", result);//result = partyId
-      setPartyId(result);
+      // setPartyId(result);
 
       onClose();
     } catch (error) {
       console.error("최종 전송 오류:", error.message);
     } finally {
       setIsGeneratingImage(false);
+      setIsCreatingParty(false);
     }
   };
 
@@ -240,35 +241,72 @@ const BookStoryGenerator = ({
     }
   }, [partyId]);
 
-  return (
-    <div className="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-75">
-      <div className="p-6 rounded-lg shadow-lg w-2/3 relative max-h-screen overflow-y-auto bg-blue-100">
-        <h2 className="text-xl font-bold mb-4 text-center">📖 생성된 이야기</h2>
+return (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+            <div className="w-[90%] md:w-[80%] lg:w-[70%]  bg-blue-100 rounded-lg shadow-lg">
+                <div className="h-full grid grid-rows-[auto_1fr_auto]">
+                    {/* 헤더 */}
+                    <div className="flex justify-between items-center p-4 border-b">
+                        <h2 className="text-lg font-bold text-center flex-grow">📖 스토리라인</h2>
+                        <button 
+                            onClick={onClose}
+                            className="text-gray-500 hover:text-gray-700"
+                        >
+                            ✕
+                        </button>
+                    </div>
 
-        {currentStory && (
-          <div className="mb-4 p-4 border border-gray-300 rounded bg-gray-50">
-            <h3 className="font-bold mb-2">동화책 제목: {currentStory.title}</h3>
-            <p>{currentStory.overview}</p>
-          </div>
-        )}
+                    {/* 스크롤 가능한 컨텐츠 영역 */}
+                    <div className="flex-1 overflow-y-auto p-4">
+                        {isGenerating ? (
+                            <div className="flex items-center justify-center h-full">
+                                <p className="text-lg">스토리를 생성하고 있습니다...</p>
+                            </div>
+                        ) : (
+                            <>
+                                {currentStory && (
+                                    <div className="mb-4 p-3 border border-gray-300 rounded bg-gray-50">
+                                        <h3 className="font-bold mb-2 text-base">개요</h3>
+                                        <p className="text-sm">{currentStory.overview}</p>
+                                    </div>
+                                )}
 
-        {currentStory?.chapters?.map((chapter, index) => (
-          <div key={index} className="mb-4 p-4 border border-gray-300 rounded bg-gray-50">
-            <h3 className="font-bold mb-2">{chapter.title}</h3>
-            <p><strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}</p>
-            {chapter.sentences.map((sentence, idx) => <p key={idx}>{sentence}</p>)}
-          </div>
-        ))}
+                                {currentStory?.chapters?.map((chapter, index) => (
+                                    <div key={index} className="mb-4 p-3 border border-gray-300 rounded bg-gray-50">
+                                        <h3 className="font-bold mb-2 text-base">에피소드 {index + 1}</h3>
+                                        <p className="text-sm mb-2">
+                                            <strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}
+                                        </p>
+                                        {chapter.sentences.map((sentence, idx) => (
+                                            <p key={idx} className="text-sm mb-1">{sentence}</p>
+                                        ))}
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
 
-        <button onClick={generateStory} disabled={isGenerating} className="bg-blue-500 px-4 py-2 rounded-lg text-white">
-          {isGenerating ? "재생성 중..." : "재생성"}
-        </button>
-        <button onClick={handleDecide} disabled={isGeneratingImage} className="bg-green-700 px-4 py-2 rounded-lg text-white">
-          결정하기
-        </button>
-      </div>
-    </div>
-  );
+                    {/* 하단 버튼 */}
+                    <div className="p-4 border-t bg-blue-100 flex justify-center gap-3">
+                        <button 
+                            onClick={generateStory} 
+                            disabled={isGenerating} 
+                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+                        >
+                            재생성하기 (1/3)
+                        </button>
+                        <button 
+                            onClick={handleDecide} 
+                            disabled={isGeneratingImage} 
+                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+                        >
+                            결정하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default BookStoryGenerator;

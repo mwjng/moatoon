@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { fetchKeywords } from '../../api/party';
 import { GiCancel } from 'react-icons/gi';
+import {useSelector} from "react-redux";
 
 const levelOptions = ['Lv1 (4~6세)', 'Lv2 (7세)', 'Lv3 (8세)', 'Lv4 (9세)', 'Lv5 (10세)', 'Lv6 (11세)'];
 const episodeOptions = Array.from({ length: 9 }, (_, i) => i + 2);
 const publicStatusOptions = ['공개', '비공개'];
 const dayOptions = ['월', '화', '수', '목', '금', '토', '일'];
-const childrenOptions = [
-    { id: 13, name: '배자식' },
-    { id: 4, name: '배현지' },
-];
 
 const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
-    const [startDate, setStartDate] = useState('');
+
+  const [startDate, setStartDate] = useState('');
     const [level, setLevel] = useState(levelOptions[0]);
     const [episodeLength, setEpisodeLength] = useState(episodeOptions[0]);
     const [time, setTime] = useState('');
     const [selectedDays, setSelectedDays] = useState([]);
     const [publicStatus, setPublicStatus] = useState(publicStatusOptions[0]);
     const [selectedChildren, setSelectedChildren] = useState([]);
+    const userChildren = useSelector(state => state.user.userInfo?.childrenList || []);
+
+
     const [mood, setMood] = useState('');
     const [theme, setTheme] = useState('');
     const [genre, setGenre] = useState('');
@@ -43,7 +44,22 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
             }
         };
         loadKeywords();
-    }, []);
+    }, [userChildren, selectedChildren]);
+
+
+
+
+    const handleChildSelect = (e) => {
+      const selectedId = parseInt(e.target.value);
+      if (!selectedId) return; // 빈 선택인 경우 처리하지 않음
+
+      const selectedChild = userChildren.find(child => child.id === selectedId);
+      console.log('Selected child:', selectedChild); // 선택된 아이 확인
+
+      if (selectedChild && !selectedChildren.some(child => child.id === selectedChild.id)) {
+          setSelectedChildren(prev => [...prev, selectedChild]);
+      }
+  };
 
     // 🔹 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
     const generateTimeOptions = () => {
@@ -282,34 +298,30 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
 
                 {/* 📌 참여 아동 선택 */}
                 <div className="flex flex-col gap-3">
-                    <select
-                        onChange={e => {
-                            const child = childrenOptions.find(c => c.id === parseInt(e.target.value));
-                            if (child && !selectedChildren.some(c => c.id === child.id)) {
-                                setSelectedChildren([...selectedChildren, child]);
-                            }
-                        }}
-                        className="p-2 rounded-xl w-[75%] bg-white outline-none border-[2px] focus:border-[#FFBD73]"
-                    >
-                        <option value="">아동 선택</option>
-                        {childrenOptions.map(({ id, name }) => (
-                            <option key={id} value={id}>
-                                {name}
-                            </option>
-                        ))}
-                    </select>
+                <select
+                    onChange={handleChildSelect}
+                    className="p-2 rounded-xl w-[75%] bg-white outline-none border-[2px] focus:border-[#FFBD73]"
+                    value="" // 선택 후 기본값으로 리셋
+                >
+                    <option value="">아동 선택</option>
+                    {userChildren?.map(({ id, name }) => (
+                        <option key={id} value={id}>
+                            {name}
+                        </option>
+                    ))}
+                </select>
 
-                    {/* 선택된 아동 목록 */}
-                    <div className="flex flex-wrap gap-2 ">
-                        {selectedChildren.map(({ id, name }) => (
-                            <div className="flex gap-1 bg-gray-200 px-3 py-1  rounded">
-                                <span key={id}>{name}</span>
-                                <GiCancel
-                                    className="w-4"
-                                    onClick={() => deleteChild(id)}
-                                    style={{ cursor: 'pointer', margin: 'auto' }}
-                                />
-                            </div>
+                {/* 선택된 아동 목록 */}
+                <div className="flex flex-wrap gap-2">
+                    {selectedChildren?.map(({ id, name }) => (
+                        <div key={id} className="flex gap-1 bg-gray-200 px-3 py-1 rounded">
+                            <span>{name}</span>
+                            <GiCancel
+                                className="w-4"
+                                onClick={() => deleteChild(id)}
+                                style={{ cursor: 'pointer', margin: 'auto' }}
+                            />
+                        </div>
                         ))}
                     </div>
                 </div>

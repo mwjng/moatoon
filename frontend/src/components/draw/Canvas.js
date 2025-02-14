@@ -7,27 +7,22 @@ import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
 
-const Canvas = ({ stageRef, toggleView }) => {
+const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
     const [lines, setLines] = useState([]);
     const [undoneLines, setUndoneLines] = useState([]);
     const isDrawing = useRef(false);
-    //const stageRef = useRef();
+
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
-
-    //임시 설정
-    const [partyId, setpartyId] = useState(2); // 예시로 방 ID를 설정
-    const [cutId, setcutId] = useState(12);
-    const [cutIds, setcutIds] = useState([10, 11, 12, 13]);
 
     //redis에 cut 초기화 데이터 추가
     useEffect(() => {
         const initializeCanvasData = async () => {
             try {
-                const response = await authInstance.post('http://localhost:8080/cuts/init-canvas', cutIds, {
+                const response = await authInstance.post('/cuts/init-canvas', cutIds, {
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -48,7 +43,7 @@ const Canvas = ({ stageRef, toggleView }) => {
 
     // 웹소켓 클라이언트 초기화
     useEffect(() => {
-        const socket = new SockJS('http://localhost:8080/ws');
+        const socket = new SockJS('/ws');
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
@@ -83,7 +78,7 @@ const Canvas = ({ stageRef, toggleView }) => {
         };
 
         try {
-            const response = await authInstance.post('http://localhost:8080/cuts/save-temp', requestData, {
+            const response = await authInstance.post('/cuts/save-temp', requestData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -116,7 +111,7 @@ const Canvas = ({ stageRef, toggleView }) => {
     useEffect(() => {
         const fetchCanvasData = async () => {
             try {
-                const response = await authInstance.get(`http://localhost:8080/cuts/${cutId}`);
+                const response = await authInstance.get(`/cuts/${cutId}`);
                 if (response.status !== 200) throw new Error('캔버스 데이터 조회 실패');
 
                 const data = response.data;

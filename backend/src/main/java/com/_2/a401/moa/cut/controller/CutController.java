@@ -2,6 +2,7 @@ package com._2.a401.moa.cut.controller;
 
 import com._2.a401.moa.cut.dto.request.CanvasRedisRequest;
 import com._2.a401.moa.cut.dto.response.CanvasRedisResponse;
+import com._2.a401.moa.cut.dto.response.CutInfoResponse;
 import com._2.a401.moa.cut.dto.response.PictureResponse;
 import com._2.a401.moa.cut.service.CutService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,4 +64,13 @@ public class CutController {
     public ResponseEntity<List<PictureResponse>> getFinalPicture(@PathVariable Long scheduledId) {
         return ResponseEntity.ok().body(cutService.getPictureData(scheduledId));
     }
+
+    @Operation(summary="컷 필요 정보 조회", description = "컷에 필요한 정보를 조회합니다.")
+    @GetMapping("/info/{scheduleId}")
+    public ResponseEntity<List<CutInfoResponse>> getCutsInfo(@PathVariable Long scheduleId) {
+        List<CutInfoResponse> cutInfoResponse=cutService.getCutsInfo(scheduleId);
+
+        return ResponseEntity.ok().body(cutInfoResponse);
+    }
+
 }

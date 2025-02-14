@@ -3,13 +3,17 @@ import Navigation from '../../components/Navigation';
 import { DayPicker } from 'react-day-picker';
 import defaultBookCover from '../../assets/images/book1.png';
 import { fetchAllParties } from '../../api/party'
+import BookDetail from '../../components/book/BookDetail';
 
 const BookSearchPage = () => {
   const [parties, setParties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showBookDetail, setShowBookDetail] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [currentPartyId, setCurrentPartyId] = useState(null);
+  const [currentPartyId, setCurrentPartyId] = useState(0);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const [pin, setPin] = useState(''); 
 
   const [searchParams, setSearchParams] = useState({
     startDate: null,
@@ -44,65 +48,6 @@ const BookSearchPage = () => {
     fetchData();
   }, [filter]);  // ✅ filter가 변경될 때만 실행
   
-
-  const loadParties = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchAllParties(filter);
-      setParties(data);
-    } catch (error) {
-      console.error('방 목록 가져오기 실패', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-    // 📌 특정 책 클릭 시 상세 보기 모달 열기
-  const openBookDetail = (partyId) => {
-    setCurrentPartyId(partyId);
-    setShowBookDetail(true);
-  };
-
-  // 📌 모달 닫기
-  const closeBookDetail = () => {
-    setShowBookDetail(false);
-    setCurrentPartyId(null);
-  };
-
-  // const handleSearch = async () => {
-  //   try {
-  //     setLoading(true);
-      
-  //     if (searchParams.startDate) {
-  //       setFilter(prev => ({...prev, startDate:formatDate(searchParams.startDate)}))
-  //     }
-  //     if (searchParams.endDate) {
-  //       setFilter(prev => ({...prev, endDate:formatDate(searchParams.endDate)}))
-  //     }
-  //     if (searchParams.time) {
-  //       setFilter(prev => ({...prev, time:formatDate(searchParams.time)}))
-  //     }
-  //     if (searchParams.dayWeek.length > 0) {
-  //       setFilter(prev => ({...prev, dayWeek:formatDate(searchParams.dayWeek.join(','))}))
-  //     }
-  //     if (searchParams.episodeLength) {
-  //       setFilter(prev => ({...prev, episodeLength:formatDate(searchParams.episodeLengthe)}))
-  //     }
-  //     if (searchParams.level) {
-  //       setFilter(prev => ({...prev, level:formatDate(searchParams.level)}))
-  //     }
-
-  //     const response = fetchAllParties(filter)
-  //     setParties(response.data);
-  //   } catch (error) {
-  //     console.error('Error searching parties:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-
-
   const handleSearch = async () => {
     const updatedFilter = { 
       ...filter, 
@@ -116,7 +61,6 @@ const BookSearchPage = () => {
   
     setFilter(updatedFilter);
   };
-  
   
 
   const handleReset = () => {
@@ -155,13 +99,28 @@ const BookSearchPage = () => {
         : [...prev.dayWeek, dayValue]
     }));
   };
-
-  const navigateToBookDetail = (partyId) => {
-    navigate(`/book/${partyId}`);
+  const handleCardClick = async(partyId) => {
+    if (!partyId || typeof partyId !== "number") {
+      return;
+    }
+    await setCurrentPartyId(partyId);
+    setShowBookDetail(true);
   };
 
+  const handleCloseModal = () => {
+    setShowBookDetail(false);
+    setCurrentPartyId(null);
+  };
+
+  const handlePinSubmit = (e) => {
+    e.preventDefault();
+    setCurrentPartyId(pin); // Pass pin as a string
+    setShowBookDetail(true);
+    // 여기서 핀 번호를 BookDetail 모달로 전달
+  }
+
   const groupPartysByLevel = () => {
-    if (!parties || !Array.isArray(parties)) return {}; // ✅ parties가 없거나 배열이 아닐 경우 빈 객체 반환
+    if (!parties || !Array.isArray(parties)) return {}; 
   
     const grouped = {};
     levels.forEach(level => {
@@ -282,23 +241,47 @@ const BookSearchPage = () => {
               </button>
             </div>
           </div>
+
+          {/* 핀 번호 검색 추가 */}
+          <div className="flex justify-center mb-1 mt-8">
+            <label className="input input-bordered input-sm w-96 flex items-center gap-2 border-2 border-gray-300 rounded-lg">
+              <input
+                type="text"
+                className="grow"
+                placeholder="Pin 번호를 입력하세요"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handlePinSubmit(e);
+                  }
+                }}
+              />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70"
+                onClick={handlePinSubmit}
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </label>
+          </div>
+
         </div>
 
-        {showBookDetail && currentPartyId && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-3xl relative">
-              <button 
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                onClick={() => setShowBookDetail(false)}
-              >
-                ✕
-              </button>
-              <BookDetail partyId={currentPartyId} />
-            </div>
-          </div>
-        )}
-
         {/* Results Section */}
+        {parties.length === 0 && (
+              <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+                <p className="text-gray-500">검색 결과가 없습니다</p>
+              </div>
+            )}
+
         {loading ? (
           <div className="text-center py-8">
             <span className="loading loading-spinner loading-lg"></span>
@@ -319,7 +302,9 @@ const BookSearchPage = () => {
                       <div
                         key={party.partyId}
                         className="cursor-pointer transition-transform hover:scale-105"
-                        onClick={() => navigateToBookDetail(party.partyId)}
+                        onClick={() => 
+                          {
+                            handleCardClick(party.partyId)}}
                       >
                         <img
                           src={party.bookCover || defaultBookCover}
@@ -343,14 +328,35 @@ const BookSearchPage = () => {
                 )}
               </div>
             ))}
+          </div>
+        )}
 
-            {parties.length === 0 && (
-              <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                <p className="text-gray-500">검색 결과가 없습니다</p>
+  {showBookDetail && currentPartyId && (
+          <div className="fixed inset-0 z-50">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="flex items-center justify-center min-h-screen p-4">
+              <div 
+                className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                  <BookDetail
+                    partyIdOrPin={currentPartyId} // Pass either number or string 
+                    onClose={handleCloseModal}
+                    setModalLoading={setModalLoading}
+                  />
+                </div>
+              </div>
+            </div>
+            {modalLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <div className="loading loading-spinner loading-lg text-primary"></div>
               </div>
             )}
           </div>
         )}
+
+
       </div>
     </div>
   );
