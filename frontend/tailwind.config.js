@@ -34,6 +34,7 @@ module.exports = {
                 'burnt-sienna': '#F07167',
                 'light-cream-blue': '#F7FCFE',
                 'light-blue': '#D9F0FE',
+                'light-green': '#ACDB33',
             },
         },
     },

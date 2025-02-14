@@ -310,6 +310,7 @@ public class PartyService {
                 .orElseThrow(() -> new MoaException(DUPLICATED_CHILD));
 
         partyMemberRepository.delete(partyMember);
+
     }
 
 }

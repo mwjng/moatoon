@@ -106,7 +106,7 @@ function ManagerLibraryPage() {
                         ))}
                 </div>
             ) : (
-                <div className="text-gray-500 text-lg font-semibold">
+                <div className="text-gray-500 text-lg p-10 ml-10 font-semibold">
                     등록된 자녀가 없습니다. 먼저 자녀를 등록해주세요.
                 </div>
             )}

@@ -61,6 +61,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:auth:2.20.0'
 	implementation 'software.amazon.awssdk:core:2.20.0'
 
+	// websocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 

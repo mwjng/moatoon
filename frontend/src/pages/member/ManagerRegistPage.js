@@ -8,10 +8,14 @@ import { regist, loginIdCheck, uploadImage, sendEmailCode, checkEmailCode, searc
 import { useNavigate } from 'react-router';
 import AlertModal from '../../components/common/AlertModal';
 import { GiCancel } from 'react-icons/gi';
+import Timer from '../../components/member/Timer';
 
 export default function ManagerRegistPage() {
     const navigate = useNavigate();
-    const [imgFile, setImgFile] = useState('');
+
+    const [firstCheck, setFirstCheck] = useState(true);
+    const [imgFile, setImgFile] = useState(null); // 파일 객체 저장
+    const [previewUrl, setPreviewUrl] = useState(''); // 미리보기 URL 저장
     const [canRegist, setCanRegist] = useState(false); // 가입 가능 여부(아이디 인증 완)
     const [modalState, setModalState] = useState(false); // 안내메세지 상태
     const [modalText, setModalText] = useState(''); // 안내메세지 내용
@@ -19,6 +23,8 @@ export default function ManagerRegistPage() {
     const [registModalState, setRegistModalState] = useState(false); // 가입완료 확인 모달
     const [searchChildId, setSearchChildId] = useState(''); // 아동 ID 검색 상태
     const [addedChildren, setAddedChildren] = useState([]); // 추가된 아동 목록
+    const [isTimer, setIsTimer] = useState(false);
+    const [count, setCount] = useState([]);
     const imgRef = useRef();
     const [registState, setRegistState] = useState([
         {
@@ -187,12 +193,12 @@ export default function ManagerRegistPage() {
         );
     };
 
-    const saveImgFile = async () => {
+    const saveImgFile = () => {
         const file = imgRef.current.files[0];
         if (!file) return;
-        const imgUrl = await uploadImage(file);
 
-        setImgFile(imgUrl);
+        setImgFile(file);
+        setPreviewUrl(URL.createObjectURL(file)); // 미리보기 URL 생성
     };
 
     const registHandler = async () => {
@@ -203,18 +209,29 @@ export default function ManagerRegistPage() {
                 registState.find(input => input.id === 'confirmPassword').value &&
             registState.find(input => input.id === 'name').comment == ''
         ) {
-            const children = addedChildren.map(item => item.id);
-            const registInfo = registState.reduce(
-                (acc, input) => {
-                    acc[input.id] = input.value;
-                    return acc;
-                },
-                { role: 'MANAGER', imgUrl: imgFile ? imgFile : null, children },
-            );
+            try {
+                let imgUrl = null;
+                if (imgFile) {
+                    imgUrl = await uploadImage(imgFile); // 파일 업로드
+                }
 
-            const res = await regist(registInfo, navigate);
-            if (res.status === 201) {
-                setRegistModalState(true);
+                const children = addedChildren.map(item => item.id);
+                const registInfo = registState.reduce(
+                    (acc, input) => {
+                        acc[input.id] = input.value;
+                        return acc;
+                    },
+                    { role: 'MANAGER', imgUrl, children },
+                );
+
+                const res = await regist(registInfo, navigate);
+                if (res.status === 201) {
+                    setRegistModalState(true);
+                }
+            } catch (error) {
+                console.error('회원가입 오류:', error);
+                setModalText('회원가입 중 오류가 발생했습니다.');
+                setModalState(true);
             }
         } else {
             setModalText('입력값을 확인해주세요.');
@@ -236,13 +253,19 @@ export default function ManagerRegistPage() {
         try {
             const res = await sendEmailCode(registState.find(input => input.id === 'email').value);
             if (res.status == 204) {
+                setIsTimer(true);
+                setCount(180);
+                setFirstCheck(false);
                 setModalText('인증 메일이 발송되었습니다.');
                 setModalState(true);
             }
         } catch (error) {
             console.error('아이디 중복 확인 오류:', error);
-            if (error.status == 500) {
+            if (error.response.data.code == 4015) {
                 setModalText('중복된 이메일입니다.');
+                setModalState(true);
+            } else if (error.status == 500) {
+                setModalText('이메일을 발송할 수 없습니다. 잠시 후 다시 시도해주세요.');
                 setModalState(true);
             }
         }
@@ -256,6 +279,7 @@ export default function ManagerRegistPage() {
             if (res.status == 200) {
                 setCodeCheck(true);
                 setModalText('인증이 완료되었습니다.');
+                setIsTimer(false);
                 setModalState(true);
             }
         } catch (error) {
@@ -320,7 +344,7 @@ export default function ManagerRegistPage() {
                 <div className="flex gap-2 items-center">
                     <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
                         <img
-                            src={imgFile ? imgFile : duck}
+                            src={previewUrl || duck} // 미리보기 URL 없으면 기본 이미지 사용
                             alt="프로필 이미지"
                             className="w-full h-full object-cover rounded-3xl"
                         />
@@ -355,6 +379,10 @@ export default function ManagerRegistPage() {
                     checkEmail={checkEmail}
                     checkCode={checkCode}
                     codeState={codeCheck}
+                    isTimer={isTimer}
+                    count={count}
+                    setCount={setCount}
+                    firstCheck={firstCheck}
                 />
                 <div className="relative  w-full">
                     <div className="flex items-center gap-2">
