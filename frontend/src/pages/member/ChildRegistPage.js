@@ -10,7 +10,8 @@ import AlertModal from '../../components/common/AlertModal';
 
 export default function ChildRegistPage() {
     const navigate = useNavigate();
-    const [imgFile, setImgFile] = useState('');
+    const [imgFile, setImgFile] = useState(null); // 파일 객체 저장
+    const [previewUrl, setPreviewUrl] = useState(''); // 미리보기 URL 저장
     const [canRegist, setCanRegist] = useState(false);
     const [modalState, setModalState] = useState(false);
     const [registModalState, setRegistModalState] = useState(false);
@@ -186,12 +187,12 @@ export default function ChildRegistPage() {
         );
     };
 
-    const saveImgFile = async () => {
+    const saveImgFile = () => {
         const file = imgRef.current.files[0];
         if (!file) return;
-        const imgUrl = await uploadImage(file);
 
-        setImgFile(imgUrl);
+        setImgFile(file);
+        setPreviewUrl(URL.createObjectURL(file)); // 미리보기 URL 생성
     };
 
     const registHandler = async () => {
@@ -201,12 +202,16 @@ export default function ChildRegistPage() {
                 registState.find(input => input.id === 'confirmPassword').value &&
             registState.find(input => input.id === 'name').comment == ''
         ) {
+            let imgUrl = null;
+            if (imgFile) {
+                imgUrl = await uploadImage(imgFile); // 파일 업로드
+            }
             const registInfo = registState.reduce(
                 (acc, input) => {
                     acc[input.id] = input.value;
                     return acc;
                 },
-                { role: 'CHILD', imgUrl: imgFile ? imgFile : null },
+                { role: 'CHILD', imgUrl },
             );
 
             const res = await regist(registInfo, navigate);
@@ -234,7 +239,7 @@ export default function ChildRegistPage() {
                 <div className="flex gap-2">
                     <div className="w-10 h-10 bg-[#00000033] rounded-3xl">
                         <img
-                            src={imgFile ? imgFile : bbi}
+                            src={previewUrl || bbi} // 미리보기 URL 없으면 기본 이미지 사용
                             alt="프로필 이미지"
                             className="w-full h-full object-cover rounded-3xl"
                         />
