@@ -18,7 +18,16 @@ function RendingPage() {
                         top: '10px',
                     }}
                 >
-                    <h2 style={{ fontSize: '180px', fontFamily: 'Ownglyph_StudyHard-Rg', color: 'black' }}>모아책방</h2>
+                    <h2
+                        style={{
+                            fontSize: '180px',
+                            fontFamily: 'Ownglyph_StudyHard-Rg',
+                            fontWeight: 'normal',
+                            color: 'black',
+                        }}
+                    >
+                        모아책방
+                    </h2>
                     <Link to="/login">
                         <div
                             style={{

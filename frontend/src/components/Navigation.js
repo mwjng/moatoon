@@ -148,7 +148,7 @@ function Navigation({
                 if (remaining <= 0) {
                     remaining = 0;
                     if (timeoutNotEvented) {
-                        onTimeOut();
+                        onTimeOut && onTimeOut();
                         timeoutNotEvented = false;
                     }
                 }
