@@ -3,6 +3,7 @@ package com._2.a401.moa.audio.controller;
 import com._2.a401.moa.audio.domain.AudioType;
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,8 @@ import java.util.Random;
 import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_AUDIO_TYPE;
 
 @RestController
-@RequestMapping("/api/audio")
+@RequestMapping("/audio")
+@Slf4j
 public class AudioController {
 
     private final Random random = new Random();
@@ -53,6 +55,7 @@ public class AudioController {
         String fileName = type.isRandomType() ? getRandomFileName(type) : type.getFileName();
         Resource audioResource = new ClassPathResource("static/audio/" + fileName);
 
+        log.info(fileName);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("audio/mpeg"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline")

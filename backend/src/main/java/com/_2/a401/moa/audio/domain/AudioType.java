@@ -26,7 +26,7 @@ public enum AudioType {
     }
 
     public String getFileName() {
-        return fileName;
+        return this.fileName;
     }
 
     public boolean isRandomType() {

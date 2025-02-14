@@ -46,6 +46,7 @@ const WordLearning = () => {
 
     return (
         <div className="bg-seashell h-screen">
+            <AudioPlayer audioType="WORD" />
             <Navigation stage={'learning'} stageTime={stageTime} onTimeOut={handleTimeOut} />
             <div className="flex m-8 justify-between h-[600px]">
                 <div className="flex w-[400px] justify-center bg-white h-full">Camera</div>
