@@ -27,6 +27,7 @@ import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
 import SessionContainer from './pages/session/SessionContainer';
 import EBookPage from './pages/EBookPage';
+import RandomPage from './pages/RandomPage';
 
 function App() {
     const location = useLocation();
@@ -127,6 +128,7 @@ function App() {
                     <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
+                        <Route path="random" element={<RandomPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="search" element={<BookSearchPage/>} />
                         <Route path="quiz" element={<QuizPage />} />

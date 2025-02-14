@@ -140,7 +140,7 @@ function Navigation({ stage, leaveSession, stageDuration = 1, sessionStartTime=D
                 if (remaining <= 0) {
                     remaining = 0;
                     if (timeoutNotEvented) {
-                        onTimeOut();
+                        onTimeOut && onTimeOut();
                         timeoutNotEvented = false;
                     }
                 }
