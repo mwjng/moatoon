@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CanvasGrid from '../draw/CanvasGrid.js';
 import ChildImg from '../../assets/child.svg';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 
-const Overview = ({ toggleView, cutsInfo }) => {
+const Overview = ({ toggleView, cutsInfo , isFirstOverviewVisit, setIsFirstOverviewVisit}) => {
+    // 페이지 진입 시 Drawing 방문 상태 업데이트
+    useEffect(() => {
+        console.log(isFirstOverviewVisit);
+        setIsFirstOverviewVisit(false);
+    }, []);
     const partyId = cutsInfo[0].partyId;
     const cutIds = cutsInfo.map(item => item.cutId);
 
@@ -11,7 +16,7 @@ const Overview = ({ toggleView, cutsInfo }) => {
 
     return (
         <div className="h-screen bg-light-cream-yellow">
-            <AudioPlayer audioType="FULLCUT" />
+            <AudioPlayer audioType="FULLCUT" isOn={isFirstOverviewVisit} />
             <div className="flex p-5">
                 <div className="w-1/5 flex-shrink-0">
                     <div className="rounded-2xs overflow-hidden mb-4">

@@ -6,7 +6,13 @@ import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 
-const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
+const Drawing = forwardRef(({ toggleView, cutsInfo, userId, isFirstDrawingVisit, setIsFirstDrawingVisit}, ref) => {
+    // 페이지 진입 시 Drawing 방문 상태 업데이트
+    useEffect(() => {
+        console.log()
+        setIsFirstDrawingVisit(false);
+    }, []);
+
     const stageRef = useRef(null);
     //const [userId, setUserId] = useState(3);
     console.log(userId);
@@ -61,7 +67,7 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId }, ref) => {
 
     return (
         <div className="h-screen bg-light-cream-yellow">
-            <AudioPlayer audioType="MYCUT" />
+            <AudioPlayer audioType="MYCUT" isOn={isFirstDrawingVisit}/>
             <div className="flex gap-4 p-5">
                 <div className="w-72 mr-5">
                     <div className="rounded-lg overflow-hidden mb-4">

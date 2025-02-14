@@ -24,6 +24,8 @@ const DrawingPage = () => {
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isFirstDrawingVisit, setIsFirstDrawingVisit] = useState(true);
+    const [isFirstOverviewVisit, setIsFirstOverviewVisit] = useState(true);
     const drawingRef = useRef(null);
 
     const toggleView = () => {
@@ -51,9 +53,19 @@ const DrawingPage = () => {
                 !cutsState.error &&
                 cutsState.cuts.length > 0 &&
                 (isDrawing ? (
-                    <Drawing ref={drawingRef} toggleView={toggleView} cutsInfo={cutsState.cuts} userId={userId} />
+                    <Drawing 
+                        ref={drawingRef} 
+                        toggleView={toggleView} 
+                        cutsInfo={cutsState.cuts} 
+                        userId={userId} 
+                        isFirstDrawingVisit = {isFirstDrawingVisit}
+                        setIsFirstDrawingVisit={setIsFirstDrawingVisit} />
                 ) : (
-                    <Overview toggleView={toggleView} cutsInfo={cutsState.cuts} />
+                    <Overview 
+                        toggleView={toggleView} 
+                        cutsInfo={cutsState.cuts}
+                        isFirstOverviewVisit = {isFirstOverviewVisit}
+                        setIsFirstOverviewVisit={setIsFirstOverviewVisit} />
                 ))}
             {isLoading && <Loading />}
         </div>

@@ -9,7 +9,8 @@ const audioState = {
   playPromise: null
 };
 
-const AudioPlayer = ({ audioType }) => {
+const AudioPlayer = ({ audioType, isOn=true }) => {
+  console.log(`[AudioPlayer] audioType:${audioType} isOn: ${isOn}`)
   const audioRef = useRef(new Audio());
 
   useEffect(() => {
@@ -30,6 +31,9 @@ const AudioPlayer = ({ audioType }) => {
     };
 
     const initializeAudio = async () => {
+      // isOn이 true일 때만 오디오 실행
+      if (!isOn) return;
+
       try {
         // 반드시 이전 오디오 정지
         await stopCurrentAudio();
@@ -72,7 +76,7 @@ const AudioPlayer = ({ audioType }) => {
         stopCurrentAudio();
       }
     };
-  }, [audioType]);
+  }, [audioType, isOn]); // isOn을 의존성 배열에 추가
 
   return null;
 };

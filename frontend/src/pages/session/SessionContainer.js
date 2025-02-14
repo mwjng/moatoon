@@ -7,6 +7,7 @@ import QuizPage from './QuizPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage'; 
 import { useNavigate } from 'react-router';
+import RandomPage from '../RandomPage';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
