@@ -8,6 +8,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const QuizPage = () => {
     const [quizs, setQuizs] = useState([]);
@@ -82,6 +83,7 @@ const QuizPage = () => {
 
     return (
         <div className="bg-[#ACDB33] bg-opacity-30 h-screen flex flex-col">
+            <AudioPlayer audioType="QUIZ" />
             <Navigation stage={'quiz'} stageDuration={stageTime} onTimeOut={handleTimeOut} />
             <div className="flex grow px-20 gap-20">
                 <DndProvider backend={HTML5Backend}>
