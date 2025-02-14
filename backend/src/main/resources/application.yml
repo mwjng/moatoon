@@ -80,7 +80,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: never
 
   h2:
     console:
@@ -98,7 +98,7 @@ spring:
       on-profile: prod
 
   datasource:
-    url: jdbc:mysql://mysql:3306/moa?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://mysql:3306/moatoon?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
@@ -128,9 +128,6 @@ spring:
     console:
       enabled: false
 
-  flyway:
-    enabled: true
-
 logging:
   level:
     org.hibernate.SQL: warn
@@ -152,3 +149,12 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create
+
+  sql:
+    init:
+      mode: never
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
