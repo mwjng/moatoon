@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
+import { BiPencil, BiCheck } from 'react-icons/bi';
 
-const CanvasAll = ({ cutId, canvasData }) => {
+const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content }) => {
     const [lines, setLines] = useState([]); // 상태를 lines로 관리
     const stageRef = useRef();
 
@@ -33,8 +34,12 @@ const CanvasAll = ({ cutId, canvasData }) => {
     };
 
     return (
-        <div className="w-[300px] h-[300px] border-2 border-black bg-white">
-            <Stage width={fixedWidth} height={fixedHeight} ref={stageRef} style={{ border: '2px solid black' }}>
+        <div className="relative w-[300px] h-[300px] border-2 border-black border-solid bg-white">
+            <button className="absolute left-2 px-3 py-1 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md">
+                {nickname}
+            </button>
+
+            <Stage width={fixedWidth} height={fixedHeight} ref={stageRef} className="relative">
                 <Layer>
                     {lines.map((line, index) => (
                         <Line
@@ -49,6 +54,28 @@ const CanvasAll = ({ cutId, canvasData }) => {
                     ))}
                 </Layer>
             </Stage>
+
+            <div className="absolute bottom-0 w-full text-center p-2.5 text-black text-xs">
+                <p
+                    className="text-md text-gray-700"
+                    dangerouslySetInnerHTML={{
+                        __html: content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
+                    }}
+                />
+            </div>
+
+            {edit && (
+                <button
+                    onClick={toggleView}
+                    className="absolute top-2 right-2 w-10 h-10 bg-dark-yellow rounded-full shadow-md flex items-center justify-center"
+                >
+                    <BiPencil className="text-2xl" />
+                </button>
+            )}
+
+            <button className="absolute bottom-2 right-2 w-10 h-10 bg-light-green rounded-full shadow-md flex items-center justify-center">
+                <BiCheck className="text-2xl" />
+            </button>
         </div>
     );
 };

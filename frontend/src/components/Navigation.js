@@ -19,19 +19,43 @@ import bbi from '../assets/bbi.png';
 import duck from '../assets/duckduck.png';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle, onTimeOut }) {
+function Navigation({
+    stage,
+    leaveSession,
+    stageDuration = 1,
+    sessionStartTime = Date.now(),
+    serverTime = Date.now(),
+    bookTitle,
+    onTimeOut,
+}) {
     const userInfo = useSelector(state => state.user.userInfo);
+
     const SECOND = 1000; //초
     const MINUTE = 60 * SECOND; //분
-    const targetTime = Date.now() + stageTime * MINUTE;
+
+    const [timeOffset, setTimeOffset] = useState(0); // 시간 오차 - serverTime과 현재시간의 차이
     const [remainTime, setRemainTime] = useState(50); //현재 단계의 남은 시간
     const [remainTimePercent, setRemainTimePercent] = useState(100); //현재 단계의 남은 시간 퍼센트
+
     const [logoutModal, setLogoutModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
-    let timeoutNotEvented = true;
+
+    // 서버와 클라이언트의 시간 차이 계산
+    useEffect(() => {
+        if (serverTime) {
+            const serverTimestamp = new Date(serverTime).getTime();
+            const offset = serverTimestamp - Date.now();
+            setTimeOffset(offset);
+        }
+    }, [serverTime]);
+
+    // 현재 서버 시간 추정
+    const getServerNow = () => {
+        return Date.now() + timeOffset;
+    };
 
     const handleBackClick = () => {
         if (stage === 'waiting') {
@@ -111,18 +135,24 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
     };
 
     useEffect(() => {
-        if (stage) {
+        if (stage && sessionStartTime) {
+            let timeoutNotEvented = true;
+
             // 타이머 초기화
             const updateRemainTime = () => {
-                let remaining = targetTime - Date.now();
+                const sessionStartTimestamp = new Date(sessionStartTime).getTime();
+                const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
+                const totalDuration = stageDuration * MINUTE; // 현재 스테이지에 주어진 전체 시간
+                let remaining = totalDuration - elapsedTime; // 남은 시간 계산
+
                 if (remaining <= 0) {
                     remaining = 0;
                     if (timeoutNotEvented) {
-                        onTimeOut();
+                        onTimeOut && onTimeOut();
                         timeoutNotEvented = false;
                     }
                 }
-                let percent = (remaining / (stageTime * MINUTE)) * 100;
+                let percent = (remaining / (stageDuration * MINUTE)) * 100;
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);
@@ -134,7 +164,7 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, []);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
 
     return (
         <>
@@ -155,8 +185,8 @@ function Navigation({ stage, leaveSession, stageTime = 1, sessionTime, bookTitle
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(sessionTime)} ~{' '}
-                                        {getTimeFormatted(addTime(sessionTime, 1))}
+                                        오늘의 일정 : {getTimeFormatted(sessionStartTime)} ~{' '}
+                                        {getTimeFormatted(addTime(sessionStartTime, 1))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">

@@ -10,10 +10,10 @@ import BookSearchPage from './pages/book/BookSearchPage';
 
 import LoginPage from './pages/member/LoginPage';
 
-import WaitingRoom from './pages/WaitingRoom';
+import WaitingRoom from './pages/session/WaitingRoom';
 import MainPage from './pages/main/MainPage';
 import LibraryPage from './pages/ChildLibraryPage';
-import WordLearning from './pages/WordLearning';
+import WordLearning from './pages/session/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
 import ChildRegistPage from './pages/member/ChildRegistPage';
@@ -21,11 +21,13 @@ import FindInfo from './pages/member/FindInfo';
 import FindIdPage from './pages/member/FindIdPage';
 import FindPWPage from './pages/member/FindPWPage';
 import MyWordPage from './pages/MywordPage';
-import QuizPage from './pages/QuizPage';
+import QuizPage from './pages/session/QuizPage';
 import ChangeUserInfoPage from './pages/member/ChangeUserInfoPage';
 import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
+import SessionContainer from './pages/session/SessionContainer';
 import EBookPage from './pages/EBookPage';
+import RandomPage from './pages/RandomPage';
 
 function App() {
     const location = useLocation();
@@ -122,9 +124,11 @@ function App() {
                         <Route path="id" element={<FindIdPage />} />
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
+                    <Route path="/session" element={<SessionContainer/>}/>
                     <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
+                        <Route path="random" element={<RandomPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
                         <Route path="search" element={<BookSearchPage/>} />
                         <Route path="quiz" element={<QuizPage />} />

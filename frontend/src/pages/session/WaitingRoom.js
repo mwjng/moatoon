@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import Navigation from '../components/Navigation';
-import MyCamera from '../components/MyCamera';
-import OtherCameras from '../components/OtherCameras';
-import CameraMicControls from '../components/CameraMicControls';
-import BookDisplay from '../components/BookDisplay';
-import FooterNotice from '../components/FooterNotice';
+import Navigation from '../../components/Navigation';
+import MyCamera from '../../components/MyCamera';
+import OtherCameras from '../../components/OtherCameras';
+import CameraMicControls from '../../components/CameraMicControls';
+import BookDisplay from '../../components/BookDisplay';
+import FooterNotice from '../../components/FooterNotice';
+import {getSessionToken} from '../../api/room';
 import base64 from 'base-64';
 import AudioPlayer from '../components/audio/AudioPlayer'
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom({ scheduleId, bookTitle, paramBookInfo, sessionTime }) {
+function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime}) {
+    console.log("WaitingRoom props:", {
+        scheduleId,
+        bookTitle,
+        sessionTime: sessionTime ? sessionTime.toString() : null,
+        serverTime: serverTime ? serverTime.toString() : null
+    });
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
@@ -94,10 +101,14 @@ function WaitingRoom({ scheduleId, bookTitle, paramBookInfo, sessionTime }) {
         setSubscribers([]);
     };
 
+    const handleTimeOut = () => {
+        // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
+    };
+
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
             <AudioPlayer audioType="WAITING" />
-            <Navigation stage={'waiting'} leaveSession={leaveSession} sessionTime={sessionTime} bookTitle={bookTitle} />
+            <Navigation stage={'waiting'} leaveSession={leaveSession} stageDuration={10} sessionStartTime={sessionTime} serverTime={serverTime} bookTitle={bookTitle} onTimeOut={handleTimeOut}/>
             <div className="justify-center items-center gap-4">
                 <div
                     className="flex flex-row gap-4 justify-center items-center bg-custom-blue my-8"

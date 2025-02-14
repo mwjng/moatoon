@@ -1,20 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import Navigation from '../components/Navigation';
-import WordInfo from '../components/word/WordInfo';
-import CheckIcon from '../assets/icon-check.png';
-import { getLearningWords } from '../api/word';
+import Navigation from '../../components/Navigation';
+import WordInfo from '../../components/word/WordInfo';
+import CheckIcon from '../../assets/icon-check.png';
+import { getLearningWords } from '../../api/word';
+import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket'; // 세션 상태 전달 받을 웹소켓
 import { useNavigate } from 'react-router';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = () => {
+const WordLearning = ({sessionTransferResponse}) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
     const [checkedWords, setCheckedWords] = useState(new Set());
-    const [partyId, setPartyId] = useState(1); //임의 값
-    const stageTime = 10;
+    const [partyId, setPartyId] = useState(1); //TODO: 임의 값
+    const [scheduleId, setScheduleId] = useState(1); //TODO: 임의 값
     const navigate = useNavigate();
+
+    // 웹소켓 훅 사용
+    const {
+        sendReady
+    } = useSessionStageWebSocket(scheduleId);
 
     const handleCheck = wordId => {
         setCheckedWords(prev => {
@@ -29,25 +35,47 @@ const WordLearning = () => {
     };
 
     const handleStep = () => {
-        navigate('/'); //다음 단계의 url로 수정 필요
+        // TODO:
+        // 사용자가 시간 조작해서 더 빨리 다음 단계를 요청할 경우를 대비해서,
+        // 서버에 현재 단계가 맞는지 요청 보내는 api 추가 예정
+        // navigate('/session/draw'); //다음 단계의 url로 수정 필요
     };
 
+    const sendReadyRequest = async () => {
+        try {
+            sendReady(scheduleId);
+            // 성공 로직
+        } catch (error) {
+            console.error('레디 요청 중 에러 발생:', error.message);
+            // 사용자에게 보여줄 수 있는 에러 처리
+        }
+    };
+
+    // 단어 로드
     useEffect(() => {
         getLearningWords(partyId).then(response => {
             setWords(response.data.words);
         });
     }, []);
 
+    // 체크된 단어가 4개면 ready 신호 전송
     useEffect(() => {
         if (checkedWords.size === 4) {
-            //서버에 이벤트 보내기
+            console.log("FE: 유저 단어학습 완료!")
+            sendReadyRequest();
         }
     }, [checkedWords]);
 
     return (
         <div className="bg-seashell h-screen">
             <AudioPlayer audioType="WORD" />
-            <Navigation stage={'learning'} stageTime={stageTime} onTimeOut={handleTimeOut} />
+            <Navigation
+                stage={'learning'}
+                stageDuration={sessionTransferResponse.sessionDuration}
+                sessionStartTime={sessionTransferResponse.sessionStartTime}
+                serverTime={sessionTransferResponse.serverTime}
+                onTimeOut={handleTimeOut}
+            />
             <div className="flex m-8 justify-between h-[600px]">
                 <div className="flex w-[400px] justify-center bg-white h-full">Camera</div>
                 <WordInfo
