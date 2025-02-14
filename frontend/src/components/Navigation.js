@@ -39,6 +39,7 @@ function Navigation({
 
     const [logoutModal, setLogoutModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
+    const cutsState = useSelector(state => state.cuts);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -111,9 +112,11 @@ function Navigation({
     const [selectedWord, setSelectedWord] = useState(null);
 
     useEffect(() => {
-        getLearningWords(1).then(response => {
-            setWords(response.data.words);
-        });
+        if (cutsState.cuts.length > 0) {
+            getLearningWords(cutsState.cuts[0].partyId).then(response => {
+                setWords(response.data.words);
+            });
+        }
     }, []);
 
     // 남은 시간 형식 변환
