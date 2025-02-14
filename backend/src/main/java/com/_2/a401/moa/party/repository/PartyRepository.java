@@ -16,13 +16,14 @@ import org.springframework.data.repository.query.Param;
 public interface PartyRepository extends JpaRepository<Party, Long>, CustomPartyRepository {
     Optional<Party> findById(Long partyId);
 
+    // h2: DATEADD('DAY', 1, CURRENT_DATE)
     @Query(value = """
         SELECT s.episode_number, p.level
         FROM schedule s
         JOIN party p ON s.party_id = p.id
         WHERE p.id = :partyId
         AND s.session_time >= CURRENT_DATE
-        AND s.session_time < DATEADD('DAY', 1, CURRENT_DATE)
+        AND s.session_time < CURRENT_DATE + INTERVAL 1 DAY
         LIMIT 1
     """, nativeQuery = true)
     Optional<EpisodeNumberAndLevel> findEpisodeNumberAndLevelByPartyIdAndToday(@Param("partyId") Long partyId);
