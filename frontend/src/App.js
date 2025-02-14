@@ -12,7 +12,6 @@ import LoginPage from './pages/member/LoginPage';
 
 import WaitingRoom from './pages/session/WaitingRoom';
 import MainPage from './pages/main/MainPage';
-import LibraryPage from './pages/ChildLibraryPage';
 import WordLearning from './pages/session/WordLearning';
 import RegistPage from './pages/member/RegistPage';
 import ManagerRegistPage from './pages/member/ManagerRegistPage';
@@ -27,6 +26,7 @@ import DrawingPage from './pages/draw/DrawingPage';
 import DrawingEndPage from './pages/draw/DrawingEndPage';
 import SessionContainer from './pages/session/SessionContainer';
 import EBookPage from './pages/EBookPage';
+import LibraryPage from './pages/library/LibraryPage';
 import RandomPage from './pages/RandomPage';
 
 function App() {
@@ -124,18 +124,18 @@ function App() {
                         <Route path="id" element={<FindIdPage />} />
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
-                    <Route path="/session" element={<SessionContainer/>}/>
+                    <Route path="/session" element={<SessionContainer />} />
                     <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
                         <Route path="random" element={<RandomPage />} />
                         <Route path="create" element={<BookGeneratorPage />} />
-                        <Route path="search" element={<BookSearchPage/>} />
+                        <Route path="search" element={<BookSearchPage />} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
                     <Route path="library" element={<LibraryPage />} />
-                    <Route path="ebook" element={<EBookPage />} />
+                    <Route path="ebook/:partyId" element={<EBookPage />} />
                     <Route path="word">
                         <Route index element={<MyWordPage />} />
                     </Route>
