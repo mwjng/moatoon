@@ -149,16 +149,36 @@ const BookSearchPage = () => {
   }
 };
 
+  // const groupPartysByLevel = () => {
+  //   if (!parties || !Array.isArray(parties)) return {}; 
+  
+  //   const grouped = {};
+  //   levels.forEach(level => {
+  //     grouped[level] = parties.filter(party => party.level === level);
+  //   });
+  //   return grouped;
+  // };
+
+
   const groupPartysByLevel = () => {
     if (!parties || !Array.isArray(parties)) return {}; 
   
+    // 먼저 레벨별로 파티들을 그룹화
     const grouped = {};
     levels.forEach(level => {
       grouped[level] = parties.filter(party => party.level === level);
     });
-    return grouped;
+  
+    // 파티 수를 기준으로 레벨들을 정렬
+    const sortedLevels = Object.entries(grouped)
+      .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
+      .reduce((acc, [level, parties]) => {
+        acc[level] = parties;
+        return acc;
+      }, {});
+  
+    return sortedLevels;
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -306,60 +326,68 @@ const BookSearchPage = () => {
         </div>
 
         {/* Results Section */}
-        {parties.length === 0 && (
-              <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                <p className="text-gray-500">검색 결과가 없습니다</p>
-              </div>
-            )}
 
-        {loading ? (
-          <div className="text-center py-8">
-            <span className="loading loading-spinner loading-lg"></span>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {Object.entries(groupPartysByLevel()).map(([level, levelParties]) => (
-              <div
-                key={level}
-                className={`p-6 rounded-lg ${
-                  Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
-                }`}
-              >
-                <h2 className="text-xl font-bold mb-4">Level {level}</h2>
-                {levelParties.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {levelParties.map(party => (
-                      <div
-                        key={party.partyId}
-                        className="cursor-pointer transition-transform hover:scale-105"
-                        onClick={() => 
-                          {
-                            handleCardClick(party.partyId)}}
-                      >
-                        <img
-                          src={party.bookCover || defaultBookCover}
-                          alt={party.bookTitle}
-                          className="w-full h-48 object-cover rounded-lg shadow-sm"
-                          onError={(e) => {
-                            e.target.src = defaultBookCover;
-                          }}
-                        />
-                        <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
-                        <p className="text-sm text-gray-600">
-                          참여자: {party.participantCount}명
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-gray-500 py-4">
-                    해당 난이도는 아직 책 정보가 없어요
+
+        {/* Results Section */}
+{parties.length === 0 && (
+  <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+    <p className="text-gray-500">검색 결과가 없습니다</p>
+  </div>
+)}
+
+{loading ? (
+  <div className="text-center py-8">
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
+) : (
+  <div className="space-y-8">
+    {Object.entries(groupPartysByLevel())
+      .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
+      .map(([level, levelParties]) => (
+        <div
+          key={level}
+          className={`p-6 rounded-lg ${
+            Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
+          }`}
+        >
+          <h2 className="text-xl font-bold mb-4">
+            Level {level} ({levelParties.length}개의 파티)
+          </h2>
+          {levelParties.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {levelParties.map(party => (
+                <div
+                  key={party.partyId}
+                  className="cursor-pointer transition-transform hover:scale-105"
+                  onClick={() => handleCardClick(party.partyId)}
+                >
+                  <img
+                    src={party.bookCover || defaultBookCover}
+                    alt={party.bookTitle}
+                    className="w-full h-48 object-cover rounded-lg shadow-sm"
+                    onError={(e) => {
+                      e.target.src = defaultBookCover;
+                    }}
+                  />
+                  <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
+                  <p className="text-sm text-gray-600">
+                    참여자: {party.participantCount}명
                   </p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500 py-4">
+              해당 난이도는 아직 책 정보가 없어요
+            </p>
+          )}
+        </div>
+      ))}
+  </div>
+)}
+
+
+
 
   {showBookDetail && currentPartyId && (
           <div className="fixed inset-0 z-50">
@@ -386,23 +414,12 @@ const BookSearchPage = () => {
           </div>
         )}
 
-{/* {alertModalState && (
-      <div className="fixed inset-0 z-[99999]">
-        <Alert 
-          modalState={alertModalState}
-          text={alertMessage}
-          closeHandler={closeAlertModal}
-        />
-      </div>
-    )} */}
 
 <Alert 
         modalState={alertModalState}
         text={alertMessage}
         closeHandler={closeAlertModal}
       />
-
-
       </div>
     </div>
   );
