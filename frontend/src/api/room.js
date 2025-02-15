@@ -21,3 +21,14 @@ export const closeSession = async (scheduleId, token) => {
         throw error;
     }
 };
+
+export const getEnterSession = async (pinNumber) => {
+    try {
+        const response = await authInstance.get(`/session/pinNumber/${pinNumber}`); // ✅ 올바른 URL 확인
+        return response.data;
+    } catch (error) {
+        console.error('세션 정보 가져오기 실패:', error);
+        throw error;
+    }
+};
+
