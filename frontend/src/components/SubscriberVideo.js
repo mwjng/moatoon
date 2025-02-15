@@ -1,16 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 
-function OtherCameras({ subscribers }) {
-    console.log(subscribers);
-    return (
-        <div className="flex flex-row mt-4 grid grid-cols-3 gap-8 content-evenly mx-auto">
-            {subscribers.map((subscriber, index) => (
-                <SubscriberVideo key={index} streamManager={subscriber} />
-            ))}
-        </div>
-    );
-}
-
 function SubscriberVideo({ streamManager }) {
     const videoRef = useRef();
     let nickname = 'Unknown';
@@ -44,4 +33,4 @@ function SubscriberVideo({ streamManager }) {
     );
 }
 
-export default OtherCameras;
+export default SubscriberVideo;

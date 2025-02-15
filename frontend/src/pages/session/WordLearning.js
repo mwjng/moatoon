@@ -5,12 +5,14 @@ import CheckIcon from '../../assets/icon-check.png';
 import { getLearningWords } from '../../api/word';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket'; // 세션 상태 전달 받을 웹소켓
 import { useNavigate } from 'react-router';
-import AudioPlayer from '../../components/audio/AudioPlayer'
+import SubscriberVideo from '../../components/SubscriberVideo';
+import { useSession } from '../../hooks/SessionProvider';
+import MyCamera from '../../components/MyCamera';
+import AudioPlayer from '../../components/audio/AudioPlayer';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-// partyId, scheduleId 받아와야함
-const WordLearning = ({sessionStageData}) => {
+const WordLearning = ({ sessionStageData, publisher, subscribers, nickname }) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
@@ -20,9 +22,7 @@ const WordLearning = ({sessionStageData}) => {
     const navigate = useNavigate();
 
     // 웹소켓 훅 사용
-    const {
-        sendReady
-    } = useSessionStageWebSocket(scheduleId);
+    const { sendReady } = useSessionStageWebSocket(scheduleId);
 
     const handleCheck = wordId => {
         setCheckedWords(prev => {
@@ -63,14 +63,22 @@ const WordLearning = ({sessionStageData}) => {
     // 체크된 단어가 4개면 ready 신호 전송
     useEffect(() => {
         if (checkedWords.size === 4) {
-            console.log("FE: 유저 단어학습 완료!")
+            console.log('FE: 유저 단어학습 완료!');
             sendReadyRequest();
         }
     }, [checkedWords]);
 
+    //Openvidu 세션 훅 사용
+    //const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession();
+    // }, []);
+
     return (
         <div className="bg-seashell h-screen">
-            <AudioPlayer audioType="WORD"/>
+            <AudioPlayer audioType="WORD" />
             <Navigation
                 stage={'learning'}
                 stageDuration={sessionStageData.sessionDuration}
@@ -79,7 +87,12 @@ const WordLearning = ({sessionStageData}) => {
                 onTimeOut={handleTimeOut}
             />
             <div className="flex m-8 justify-between h-[600px]">
-                <div className="flex w-[400px] justify-center bg-white h-full">Camera</div>
+                <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
+                    <MyCamera streamManager={publisher} nickname={nickname} />
+                    {subscribers.map((subscriber, index) => (
+                        <SubscriberVideo key={index} streamManager={subscriber} />
+                    ))}
+                </div>
                 <WordInfo
                     word={words[currentWordIdx]}
                     isChecked={checkedWords.has(words[currentWordIdx]?.wordId)}
