@@ -30,17 +30,58 @@ const BookStoryGenerator = ({
   const [isCreatingParty, setIsCreatingParty] = useState(false);
   const [showBookDetail, setShowBookDetail] = useState(false);
 
-  const generateStory = async () => {
-    setIsGenerating(true);
+
+  const fetchWords = async () => {
     try {
       const data = await fetchRandomWords(difficulty, episodeLength);
-      
       if (!data || !data.words || data.words.length === 0) {
         throw new Error("단어를 가져오는 데 실패했습니다.");
       }
+      setWords(data.words); // ✅ 상태 업데이트
+    } catch (error) {
+      console.error("단어 가져오기 실패:", error.message);
+    }
+  };
 
-      setWords(data.words);
-      const wordList = data.words.map((w) => w.word).join(", ");
+  useEffect(() => {
+    fetchWords();
+  }, [difficulty, episodeLength]);
+
+
+  useEffect(() => {
+    if (words.length > 0) {
+      generateStory();
+    }
+  }, [words]);
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//         try {
+//             const data = await fetchRandomWords(difficulty, episodeLength);
+//             if (!data || !data.words || data.words.length === 0) {
+//                 throw new Error("단어를 가져오는 데 실패했습니다.");
+//             }
+//             setWords(data.words); // 상태 업데이트
+//         } catch (error) {
+//             console.error("단어 가져오기 실패:", error.message);
+//         }
+//     };
+
+//     fetchData();
+// }, [difficulty, episodeLength]); // `difficulty`, `episodeLength`가 변경될 때 재실행
+
+  
+  const generateStory = async () => {
+    setIsGenerating(true);
+    try {
+      // const data = await fetchRandomWords(difficulty, episodeLength);
+      
+      if (!words || words.length === 0) {
+        throw new Error("단어 리스트가 없습니다. 먼저 단어를 가져와야 합니다.");
+    }
+
+    const wordList = words.map((w) => w.word).join(", ");
+
       const prompt = `
             동화책 제목: 생성된 이야기와 어울리는 동화책 제목을 지어줘.
             역할: ${mood} 분위기의 ${theme} 테마 ${genre} 동화를 작성하는 동화 작가.
@@ -152,7 +193,7 @@ const BookStoryGenerator = ({
         throw new Error("OpenAI에서 올바른 JSON 응답을 받지 못했습니다.");
       }
 
-      // ✅ overview를 하나의 문자열로 변환
+      // overview를 하나의 문자열로 변환
       if (Array.isArray(generatedStory.overview)) {
         generatedStory.overview = generatedStory.overview.join(" ");
       }
@@ -164,11 +205,6 @@ const BookStoryGenerator = ({
       setIsGenerating(false);
     }
   };
-
-  useEffect(() => {
-    generateStory();
-  }, []);
-
 
   const convertDayOfWeekToEnum = (dayList) => {
     const dayMap = {
@@ -183,8 +219,6 @@ const BookStoryGenerator = ({
     return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
   };
 
-
-  
 
   // 🔹 표지 이미지 생성 및 최종 데이터 전송
   const handleDecide = async () => {

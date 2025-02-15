@@ -92,9 +92,10 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
     }
   };
 
-const handlePreviousStory = () => {
-  navigate(`/ebook/${partyDetails.id}`);
-};
+  //이북보기
+  const handlePreviousStory = () => {
+    navigate(`/ebook/${partyDetails.id}`);
+  };
   // 멤버 관리 함수들
   const handleAddChild = (childId) => {
     const selectedChild = userChildren.find(child => child.id === childId);
@@ -197,6 +198,17 @@ const handlePreviousStory = () => {
     setConfirmModalState(false);
   };
 
+  const dayOrder = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+  const dayWeekMapping = {
+    'MONDAY': '월',
+    'TUESDAY': '화',
+    'WEDNESDAY': '수',
+    'THURSDAY': '목',
+    'FRIDAY': '금',
+    'SATURDAY': '토',
+    'SUNDAY': '일'
+  };
+
   if (loading) return <div className="loading loading-spinner loading-lg"></div>;
   if (error) return <div className="text-red-600">오류가 발생했습니다: {error}</div>;
 
@@ -223,8 +235,21 @@ const handlePreviousStory = () => {
           <div className="flex justify-between items-center bg-white rounded-xl p-4 mt-2 shadow-sm" style={{ fontFamily: 'S-CoreDream-3Light', color: 'red' }}>
             <div className="flex items-center gap-4 text-gray-600">
               <span className="text-sm">시작일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
-              <span className="text-sm">요일: {partyDetails.dayWeeks.join(", ")}</span>
-              <span className="text-sm">시간: {new Date(partyDetails.startDate).toLocaleTimeString()}</span>
+              <span className="text-sm">
+                요일: {partyDetails.dayWeeks
+                  .sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b))
+                  .map(day => dayWeekMapping[day])
+                  .join(", ")}
+              </span>
+              <span className="text-sm">
+                시간: {new Date(partyDetails.startDate).toLocaleTimeString('ko-KR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                })}
+              </span>
+              
+              
               <span className="text-sm">난이도: Lv.{partyDetails.level}</span>
               <span className="text-sm">진행률: {partyDetails.progressCount}/{partyDetails.episodeCount}</span>
             </div>
@@ -271,65 +296,72 @@ const handlePreviousStory = () => {
               {/* 참여하는 아동 섹션 */}
               <div className="bg-gray-200 rounded-xl p-4 shadow-inner">
                 <p className="text-sm font-semibold mb-3">참여하는 사람</p>
-                <div className="flex flex-col gap-2">
-                  {/* 기존 멤버 */}
-                  {partyDetails.members.map((member) => (
-                    <div key={member.memberId} className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img 
-                              src={member.imgUrl || defaultProfileImage} 
-                              alt={member.name}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{member.name}</span>
-                          <span className="text-sm text-gray-500">{member.nickname}</span>
-                        </div>
-                      </div>
-                      {showControls && (
-                        <button 
-                          onClick={() => handleRemoveExistingMember(member.memberId)}
-                          disabled={isSubmitting}
-                          className="btn btn-circle btn-sm btn-error"
-                        >
-                          <X size={16} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                <div className="flex space-x-3 overflow-x-auto py-2">
+                  {/* 기존 멤버 슬롯 */}
+                  {partyDetails.members.map((member) => {
+                    const currentUserChildrenIds = userChildren.map(child => child.id);
+                    const isMemberOwnChild = currentUserChildrenIds.includes(member.memberId);
 
-                  {/* 임시 추가된 아동 */}
-                  {selectedNewChildren.map((child) => (
-                    <div key={child.id} className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img 
-                              src={child.imgUrl || defaultProfileImage} 
-                              alt={child.name}
-                            />
-                          </div>
+                    return (
+                      <div key={member.memberId} className="flex flex-col items-center relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                          <img 
+                            src={member.imgUrl || defaultProfileImage} 
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{child.name}</span>
-                          <span className="text-sm text-gray-500 opacity-70">(예정)</span>
-                        </div>
+                        <span className="text-xs text-gray-600 mt-1 text-center">
+                          {member.nickname}
+                        </span>
+                        {showControls && isMemberOwnChild && (
+                          <button 
+                            onClick={() => handleRemoveExistingMember(member.memberId)}
+                            disabled={isSubmitting}
+                            className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-error"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
                       </div>
+                    );
+                  })}
+
+                  {/* 임시 추가된 아동 슬롯 */}
+                  {selectedNewChildren.map((child) => (
+                    <div key={child.id} className="flex flex-col items-center relative">
+                      <div className="w-12 h-12 rounded-full overflow-hidden">
+                        <img 
+                          src={child.imgUrl || defaultProfileImage} 
+                          alt={child.name}
+                          className="w-full h-full object-cover opacity-70"
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600 mt-1 text-center">
+                        {child.name}
+                      </span>
                       <button 
                         onClick={() => handleRemoveNewChild(child.id)}
                         disabled={isSubmitting}
-                        className="btn btn-circle btn-sm btn-warning"
+                        className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-warning"
                       >
-                        <X size={16} />
+                        <X size={12} />
                       </button>
+                    </div>
+                  ))}
+
+                  {/* 추가 슬롯 */}
+                  {[...Array(4 - partyDetails.members.length - selectedNewChildren.length)].map((_, index) => (
+                    <div 
+                      key={`empty-slot-${index}`} 
+                      className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center"
+                    >
+                      <span className="text-xs text-gray-400">+</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
+                            
               {/* 아동 추가 섹션 */}
               {isRegistrationVisible ? (
                 <div className="mt-4 flex gap-2">

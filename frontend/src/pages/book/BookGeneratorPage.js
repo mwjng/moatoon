@@ -3,7 +3,6 @@ import BookStoryGenerator from '../../components/book/BookStoryGenerator';
 import Navigation from '../../components/Navigation';
 import BookForm from '../../components/book/BookForm';
 import AlertModal from '../../components/common/AlertModal';
-import ConfirmModal from '../../components/common/ConfirmModal';
 import BookDetail from '../../components/book/BookDetail';
 
 const BookGeneratorPage = () => {
@@ -67,11 +66,12 @@ const BookGeneratorPage = () => {
             {showBookDetail && currentPartyId && (
                 <BookDetail
                     partyIdOrPin={currentPartyId}
-                    onClose={handleCloseModal}
+                    onClose={handleBookDetailClose}
                     //   setModalLoading={setModalLoading}
                 />
             )}
-            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
+            <AlertModal text={modalText} modalState={modalState} 
+            closeHandler={closeModal} />
         </div>
     );
 };

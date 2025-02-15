@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
 import { DayPicker } from 'react-day-picker';
 import defaultBookCover from '../../assets/images/book1.png';
-import { fetchAllParties } from '../../api/party'
+import { fetchAllParties , getPartyDetailByPin } from '../../api/party'
 import BookDetail from '../../components/book/BookDetail';
+import Alert from "../../components/common/AlertModal"; 
 
 const BookSearchPage = () => {
   const [parties, setParties] = useState([]);
@@ -12,7 +13,8 @@ const BookSearchPage = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentPartyId, setCurrentPartyId] = useState(0);
   const [modalLoading, setModalLoading] = useState(false);
-
+  const [alertModalState, setAlertModalState] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const [pin, setPin] = useState(''); 
 
   const [searchParams, setSearchParams] = useState({
@@ -46,8 +48,14 @@ const BookSearchPage = () => {
     };
   
     fetchData();
-  }, [filter]);  // ✅ filter가 변경될 때만 실행
-  
+  }, [filter]); 
+
+   // Alert 모달 닫기 핸들러
+   const closeAlertModal = () => {
+    setAlertModalState(false);
+  };
+
+    
   const handleSearch = async () => {
     const updatedFilter = { 
       ...filter, 
@@ -112,12 +120,34 @@ const BookSearchPage = () => {
     setCurrentPartyId(null);
   };
 
-  const handlePinSubmit = (e) => {
-    e.preventDefault();
-    setCurrentPartyId(pin); // Pass pin as a string
-    setShowBookDetail(true);
-    // 여기서 핀 번호를 BookDetail 모달로 전달
+ // 핀 번호 제출 핸들러 수정
+ const handlePinSubmit = async (e) => {
+  e.preventDefault();
+  if (!pin.trim()) {
+    setAlertMessage("PIN 번호를 입력해주세요.");
+    setAlertModalState(true);
+    return;
   }
+
+  try {
+    const data = await getPartyDetailByPin(pin);
+    
+    if (!data || data.length === 0) {
+      console.log("Searching for PIN1:", pin.trim());
+      setAlertMessage("해당 PIN 번호의 방을 찾을 수 없습니다.");
+      setAlertModalState(true);
+      return;
+    }
+    
+    setCurrentPartyId(pin);
+    setShowBookDetail(true);
+    setPin(''); // 검색 후 입력 필드 초기화
+  } catch (error) {
+    console.log("Searching for PIN2:", pin.trim());
+    setAlertMessage("검색 결과가 없습니다.");
+    setAlertModalState(true);
+  }
+};
 
   const groupPartysByLevel = () => {
     if (!parties || !Array.isArray(parties)) return {}; 
@@ -128,7 +158,7 @@ const BookSearchPage = () => {
     });
     return grouped;
   };
-  
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -136,7 +166,7 @@ const BookSearchPage = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex flex-wrap gap-4">
+          <div className="flex justify-center flex-wrap gap-4">
             {/* Date Selection */}
             <div className="relative">
               <button
@@ -341,7 +371,7 @@ const BookSearchPage = () => {
               >
                 <div className="max-h-[90vh] overflow-hidden rounded-xl">
                   <BookDetail
-                    partyIdOrPin={currentPartyId} // Pass either number or string 
+                    partyIdOrPin={currentPartyId}
                     onClose={handleCloseModal}
                     setModalLoading={setModalLoading}
                   />
@@ -355,6 +385,22 @@ const BookSearchPage = () => {
             )}
           </div>
         )}
+
+{/* {alertModalState && (
+      <div className="fixed inset-0 z-[99999]">
+        <Alert 
+          modalState={alertModalState}
+          text={alertMessage}
+          closeHandler={closeAlertModal}
+        />
+      </div>
+    )} */}
+
+<Alert 
+        modalState={alertModalState}
+        text={alertMessage}
+        closeHandler={closeAlertModal}
+      />
 
 
       </div>
