@@ -1,6 +1,5 @@
 package com._2.a401.moa.schedule.controller;
 
-import com._2.a401.moa.auth.service.MailService;
 import com._2.a401.moa.schedule.dto.request.NoticeRequest;
 import com._2.a401.moa.schedule.service.SessionMailService;
 import jakarta.servlet.http.HttpServletRequest;

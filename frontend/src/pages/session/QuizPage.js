@@ -9,6 +9,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer'
+import { sendReportMail } from '../../api/mail';
 
 const QuizPage = ({onChangeStage}) => {
     const [quizs, setQuizs] = useState([]);
@@ -41,27 +42,43 @@ const QuizPage = ({onChangeStage}) => {
     };
 
     const handleStep = async () => {
+        // 마지막에 실행되는 함수
         const newFailList = new Set(failList);
+        const failWordsForMail = []; // 틀린 단어들을 담을 배열 생성
 
         correctList.forEach((isCorrect, index) => {
             if (!isCorrect) {
                 const wordId = quizs[index]?.wordId;
+                const word = quizs[index]?.word;
                 if (wordId) {
                     newFailList.add(wordId);
+                    failWordsForMail.push(word);
                 }
             }
         });
 
         setFailList(newFailList);
-        await addToMyWords(Array.from(newFailList))
-            .then(
-                setTimeout(() => {
-                    onChangeStage();
-                }, 3000),
-            )
-            .catch(error => {
-                console.error('에러 발생:', error);
-            });
+        const failWordIds = Array.from(newFailList);
+
+        addToMyWords(failWordIds)
+        .then(() => {
+            return sendReportMail(failWordsForMail);
+        })
+        .then(() => {
+            setTimeout(() => {
+                onChangeStage();
+            }, 3000);
+        })
+        .catch(error => {
+            if (error.config?.url?.includes('/mywords')) {
+                console.error('단어장 추가 중 에러 발생:', error);
+            } else if (error.config?.url?.includes('/mail')) {
+                console.error('메일 전송 중 에러 발생:', error);
+            } else {
+                console.error('알 수 없는 에러 발생:', error);
+            }
+        });
+        
     };
 
     const handleTimeOut = () => {
