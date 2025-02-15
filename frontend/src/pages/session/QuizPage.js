@@ -10,7 +10,7 @@ import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 
-const QuizPage = () => {
+const QuizPage = ({onChangeStage}) => {
     const [quizs, setQuizs] = useState([]);
     const [words, setWords] = useState([]);
     const [correctList, setCorrectList] = useState([false, false, false, false]);
@@ -56,7 +56,7 @@ const QuizPage = () => {
         await addToMyWords(Array.from(newFailList))
             .then(
                 setTimeout(() => {
-                    navigate('/'); // 다음 단계의 url로 변경 필요
+                    onChangeStage();
                 }, 3000),
             )
             .catch(error => {

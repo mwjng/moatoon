@@ -5,6 +5,7 @@ import RandomPage from '../RandomPage';
 import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
+import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage'; 
 import { useNavigate } from 'react-router';
@@ -53,11 +54,19 @@ const SessionContainer = () => {
     };
 
     // 타임아웃 처리 함수
-    const handleTimeout = () => {
+    const handleDrawingTimeout = () => {
         console.log('타임아웃 처리: QUIZ 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
             currentStage: 'QUIZ'
+        }));
+    };
+
+    const handleQuizTimeout = () => {
+        console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
+        setSessionStageData(prev => ({
+            ...prev,
+            currentStage: 'QUIZ_END'
         }));
     };
 
@@ -134,12 +143,17 @@ const SessionContainer = () => {
                 return (
                     <DrawingEndPage 
                         sessionStageData={sessionStageData}
-                        onTimeout={handleTimeout}
+                        onTimeout={handleDrawingTimeout}
                     />
                 );
             case 'QUIZ':
                 return(
-                    <QuizPage/>
+                    <QuizPage
+                    onChangeStage={handleQuizTimeout}/>
+                );
+            case 'QUIZ_END':
+                return(
+                    <QuizEndPage/>
                 );
             default:
                 navigate('/home');
