@@ -5,8 +5,10 @@ import { getPartyDetail, addPartyMembers, removePartyMember, getPartyDetailByPin
 import Alert from "../common/AlertModal";
 import ConfirmModal from "../common/ConfirmModal";
 import defaultProfileImage from "../../assets/duckduck.png"
+import { useNavigate } from 'react-router-dom';
 
 const BookDetail = ({partyIdOrPin, onClose}) => {
+  const navigate = useNavigate();
   const [partyDetails, setPartyDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +16,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [memberToRemove, setMemberToRemove] = useState(null);
+  const [partyId, setPartyId] = useState(null);
 
   // 모달 상태 관리
   const [alertModalState, setAlertModalState] = useState(false);
@@ -27,14 +30,13 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
       try {
         let data;
         if (typeof partyIdOrPin === 'number') {
-          // Fetch by partyId if number provided
           data = await getPartyDetail(partyIdOrPin); 
         } else {
-          // Else assume it's a pin and fetch by pin
           console.log("핀번호 검색 : ", data)
           data = await getPartyDetailByPin(partyIdOrPin);
         }
         setPartyDetails(data);
+        setPartyId(data.id);
       } catch (err) {
         setError(err.message);
         setAlertMessage("데이터를 불러오는데 실패했습니다.");
@@ -54,6 +56,45 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
     return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
   };
 
+  const getActiveSchedule = () => {
+    if (!partyDetails?.schedules) return null;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // 오늘 스케줄 찾기
+    const todaySchedules = partyDetails.schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.sessionTime);
+      return scheduleDate.toISOString().split('T')[0] === today;
+    });
+
+    if (todaySchedules.length === 0) return null;
+
+    // 현재 시간으로부터 10분 이내에 시작하는 스케줄 찾기
+    return todaySchedules.find(schedule => {
+      const sessionTime = new Date(schedule.sessionTime);
+      const remainingMinutes = (sessionTime.getTime() - now.getTime()) / (1000 * 60);
+      return remainingMinutes <= 10 && remainingMinutes > 0;
+    });
+  };
+
+  const isRegistrationVisible = getRemainingTime() > 1;
+  const activeSchedule = getActiveSchedule();
+
+  const handleJoinSession = () => {
+    if (activeSchedule) {
+      navigate('/session', {
+        state: {
+          partyId: partyDetails.id,
+          scheduleId: activeSchedule.scheduleId
+        }
+      });
+    }
+  };
+
+const handlePreviousStory = () => {
+  navigate(`/ebook/${partyDetails.id}`);
+};
   // 멤버 관리 함수들
   const handleAddChild = (childId) => {
     const selectedChild = userChildren.find(child => child.id === childId);
@@ -138,6 +179,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
       setAlertMessage("삭제되었습니다.");
       setAlertModalState(true);
     } catch (err) {
+      console.log("삭제 시 에러 이유 ", err);
       setAlertMessage("멤버 삭제 중 오류가 발생했습니다.");
       setAlertModalState(true);
     } finally {
@@ -197,7 +239,12 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                 className="w-[280px] h-[400px] object-cover rounded-lg shadow-md"
               />
               {showPreviousStory && (
-                <button className="btn btn-warning absolute bottom-4 left-1/2 transform -translate-x-1/2 w-4/5 shadow-lg">
+                <button 
+                  onClick={handlePreviousStory}
+                  className="btn btn-warning btn-md absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5
+                    normal-case font-medium
+                    hover:brightness-95"
+                >
                   이전 이야기 보기
                 </button>
               )}
@@ -284,7 +331,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
               </div>
               
               {/* 아동 추가 섹션 */}
-              {showControls && (
+              {isRegistrationVisible ? (
                 <div className="mt-4 flex gap-2">
                   <select 
                     className="select select-bordered flex-1"
@@ -310,6 +357,19 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                   >
                     등록하기
                   </button>
+                </div>
+              ) : (
+                <div className="mt-4 flex justify-end">
+                  <button 
+                    className={`btn px-8 shadow-md hover:shadow-lg transition-shadow ${
+                      activeSchedule ? 'btn-primary' : 'btn-disabled'
+                    }`}
+                    onClick={handleJoinSession}
+                    disabled={!activeSchedule}
+                  >
+                    입장하기
+                  </button>
+
                 </div>
               )}
             </div>
@@ -341,6 +401,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
             ? confirmRemoveMember
             : () => {}
         }
+        cancelHandler={closeConfirmModal} 
       />
       </div>
 
