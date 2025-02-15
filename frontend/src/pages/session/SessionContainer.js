@@ -94,14 +94,12 @@ const SessionContainer = () => {
     const renderStage = () => {
         console.log("=========[SessionContainer의 renderStage => WaitingRoom]===============");
         console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
-        switch (sessionStageData.currentStage) {
-
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
             console.log('현재 스테이지와 동일하여 렌더링 스킵');
             return null;
         }
-
+        switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
                     <WaitingRoom 
