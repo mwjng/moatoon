@@ -6,11 +6,15 @@ import micOffImg from '../assets/icon-player.png';
 import guideOnImg from '../assets/icon-switch-on.png';
 import guideOffImg from '../assets/icon-switch-off.png';
 
+const GUIDE_ENABLED_KEY = 'guideEnabled';
+
 function CameraMicControls({ publisher }) {
     const [cameraOn, setCameraOn] = useState(true);
     const [micOn, setMicOn] = useState(true);
-    const [guideOn, setGuideOn] = useState(true);
-
+    const [guideOn, setGuideOn] = useState(() => {
+        const savedState = localStorage.getItem(GUIDE_ENABLED_KEY);
+        return savedState === null ? true : JSON.parse(savedState);
+    });
     const streamRef = useRef(null);
 
     useEffect(() => {
@@ -51,6 +55,20 @@ function CameraMicControls({ publisher }) {
         }
     };
 
+    const toggleGuide = () => {
+        const newState = !guideOn;
+        setGuideOn(newState);
+        localStorage.setItem(GUIDE_ENABLED_KEY, JSON.stringify(newState));
+
+        // 커스텀 이벤트 발생
+        window.dispatchEvent(new CustomEvent('localStorageChange', {
+            detail: {
+                key: GUIDE_ENABLED_KEY,
+                value: JSON.stringify(newState)
+            }
+        }));
+    };
+
     const cameraIcon = cameraOn ? cameraOnImg : cameraOffImg;
     const cameraText = cameraOn ? 'on' : 'off';
 
@@ -78,7 +96,7 @@ function CameraMicControls({ publisher }) {
             </button>
 
             <button
-                onClick={() => setGuideOn(!guideOn)}
+                onClick={toggleGuide}
                 className="flex flex-col items-center justify-center text-black p-1"
             >
                 <img src={guideIcon} alt="guide-icon" className="w-8 h-8" />
