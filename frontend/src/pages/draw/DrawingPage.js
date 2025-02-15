@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname }) => {
+const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendReady, readyStatusResponse }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleId = 1;
@@ -92,6 +92,7 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname }) => 
                         toggleView={toggleView}
                         cutsInfo={cutsState.cuts}
                         userId={userId}
+                        sendReady = {sendReady}
                         publisher={publisher}
                         nickname={nickname}
                         isFirstDrawingVisit={isFirstDrawingVisit}
@@ -106,6 +107,7 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname }) => 
                         nickname={nickname}
                         isFirstOverviewVisit={isFirstOverviewVisit}
                         setIsFirstOverviewVisit={setIsFirstOverviewVisit}
+                        readyStatusResponse = {readyStatusResponse}
                     />
                 ))}
             {isLoading && <Loading />}

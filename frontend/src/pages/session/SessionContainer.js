@@ -5,6 +5,7 @@ import RandomPage from '../RandomPage';
 import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
+import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
@@ -68,11 +69,19 @@ const SessionContainer = () => {
     };
 
     // 타임아웃 처리 함수
-    const handleTimeout = () => {
+    const handleDrawingTimeout = () => {
         console.log('타임아웃 처리: QUIZ 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
             currentStage: 'QUIZ',
+        }));
+    };
+
+    const handleQuizTimeout = () => {
+        console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
+        setSessionStageData(prev => ({
+            ...prev,
+            currentStage: 'QUIZ_END'
         }));
     };
 
@@ -82,10 +91,10 @@ const SessionContainer = () => {
     }, [sessionData.scheduleId]);
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
-    useEffect(() => {
-        console.log('세션 stage 업데이트됨: ', sessionStageData);
-        renderStage();
-    }, [sessionStageData]);
+    // useEffect(() => {
+    //     console.log("세션 stage 업데이트됨: ", sessionStageData);
+    //     renderStage();
+    // }, [sessionStageData]);
 
     const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
         sessionData.scheduleId,
@@ -143,20 +152,29 @@ const SessionContainer = () => {
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
+                        sendReady = {sendReady}
+                        readyStatusResponse = {readyStatusResponse}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage
                         sessionStageData={sessionStageData}
-                        onTimeout={handleTimeout}
+                        onTimeout={handleDrawingTimeout}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
                     />
                 );
             case 'QUIZ':
-                return <QuizPage />;
+                return(
+                    <QuizPage
+                    onChangeStage={handleQuizTimeout}/>
+                );
+            case 'QUIZ_END':
+                return(
+                    <QuizEndPage/>
+                );
             default:
                 navigate('/home');
                 return null;

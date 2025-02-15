@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import { BiPencil, BiCheck } from 'react-icons/bi';
 
-const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content }) => {
+const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isReady }) => {
     const [lines, setLines] = useState([]); // 상태를 lines로 관리
     const stageRef = useRef();
 
@@ -73,9 +73,11 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content }) =
                 </button>
             )}
 
-            <button className="absolute bottom-2 right-2 w-10 h-10 bg-light-green rounded-full shadow-md flex items-center justify-center">
-                <BiCheck className="text-2xl" />
-            </button>
+            {isReady && (
+                <button className="absolute bottom-2 right-2 w-10 h-10 bg-light-green rounded-full shadow-md flex items-center justify-center">
+                    <BiCheck className="text-2xl" />
+                </button>
+            )}
         </div>
     );
 };

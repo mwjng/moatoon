@@ -14,17 +14,16 @@ const Overview = ({
     subscribers,
     publisher,
     nickname,
+    readyStatusResponse
 }) => {
     // 페이지 진입 시 Drawing 방문 상태 업데이트
     useEffect(() => {
-        console.log(isFirstOverviewVisit);
+        console.log(readyStatusResponse); // {1: false} 멤버아이디: ready값 형식식
         setIsFirstOverviewVisit(false);
     }, []);
 
     const partyId = cutsInfo[0].partyId;
     const cutIds = cutsInfo.map(item => item.cutId);
-
-    const userId = 3;
 
     return (
         <div className="h-screen bg-light-cream-yellow">
@@ -37,7 +36,7 @@ const Overview = ({
                     <MyCamera streamManager={publisher} nickname={nickname} />
                 </div>
                 <div className="flex flex-col items-center ml-24">
-                    <CanvasGrid partyId={partyId} cutIds={cutIds} toggleView={toggleView} cutsInfo={cutsInfo} />
+                    <CanvasGrid partyId={partyId} cutIds={cutIds} toggleView={toggleView} cutsInfo={cutsInfo} readyStatusResponse = {readyStatusResponse} />
                 </div>
             </div>
         </div>

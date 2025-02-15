@@ -6,7 +6,7 @@ import { updateLines, handleDraw } from '../../utils/canvasUtils';
 import { authInstance } from '../../api/axios';
 import { useSelector } from 'react-redux';
 
-const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo }) => {
+const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo, readyStatusResponse }) => {
     const [canvasData, setCanvasData] = useState({}); // cutId별 캔버스 데이터 저장
 
     //본인에게만 편집 버튼이 활성화되어야함
@@ -99,6 +99,7 @@ const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo }) => {
                                     toggleView={toggleView}
                                     edit={userId === cut.memberId}
                                     content={cut.content}
+                                    isReady = {readyStatusResponse?.[cut.memberId] ?? false}
                                 />
                             </div>
                         );
