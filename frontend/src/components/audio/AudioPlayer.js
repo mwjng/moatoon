@@ -1,5 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { fetchAudio } from '../../api/audio';
+
+const GUIDE_ENABLED_KEY = 'guideEnabled';
+
+// 타이머 알림음 타입들
+const TIMER_AUDIO_TYPES = ['TEN_LEFT', 'FIVE_LEFT', 'ONE_LEFT'];
 
 // 전역 오디오 상태 관리
 const audioState = {
@@ -11,6 +16,23 @@ const audioState = {
 
 const AudioPlayer = ({ audioType, isOn=true }) => {
   const audioRef = useRef(new Audio());
+  const [guideOn, setGuideOn] = useState(() => { // tts on/off 설정정
+      const savedState = localStorage.getItem(GUIDE_ENABLED_KEY);
+      return savedState === null ? true : JSON.parse(savedState);
+  });
+
+  useEffect(() => {
+      const handleStorageChange = (e) => {
+          console.log('Storage change event:', e.detail);
+          if (e.detail.key === GUIDE_ENABLED_KEY) {
+              console.log('TTS setting changed to:', e.detail.value);
+              setGuideOn(JSON.parse(e.detail.value));
+          }
+      };
+
+      window.addEventListener('localStorageChange', handleStorageChange);
+      return () => window.removeEventListener('localStorageChange', handleStorageChange);
+  }, []);
 
   useEffect(() => {
 
@@ -29,6 +51,11 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
     };
 
     const initializeAudio = async () => {
+      // 가이드가 꺼져있고, 타이머 알림음이 아닌 경우에만 리턴
+      if (!guideOn && !TIMER_AUDIO_TYPES.includes(audioType)) {
+        return;
+      }
+
       // isOn이 true일 때만 오디오 실행
       if (!isOn) return;
 
@@ -74,7 +101,7 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
         stopCurrentAudio();
       }
     };
-  }, [audioType, isOn]); // isOn을 의존성 배열에 추가
+  }, [audioType, isOn, guideOn]); 
 
   return null;
 };
