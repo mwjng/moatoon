@@ -9,6 +9,7 @@ import AudioPlayer from '../../components/audio/AudioPlayer'
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
+// partyId, scheduleId 받아와야함
 const WordLearning = ({sessionStageData}) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);

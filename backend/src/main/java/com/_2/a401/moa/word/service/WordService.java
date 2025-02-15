@@ -201,6 +201,7 @@ public class WordService {
     }
 
     public LearningWordsResponse getLearningWords(Long partyId) {
+        log.info("getLearningWords = {}", partyId);
         // 현재 날짜에 해당하는 episode_number 조회
         EpisodeNumberAndLevel episodeNumberAndLevel = partyRepository.findEpisodeNumberAndLevelByPartyIdAndToday(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No episode found for today's schedule"));
