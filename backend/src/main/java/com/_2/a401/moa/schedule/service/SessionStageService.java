@@ -43,11 +43,20 @@ public class SessionStageService {
         setWaitingRoomTimer(scheduleId);
     }
 
-    // 현재 세션 상태 얻어오기
+    // 현재 세션 상태 얻어오기 - api (새로고침용)
     public CurrentSessionStageResponse getCurrentSessionStage(Long scheduleId) {
         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
         log.info("세션 {}의 sessionRedisStage = {}", scheduleId, session.toString());
         return CurrentSessionStageResponse.from(session);
+    }
+
+    public void getDrawingReadyStatus(Long scheduleId) {
+        log.info("[서버] 그림그리기 레디 상태 조회요청 날라옴");
+        log.info("getDrawingReadyStatus : scheduleId={}", scheduleId);
+
+        // Redis에서 sessionMember 불러오기
+        SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
+        broadcastReadyStatus(scheduleId, sessionMember.getSessionMembers());
     }
 
     public void updateReadyStatus(Long scheduleId, Long memberId, boolean isReady) {
@@ -133,6 +142,11 @@ public class SessionStageService {
                     if (currentStage == expectedStage) {
                         log.info("{} 에서 다음 단계로 이동~", expectedStage);
                         handleSessionTransfer(scheduleId);
+
+                        if(currentStage == FullSessionStage.CUT_ASSIGN) { // CUT_ASSIGN 다음 단계인 DRAWING에서는 
+                            // ready를 요청하지 않았어도 현재 다른 사람들의 ready 정보가 필요
+                            getDrawingReadyStatus(scheduleId);
+                        }
                     }
                 },
                 endTime.atZone(ZoneId.systemDefault()).toInstant()

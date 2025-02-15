@@ -127,6 +127,7 @@ const SessionContainer = () => {
                     <DrawingPage 
                         sessionStageData={sessionStageData}
                         sendReady = {sendReady}
+                        readyStatusResponse = {readyStatusResponse}
                     />
                 );
             case 'DONE':

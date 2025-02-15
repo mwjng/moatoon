@@ -20,7 +20,7 @@ public class SessionStageController {
     private final SessionStageService sessionStageService;
 
     @Operation(summary = "현재 시간을 기준으로 scheduleId의 대기방 생성, 멤버에는 memberId 참여")
-    @GetMapping("/make-redis-now")
+    @GetMapping("/redis-dummy")
     public void testRedis(@RequestParam Long scheduleId, @RequestParam Long memberId) {
         sessionStageService.dummyRedis(scheduleId, memberId);
     }

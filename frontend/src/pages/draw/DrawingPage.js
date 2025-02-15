@@ -7,8 +7,7 @@ import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 
-const DrawingPage = ({sessionStageData, sendReady}) => {
-    const navigate = useNavigate();
+const DrawingPage = ({sessionStageData, sendReady, readyStatusResponse}) => {
     const dispatch = useDispatch();
     const scheduleId = 1;
 
@@ -90,7 +89,8 @@ const DrawingPage = ({sessionStageData, sendReady}) => {
                         toggleView={toggleView} 
                         cutsInfo={cutsState.cuts}
                         isFirstOverviewVisit = {isFirstOverviewVisit}
-                        setIsFirstOverviewVisit={setIsFirstOverviewVisit} />
+                        setIsFirstOverviewVisit={setIsFirstOverviewVisit}
+                        readyStatusResponse = {readyStatusResponse}/>
                 ))}
             {isLoading && <Loading />}
         </div>
