@@ -88,15 +88,35 @@ const BookSearchPage = () => {
   };
 
   const handleDaySelect = (range) => {
-    if (range) {
+    const { from, to } = range;
+  
+    // 시작일 선택 로직
+    if (from) {
+      // 기존 시작일보다 이전 날짜 선택 시 새로운 시작일로 변경
       setSearchParams(prev => ({
-        ...prev,
-        startDate: range.from,
-        endDate: range.to
+        ...prev, 
+        startDate: from
       }));
     }
-    setShowCalendar(false);
+  
+    // 종료일 선택 로직
+    if (from && to) {
+      // 종료일이 시작일 이전인 경우 시작일과 종료일 교환
+      const newStartDate = from <= to ? from : to;
+      const newEndDate = from <= to ? to : from;
+  
+      setSearchParams(prev => ({
+        ...prev,
+        startDate: newStartDate,
+        endDate: newEndDate
+      }));
+  
+      // 캘린더 닫기
+      setShowCalendar(false);
+    }
   };
+  
+
 
   const handleWeekDayToggle = (dayIndex) => {
     const dayValue = weekDayValues[dayIndex];
@@ -115,10 +135,12 @@ const BookSearchPage = () => {
     setShowBookDetail(true);
   };
 
+  
   const handleCloseModal = () => {
     setShowBookDetail(false);
     setCurrentPartyId(null);
   };
+
 
  // 핀 번호 제출 핸들러 수정
  const handlePinSubmit = async (e) => {
@@ -133,7 +155,6 @@ const BookSearchPage = () => {
     const data = await getPartyDetailByPin(pin);
     
     if (!data || data.length === 0) {
-      console.log("Searching for PIN1:", pin.trim());
       setAlertMessage("해당 PIN 번호의 방을 찾을 수 없습니다.");
       setAlertModalState(true);
       return;
@@ -143,22 +164,10 @@ const BookSearchPage = () => {
     setShowBookDetail(true);
     setPin(''); // 검색 후 입력 필드 초기화
   } catch (error) {
-    console.log("Searching for PIN2:", pin.trim());
     setAlertMessage("검색 결과가 없습니다.");
     setAlertModalState(true);
   }
 };
-
-  // const groupPartysByLevel = () => {
-  //   if (!parties || !Array.isArray(parties)) return {}; 
-  
-  //   const grouped = {};
-  //   levels.forEach(level => {
-  //     grouped[level] = parties.filter(party => party.level === level);
-  //   });
-  //   return grouped;
-  // };
-
 
   const groupPartysByLevel = () => {
     if (!parties || !Array.isArray(parties)) return {}; 
@@ -187,30 +196,62 @@ const BookSearchPage = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex justify-center flex-wrap gap-4">
-            {/* Date Selection */}
-            <div className="relative">
-              <button
-                className="btn btn-sm bg-white text-gray-700 border-gray-200"
-                onClick={() => setShowCalendar(!showCalendar)}
-              >
-                {searchParams.startDate ? formatDate(searchParams.startDate) : '시작일'}
-              </button>
-              {showCalendar && (
-                <div className="absolute z-10 mt-2 bg-white shadow-lg rounded-lg">
-                  <DayPicker
-                    mode="range"
-                    selected={{
-                      from: searchParams.startDate,
-                      to: searchParams.endDate
-                    }}
-                    onSelect={handleDaySelect}
-                    disabled={{ before: new Date() }}
-                  />
-                </div>
-              )}
-            </div>
 
-            {/* Time Selection */}
+
+
+
+            {/* Date Selection */}
+            {/* Date Selection */}
+{/* Date Selection */}
+<div className="relative">
+  <button
+    className="btn btn-sm normal-case"
+    onClick={() => setShowCalendar(!showCalendar)}
+  >
+    {searchParams.startDate ? formatDate(searchParams.startDate) : '시작일'} - 
+    {searchParams.endDate ? formatDate(searchParams.endDate) : '종료일'}
+  </button>
+  
+  {showCalendar && (
+    <div className="absolute z-50 mt-2">
+      <div className="card bg-base-100 shadow-xl">
+        <div className="card-body p-4">
+        <DayPicker
+  mode="range"
+  selected={{
+    from: searchParams.startDate,
+    to: searchParams.endDate
+  }}
+  onSelect={handleDaySelect}
+  disabled={{ 
+    before: new Date() // 오늘 이전 날짜 선택 제한
+  }}
+  modifiersStyles={{
+    selected: { 
+      backgroundColor: 'rgb(59 130 246)', 
+      color: 'white' 
+    },
+    range_middle: { 
+      backgroundColor: 'rgb(219 234 254)', 
+      color: 'rgb(37 99 235)' 
+    },
+    range_start: { 
+      backgroundColor: 'rgb(59 130 246)', 
+      color: 'white' 
+    },
+    range_end: { 
+      backgroundColor: 'rgb(59 130 246)', 
+      color: 'white' 
+    }
+  }}
+/>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+
             <select
               className="select select-sm select-bordered"
               value={searchParams.time}
@@ -222,7 +263,6 @@ const BookSearchPage = () => {
               ))}
             </select>
 
-            {/* Day Selection */}
             <div className="flex gap-1">
               {weekDays.map((day, index) => (
                 <button
@@ -239,7 +279,6 @@ const BookSearchPage = () => {
               ))}
             </div>
 
-            {/* Episode Length */}
             <input
               type="number"
               placeholder="에피소드 수"
@@ -248,7 +287,6 @@ const BookSearchPage = () => {
               onChange={(e) => setSearchParams(prev => ({ ...prev, episodeLength: e.target.value }))}
             />
 
-            {/* Level Selection */}
             <select
               className="select select-sm select-bordered"
               value={searchParams.level}
@@ -260,7 +298,6 @@ const BookSearchPage = () => {
               ))}
             </select>
 
-            {/* Available Spots */}
             <label className="cursor-pointer flex items-center gap-2">
               <input
                 type="checkbox"
@@ -274,7 +311,6 @@ const BookSearchPage = () => {
               <span className="text-sm">빈자리만 보기</span>
             </label>
 
-            {/* Search and Reset Buttons */}
             <div className="flex gap-2">
               <button
                 className="btn btn-sm bg-blue-500 text-white hover:bg-blue-600"
@@ -322,104 +358,96 @@ const BookSearchPage = () => {
               </svg>
             </label>
           </div>
-
         </div>
 
-        {/* Results Section */}
-
-
-        {/* Results Section */}
-{parties.length === 0 && (
-  <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-    <p className="text-gray-500">검색 결과가 없습니다</p>
-  </div>
-)}
-
-{loading ? (
-  <div className="text-center py-8">
-    <span className="loading loading-spinner loading-lg"></span>
-  </div>
-) : (
-  <div className="space-y-8">
-    {Object.entries(groupPartysByLevel())
-      .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
-      .map(([level, levelParties]) => (
-        <div
-          key={level}
-          className={`p-6 rounded-lg ${
-            Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
-          }`}
-        >
-          <h2 className="text-xl font-bold mb-4">
-            Level {level} ({levelParties.length}개의 파티)
-          </h2>
-          {levelParties.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {levelParties.map(party => (
-                <div
-                  key={party.partyId}
-                  className="cursor-pointer transition-transform hover:scale-105"
-                  onClick={() => handleCardClick(party.partyId)}
-                >
-                  <img
-                    src={party.bookCover || defaultBookCover}
-                    alt={party.bookTitle}
-                    className="w-full h-48 object-cover rounded-lg shadow-sm"
-                    onError={(e) => {
-                      e.target.src = defaultBookCover;
-                    }}
-                  />
-                  <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
-                  <p className="text-sm text-gray-600">
-                    참여자: {party.participantCount}명
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 py-4">
-              해당 난이도는 아직 책 정보가 없어요
-            </p>
-          )}
-        </div>
-      ))}
-  </div>
-)}
-
-
-
-
-  {showBookDetail && currentPartyId && (
-          <div className="fixed inset-0 z-50">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-            <div className="flex items-center justify-center min-h-screen p-4">
-              <div 
-                className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="max-h-[90vh] overflow-hidden rounded-xl">
-                  <BookDetail
-                    partyIdOrPin={currentPartyId}
-                    onClose={handleCloseModal}
-                    setModalLoading={setModalLoading}
-                  />
-                </div>
-              </div>
-            </div>
-            {modalLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <div className="loading loading-spinner loading-lg text-primary"></div>
-              </div>
-            )}
+        {parties.length === 0 && (
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <p className="text-gray-500">검색 결과가 없습니다</p>
           </div>
         )}
 
+        {loading ? (
+          <div className="text-center py-8">
+            <span className="loading loading-spinner loading-lg"></span>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {Object.entries(groupPartysByLevel())
+              .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
+              .map(([level, levelParties]) => (
+                <div
+                  key={level}
+                  className={`p-6 rounded-lg ${
+                    Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
+                  }`}
+                >
+                  <h2 className="text-xl font-bold mb-4">
+                    Level {level} ({levelParties.length}개의 파티)
+                  </h2>
+                  {levelParties.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {levelParties.map(party => (
+                        <div
+                          key={party.partyId}
+                          className="cursor-pointer transition-transform hover:scale-105"
+                          onClick={() => handleCardClick(party.partyId)}
+                        >
+                          <img
+                            src={party.bookCover || defaultBookCover}
+                            alt={party.bookTitle}
+                            className="w-full h-48 object-cover rounded-lg shadow-sm"
+                            onError={(e) => {
+                              e.target.src = defaultBookCover;
+                            }}
+                          />
+                          <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
+                          <p className="text-sm text-gray-600">
+                            참여자: {party.participantCount}명
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center text-gray-500 py-4">
+                      해당 난이도는 아직 책 정보가 없어요
+                    </p>
+                  )}
+                </div>
+              ))}
+          </div>
+        )}
 
-<Alert 
-        modalState={alertModalState}
-        text={alertMessage}
-        closeHandler={closeAlertModal}
-      />
+        {showBookDetail && currentPartyId && (
+                <div className="fixed inset-0 z-50">
+                  <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                  <div className="flex items-center justify-center min-h-screen p-4">
+                    <div 
+                      className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                        <BookDetail
+                          partyIdOrPin={currentPartyId}
+                          onClose={handleCloseModal}
+                          setModalLoading={setModalLoading}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {modalLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                      <div className="loading loading-spinner loading-lg text-primary"></div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+
+            <Alert 
+              modalState={alertModalState}
+              text={alertMessage}
+              closeHandler={closeAlertModal}
+            />
       </div>
     </div>
   );

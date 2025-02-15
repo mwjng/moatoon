@@ -32,13 +32,11 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
         if (typeof partyIdOrPin === 'number') {
           data = await getPartyDetail(partyIdOrPin); 
         } else {
-          console.log("핀번호 검색/ 상세 모달에는 들어왔는가? : ", data)
           data = await getPartyDetailByPin(partyIdOrPin);
         }
 
         setPartyDetails(data);
         setPartyId(data.id);
-        console.log("불러온 파티 데이터: ", data.id); 
       } catch (err) {
         setError(err.message);
         setAlertMessage("데이터를 불러오는데 실패했습니다.");
