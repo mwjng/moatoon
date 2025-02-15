@@ -5,6 +5,7 @@ import bbi from '../../assets/bbi_normal.png';
 import { authInstance } from '../../api/axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
     const [finalCuts, setFinalCuts] = useState([]);
@@ -42,6 +43,7 @@ const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
 
     return (
         <div className="min-h-screen bg-light-cream-yellow">
+            <AudioPlayer audioType="SHARING" />
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"

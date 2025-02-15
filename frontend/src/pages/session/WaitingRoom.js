@@ -9,6 +9,7 @@ import BookDisplay from '../../components/BookDisplay';
 import FooterNotice from '../../components/FooterNotice';
 import {getSessionToken} from '../../api/room';
 import base64 from 'base-64';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
@@ -106,6 +107,7 @@ function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime, sessionDu
 
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
+            <AudioPlayer audioType="WAITING" />
             <Navigation stage={'waiting'} leaveSession={leaveSession} stageDuration={sessionDuration} sessionStartTime={sessionTime} serverTime={serverTime} bookTitle={bookTitle} onTimeOut={handleTimeOut}/>
             <div className="justify-center items-center gap-4">
                 <div

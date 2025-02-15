@@ -67,10 +67,10 @@ const SessionContainer = () => {
     }, [sessionData.scheduleId]);
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
-    useEffect(() => {
-        console.log("세션 stage 업데이트됨: ", sessionStageData);
-        renderStage();
-    }, [sessionStageData]);
+    // useEffect(() => {
+    //     console.log("세션 stage 업데이트됨: ", sessionStageData);
+    //     renderStage();
+    // }, [sessionStageData]);
 
     const { 
         sendReady, 
@@ -94,9 +94,14 @@ const SessionContainer = () => {
     const renderStage = () => {
         console.log("=========[SessionContainer의 renderStage => WaitingRoom]===============");
         console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
-        console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
-        console.log("sessionStageData.sessionStartTime : ", sessionStageData.sessionStartTime)
         switch (sessionStageData.currentStage) {
+
+        // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
+        if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
+            console.log('현재 스테이지와 동일하여 렌더링 스킵');
+            return null;
+        }
+
             case 'WAITING':
                 return (
                     <WaitingRoom 
@@ -157,7 +162,6 @@ const SessionContainer = () => {
                 </div>
             );
         }
-
         return renderStage();
     };
 

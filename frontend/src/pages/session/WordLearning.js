@@ -5,6 +5,7 @@ import CheckIcon from '../../assets/icon-check.png';
 import { getLearningWords } from '../../api/word';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket'; // 세션 상태 전달 받을 웹소켓
 import { useNavigate } from 'react-router';
+import AudioPlayer from '../../components/audio/AudioPlayer'
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
@@ -69,6 +70,7 @@ const WordLearning = ({sessionStageData}) => {
 
     return (
         <div className="bg-seashell h-screen">
+            <AudioPlayer audioType="WORD"/>
             <Navigation
                 stage={'learning'}
                 stageDuration={sessionStageData.sessionDuration}
