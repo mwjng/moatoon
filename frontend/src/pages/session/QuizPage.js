@@ -19,7 +19,6 @@ const QuizPage = () => {
     const [correctCount, setCorrectCount] = useState(0);
     const [isEnd, setIsEnd] = useState(false);
     const [partyId, setPartyId] = useState(1); //임의 값
-    const stageTime = 5;
     const navigate = useNavigate();
 
     const handleCorrect = (quizIndex, wordIndex) => {
@@ -57,7 +56,7 @@ const QuizPage = () => {
             .then(
                 setTimeout(() => {
                     navigate('/'); // 다음 단계의 url로 변경 필요
-                }, 5000),
+                }, 3000),
             )
             .catch(error => {
                 console.error('에러 발생:', error);
@@ -84,7 +83,12 @@ const QuizPage = () => {
     return (
         <div className="bg-[#ACDB33] bg-opacity-30 h-screen flex flex-col">
             <AudioPlayer audioType="QUIZ" />
-            <Navigation stage={'quiz'} stageDuration={stageTime} onTimeOut={handleTimeOut} />
+            <Navigation 
+                stage={'quiz'} 
+                stageDuration={60*1}
+                sessionStartTime={Date.now()}
+                serverTime={Date.now()}
+                onTimeOut={handleTimeOut} />
             <div className="flex grow px-20 gap-20">
                 <DndProvider backend={HTML5Backend}>
                     <div
