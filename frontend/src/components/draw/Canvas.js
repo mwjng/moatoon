@@ -86,6 +86,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
 
             if (response.status === 200) {
                 console.log('캔버스 임시 저장 성공');
+                return response;
             } else {
                 console.error('캔버스 임시 저장 실패:', response.status);
             }
@@ -102,7 +103,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
             sendCanvasData(canvasData);
         };
 
-        const intervalId = setInterval(saveCanvasData, 30000); // 30초마다 실행
+        const intervalId = setInterval(saveCanvasData, 30000); // 캔버스 임시저장 30초마다 실행
 
         return () => clearInterval(intervalId);
     }, [lines, connected]);
@@ -227,6 +228,21 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
         await sendCanvasData(canvasState); // sendCanvasData 함수 호출로 변경
     };
 
+    const [isSaving, setIsSaving] = useState(false);
+
+    async function handleViewAll() {
+        if (isSaving) return;
+        setIsSaving(true);
+        try {
+            await handleExportCanvasData(); // 저장 완료될 때까지 기다림
+            toggleView(); // 저장 후 화면 전환
+        } catch (error) {
+            console.error('데이터 저장 중 오류 발생:', error);
+        } finally {
+            setIsSaving(false);
+        }
+    }
+
     return (
         <div className="flex bg-white" style={{ width: '600px', height: '600px', position: 'relative' }}>
             <div className="flex flex-col">
@@ -269,10 +285,7 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
                         textColor="text-white"
                         size="md"
                         textSize="large"
-                        onClick={() => {
-                            handleExportCanvasData();
-                            toggleView();
-                        }}
+                        onClick={handleViewAll}
                     >
                         전체 보기
                     </WordButton>

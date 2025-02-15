@@ -12,13 +12,10 @@ const Drawing = forwardRef(
     ({ toggleView, cutsInfo, userId, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname }, ref) => {
         // 페이지 진입 시 Drawing 방문 상태 업데이트
         useEffect(() => {
-            console.log();
             setIsFirstDrawingVisit(false);
         }, []);
 
         const stageRef = useRef(null);
-        //const [userId, setUserId] = useState(3);
-        console.log(userId);
         const partyId = cutsInfo[0].partyId;
         const cutIds = cutsInfo.map(item => item.cutId);
         const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
@@ -96,6 +93,16 @@ const Drawing = forwardRef(
                         />
                     </div>
                 </div>
+
+                {/* SVG 내보내기 버튼 추가
+                <div className="flex justify-center mt-5">
+                    <button
+                        className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600"
+                        onClick={exportToSVGAndUpload}
+                    >
+                        SVG 내보내기
+                    </button>
+                </div> */}
             </div>
         );
     },

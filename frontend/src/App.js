@@ -125,7 +125,7 @@ function App() {
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
                     <Route path="/session" element={<SessionContainer />} />
-                    {/* <Route path="/session">
+                    <Route path="/session" />
                     <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
@@ -134,7 +134,7 @@ function App() {
                         <Route path="search" element={<BookSearchPage />} />
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
-                    </Route> */}
+                    </Route>
                     <Route path="library" element={<LibraryPage />} />
                     <Route path="ebook/:partyId" element={<EBookPage />} />
                     <Route path="word">
