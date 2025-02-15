@@ -80,7 +80,7 @@ INSERT INTO PARTY (introduction, pin_number, book_cover, book_title, level, epis
   ('완료! 전설의 마법서 찾기', '3001', 'cover.jpg', '전설의 마법서', 1, 2, 2, 'DONE', '2025-01-30 08:00:00', 1, '2025-02-06 08:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   ('완료! 중세 왕국의 모험', '3002', 'cover.jpg', '중세 왕국', 1, 2, 2, 'DONE', '2025-01-30 08:00:00', 1, '2025-02-06 08:00:00', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
------------------------------------------------------------
+      -----------------------------------------------------------
 -- 4. PARTY_KEYWORD 테이블 (파티당 3개의 키워드 할당)
 -----------------------------------------------------------
 INSERT INTO PARTY_KEYWORD (party_id, keyword_id) VALUES

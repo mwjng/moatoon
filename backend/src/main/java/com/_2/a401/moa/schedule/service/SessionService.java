@@ -1,12 +1,17 @@
 package com._2.a401.moa.schedule.service;
 
+import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
+import com._2.a401.moa.party.domain.Party;
+import com._2.a401.moa.party.domain.PartyKeyword;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
+import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.dto.response.SessionTokenResponse;
+import com._2.a401.moa.schedule.dto.response.enterSessionResponse;
 import com._2.a401.moa.schedule.manager.VideoConferenceManager;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
@@ -15,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -34,6 +40,9 @@ public class SessionService {
     private final PartyMemberRepository partyMemberRepository;
     private final SessionRedisRepository sessionRedisRepository;
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
+    private final PartyRepository partyRepository;
+
+
 
     public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
         validateSessionJoin(member, scheduleId);
@@ -105,5 +114,22 @@ public class SessionService {
         if (!memberIds.contains(member.getId())) {
             throw new MoaException(INVALID_REQUEST);
         }
+    }
+
+
+    public enterSessionResponse getEnterSession(String pinNumber) {
+
+        Long partyId = partyRepository.findPartyIdByPinNumber(pinNumber)
+                .orElseThrow(() -> new MoaException(INVALID_REQUEST));
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+
+        long scheduleId = scheduleRepository.findTodayScheduleIdByPartyId(partyId, startOfDay, endOfDay)
+                .orElseThrow(() -> new MoaException(SCHEDULE_NOT_FOUND));
+        return new enterSessionResponse(partyId, scheduleId);
+
     }
 }

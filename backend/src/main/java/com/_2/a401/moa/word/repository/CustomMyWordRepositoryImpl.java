@@ -45,7 +45,7 @@ public class CustomMyWordRepositoryImpl implements CustomMyWordRepository{
                 .join(wordExample).on(wordExample.word.id.eq(word.id))
                 .where(builder)
                 .offset(page)
-                .limit(8)
+                .limit(4)
                 .fetch();
     }
 

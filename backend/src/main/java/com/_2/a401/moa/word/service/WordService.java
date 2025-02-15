@@ -42,7 +42,7 @@ public class WordService {
 
     public MyWordsResponse getMyWords(Long memberId, Integer page, String keyword) {
         Long totalCount = myWordRepository.countAll(memberId, keyword);
-        int totalPage = (int) (totalCount % 4) == 0 ? (int) (totalCount / 4) : (int) (totalCount / 4) + 1;
+        int totalPage = (int) (totalCount % 2) == 0 ? (int) (totalCount / 2) : (int) (totalCount / 2) + 1;
         int searchPage;
 
         if (page == null || page < 1 || totalPage == 0) {

@@ -3,6 +3,8 @@ package com._2.a401.moa.schedule.controller;
 import com._2.a401.moa.common.jwt.JwtUtil;
 import com._2.a401.moa.schedule.dto.request.ReadyRequest;
 import com._2.a401.moa.schedule.dto.response.CurrentSessionStageResponse;
+import com._2.a401.moa.schedule.dto.response.enterSessionResponse;
+import com._2.a401.moa.schedule.service.SessionService;
 import com._2.a401.moa.schedule.service.SessionStageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SessionStageController {
     private final JwtUtil jwtUtil;
     private final SessionStageService sessionStageService;
+    private final SessionService sessionService;
 
     @Operation(summary = "현재 시간을 기준으로 scheduleId의 대기방 생성, 멤버에는 memberId 참여")
     @GetMapping("/redis-dummy")
@@ -38,5 +41,10 @@ public class SessionStageController {
         String token = request.accessToken();
         Long memberId = jwtUtil.getMemberId(token);
         sessionStageService.updateReadyStatus(request.scheduleId(), memberId, true); // 확장성(ready 해제)을 위해 true 파라미터도 넣음
+    }
+
+    @GetMapping("session/pinNumber/{pinNumber}")
+    public ResponseEntity<enterSessionResponse> enterSession(@PathVariable String pinNumber) {
+        return ResponseEntity.ok(sessionService.getEnterSession(pinNumber));
     }
 }

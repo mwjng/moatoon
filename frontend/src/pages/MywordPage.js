@@ -116,9 +116,9 @@ const MyWordPage = () => {
                     <img src={charCado} alt="" className="absolute left-0 top-[-250px] h-[250px]" />
                     <img src={charChick} alt="" className="absolute right-0 bottom-0 h-[250px]" />
                 </div>
-                <div className="flex z-0 gap-8 items-center">
+                <div className="flex z-0 items-center">
                     <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
-                    <div className="relative z-10 p-4 grid grid-cols-2 gap-4">
+                    <div className="relative z-10 p-4 gap-4 flex ">
                         {words.map((word, index) => (
                             <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
                         ))}
