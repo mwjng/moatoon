@@ -5,9 +5,12 @@ import bbi from '../../assets/bbi_normal.png';
 import { authInstance } from '../../api/axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
-import AudioPlayer from '../../components/audio/AudioPlayer'
+import SubscriberVideo from '../../components/SubscriberVideo.js';
+import MyCamera from '../../components/MyCamera.js';
+import { useSession } from '../../hooks/SessionProvider.js';
+import AudioPlayer from '../../components/audio/AudioPlayer';
 
-const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
+const DrawingEndPage = ({ sessionStageData, onTimeout, publisher, subscribers, nickname }) => {
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
     const scheduledId = 1;
@@ -41,6 +44,14 @@ const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
         }
     };
 
+    //Openvidu 세션 훅 사용
+    // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession();
+    // }, []);
+
     return (
         <div className="min-h-screen bg-light-cream-yellow">
             <AudioPlayer audioType="SHARING" />
@@ -48,19 +59,18 @@ const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
                 <Navigation
                     stage="endDrawing"
                     stageDuration={sessionStageData.sessionDuration}
-                    sessionStartTime={sessionStageData.sessionStartTime}
-                    serverTime={sessionStageData.serverTime}
-                    onTimeOut={onTimeout} />
+                    sessionStartTime={sessionStageData?.sessionStartTime}
+                    serverTime={sessionStageData?.serverTime}
+                    onTimeOut={onTimeout}
+                />
             </div>
 
             <div className="flex p-5">
-                <div className="w-1/5 flex-shrink-0">
-                    <div className="rounded-2xs overflow-hidden mb-4">
-                        <img src={ChildImg} alt="참고 이미지" className="w-full object-cover mb-3" />
-                        <img src={ChildImg} alt="참고 이미지" className="w-full object-cover mb-3" />
-                        <img src={ChildImg} alt="참고 이미지" className="w-full object-cover mb-3" />
-                        <img src={ChildImg} alt="참고 이미지" className="w-full object-cover mb-3" />
-                    </div>
+                <div className="flex flex-col mt-4 gap-8 content-evenly">
+                    <MyCamera streamManager={publisher} nickname={nickname} />
+                    {subscribers.map((subscriber, index) => (
+                        <SubscriberVideo key={index} streamManager={subscriber} />
+                    ))}
                 </div>
 
                 <div className="max-w-2xl mx-auto flex flex-col items-center">
