@@ -7,7 +7,7 @@ import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 
-const DrawingPage = ({sessionStageData}) => {
+const DrawingPage = ({sessionStageData, sendReady}) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleId = 1;
@@ -82,6 +82,7 @@ const DrawingPage = ({sessionStageData}) => {
                         toggleView={toggleView} 
                         cutsInfo={cutsState.cuts} 
                         userId={userId} 
+                        sendReady = {sendReady}
                         isFirstDrawingVisit = {isFirstDrawingVisit}
                         setIsFirstDrawingVisit={setIsFirstDrawingVisit} />
                 ) : (

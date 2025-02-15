@@ -6,7 +6,7 @@ import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 
-const Drawing = forwardRef(({ toggleView, cutsInfo, userId, isFirstDrawingVisit, setIsFirstDrawingVisit}, ref) => {
+const Drawing = forwardRef(({ toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit}, ref) => {
     // 페이지 진입 시 Drawing 방문 상태 업데이트
     useEffect(() => {
         console.log()
@@ -83,6 +83,7 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId, isFirstDrawingVisit,
                 </div>
                 <div className="relative w-full h-full">
                     <Canvas
+                        sendReady = {sendReady}
                         stageRef={stageRef}
                         toggleView={toggleView}
                         partyId={partyId}
