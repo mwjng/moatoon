@@ -93,7 +93,6 @@ const Drawing = forwardRef(
                         />
                     </div>
                 </div>
-
                 {/* SVG 내보내기 버튼 추가
                 <div className="flex justify-center mt-5">
                     <button
