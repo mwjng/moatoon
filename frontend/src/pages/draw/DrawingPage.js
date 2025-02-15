@@ -8,7 +8,7 @@ import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = () => {
+const DrawingPage = ({ publisher, subscribers, nickname }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const scheduleId = 12;
@@ -69,14 +69,6 @@ const DrawingPage = () => {
 
         navigate('/session/draw-end', { state: { scheduleId } });
     };
-
-    //openvidu;
-    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
-
-    useEffect(() => {
-        joinSession();
-        return () => leaveSession();
-    }, []);
 
     return (
         <div className="h-screen bg-light-cream-yellow">

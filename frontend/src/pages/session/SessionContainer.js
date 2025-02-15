@@ -9,6 +9,7 @@ import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
 import RandomPage from '../RandomPage';
+import useOpenViduSession from '../../hooks/useOpenViduSession';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -25,6 +26,17 @@ const SessionContainer = () => {
         serverTime: new Date(),
         sessionDuration: 60,
     });
+
+    const scheduleId = 12;
+
+    // useOpenViduSession 훅 사용
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(scheduleId);
+
+    // 컴포넌트 마운트될 때 세션 참여
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    }, []);
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
@@ -107,14 +119,39 @@ const SessionContainer = () => {
                         bookTitle={sessionData.bookTitle}
                         sessionTime={sessionStageData.sessionTime}
                         serverTime={sessionStageData.serverTime}
+                        publisher={publisher}
+                        subscribers={subscribers}
+                        nickname={nickname}
                     />
                 );
             case 'WORD':
-                return <WordLearning sessionStageData={sessionStageData} />;
+                return (
+                    <WordLearning
+                        sessionStageData={sessionStageData}
+                        publisher={publisher}
+                        subscribers={subscribers}
+                        nickname={nickname}
+                    />
+                );
             case 'DRAWING':
-                return <DrawingPage sessionStageData={sessionStageData} />;
+                return (
+                    <DrawingPage
+                        sessionStageData={sessionStageData}
+                        publisher={publisher}
+                        subscribers={subscribers}
+                        nickname={nickname}
+                    />
+                );
             case 'DONE':
-                return <DrawingEndPage sessionStageData={sessionStageData} onTimeout={handleTimeout} />;
+                return (
+                    <DrawingEndPage
+                        sessionStageData={sessionStageData}
+                        onTimeout={handleTimeout}
+                        publisher={publisher}
+                        subscribers={subscribers}
+                        nickname={nickname}
+                    />
+                );
             case 'QUIZ':
                 return <QuizPage />;
             default:
@@ -142,11 +179,9 @@ const SessionContainer = () => {
     };
 
     return (
-        <SessionProvider scheduleId={sessionData.scheduleId}>
-            <div className="min-h-screen">
-                <CurrentStage />
-            </div>
-        </SessionProvider>
+        <div className="min-h-screen">
+            <CurrentStage />
+        </div>
     );
 };
 

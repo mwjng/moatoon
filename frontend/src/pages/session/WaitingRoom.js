@@ -12,7 +12,7 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime }) {
+function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime, publisher, subscribers, nickname }) {
     const [bookInfo, setBookInfo] = useState({
         partyId: 1,
         bookTitle: '용감한 기사',
@@ -24,19 +24,18 @@ function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime }) {
         // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
     };
 
-    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+    // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
 
-    useEffect(() => {
-        joinSession();
-        return () => leaveSession();
-    }, []);
+    // useEffect(() => {
+    //     joinSession();
+    //     // return () => leaveSession();
+    // }, []);
 
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
             <AudioPlayer audioType="WAITING" />
             <Navigation
                 stage={'waiting'}
-                leaveSession={leaveSession}
                 stageDuration={10}
                 sessionStartTime={sessionTime}
                 serverTime={serverTime}

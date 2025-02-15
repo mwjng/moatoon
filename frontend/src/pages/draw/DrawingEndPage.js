@@ -10,7 +10,7 @@ import MyCamera from '../../components/MyCamera.js';
 import { useSession } from '../../hooks/SessionProvider.js';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 
-const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
+const DrawingEndPage = ({ sessionStageData, onTimeout, publisher, subscribers, nickname }) => {
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
     const scheduledId = 12;
@@ -45,12 +45,12 @@ const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
     };
 
     //Openvidu 세션 훅 사용
-    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+    // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
 
-    useEffect(() => {
-        joinSession();
-        return () => leaveSession();
-    }, []);
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession();
+    // }, []);
 
     return (
         <div className="min-h-screen bg-light-cream-yellow">
@@ -66,7 +66,7 @@ const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
             </div>
 
             <div className="flex p-5">
-                <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
+                <div className="flex flex-col mt-4 gap-8 content-evenly">
                     <MyCamera streamManager={publisher} nickname={nickname} />
                     {subscribers.map((subscriber, index) => (
                         <SubscriberVideo key={index} streamManager={subscriber} />

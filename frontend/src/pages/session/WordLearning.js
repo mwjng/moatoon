@@ -12,7 +12,7 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = ({ sessionStageData }) => {
+const WordLearning = ({ sessionStageData, publisher, subscribers, nickname }) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
@@ -69,12 +69,12 @@ const WordLearning = ({ sessionStageData }) => {
     }, [checkedWords]);
 
     //Openvidu 세션 훅 사용
-    const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
+    //const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
 
-    useEffect(() => {
-        joinSession();
-        return () => leaveSession();
-    }, []);
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession();
+    // }, []);
 
     return (
         <div className="bg-seashell h-screen">
