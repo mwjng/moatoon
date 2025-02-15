@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookStoryGenerator from '../../components/book/BookStoryGenerator';
 import Navigation from '../../components/Navigation';
 import BookForm from '../../components/book/BookForm';
@@ -13,7 +13,15 @@ const BookGeneratorPage = () => {
     const [showBookDetail, setShowBookDetail] = useState(false);
     const [currentPartyId, setCurrentPartyId] = useState(null);
 
-    // 🔹 폼 제출 시 호출
+
+    useEffect(() => {
+        console.log("State changes:", {
+            showStoryGenerator,
+            currentPartyId,
+            showBookDetail
+        });
+    }, [showStoryGenerator, currentPartyId, showBookDetail]);
+
     const handleFormSubmit = formData => {
         setStoryConfig(formData);
         setShowStoryGenerator(true);
@@ -64,11 +72,20 @@ const BookGeneratorPage = () => {
             )}
 
             {showBookDetail && currentPartyId && (
-                <BookDetail
-                    partyIdOrPin={currentPartyId}
-                    onClose={handleBookDetailClose}
-                    //   setModalLoading={setModalLoading}
-                />
+                <div className="fixed inset-0 z-50">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+                    <div className="flex items-center justify-center min-h-screen p-4">
+                        <div className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl">
+                            <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                                <BookDetail
+                                    {...storyConfig}
+                                    partyIdOrPin={currentPartyId}
+                                    onClose={handleBookDetailClose}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
             <AlertModal text={modalText} modalState={modalState} 
             closeHandler={closeModal} />
