@@ -9,6 +9,8 @@ import SubscriberVideo from '../../components/SubscriberVideo';
 import { getSessionToken } from '../../api/room';
 import base64 from 'base-64';
 import AudioPlayer from '../../components/audio/AudioPlayer';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCutsInfo } from '../../store/cutsSlice';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
@@ -22,12 +24,19 @@ function WaitingRoom({
     subscribers,
     nickname,
 }) {
+    const dispatch = useDispatch();
     const [bookInfo, setBookInfo] = useState({
         partyId: 1,
         bookTitle: '용감한 기사',
         bookCover: 'cover.jpg',
         cuts: [],
     });
+
+    useEffect(() => {
+        if (scheduleId) {
+            dispatch(fetchCutsInfo(scheduleId)); // API 호출
+        }
+    }, [dispatch, scheduleId]);
 
     const handleTimeOut = () => {
         // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
