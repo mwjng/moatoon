@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import WaitingRoom from './WaitingRoom';
 import WordLearning from './WordLearning';
+import RandomPage from '../RandomPage';
 import DrawingPage from '../draw/DrawingPage';
 import DrawingEndPage from '../draw/DrawingEndPage';
 import QuizPage from './QuizPage';
@@ -8,7 +9,7 @@ import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
-import RandomPage from '../RandomPage';
+
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 
 const SessionContainer = () => {
@@ -103,25 +104,25 @@ const SessionContainer = () => {
     }, [sessionTransferResponse]);
 
     const renderStage = () => {
-        console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
-
+        console.log('=========[SessionContainer의 renderStage => WaitingRoom]===============');
+        console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
             console.log('현재 스테이지와 동일하여 렌더링 스킵');
             return null;
         }
-
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
                     <WaitingRoom
                         scheduleId={sessionData.scheduleId}
                         bookTitle={sessionData.bookTitle}
-                        sessionTime={sessionStageData.sessionTime}
+                        sessionTime={sessionStageData.sessionStartTime}
                         serverTime={sessionStageData.serverTime}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
+                        sessionDuration={sessionStageData.sessionDuration}
                     />
                 );
             case 'WORD':
@@ -133,6 +134,8 @@ const SessionContainer = () => {
                         nickname={nickname}
                     />
                 );
+            case 'CUT_ASSIGN':
+                return <RandomPage sessionStageData={sessionStageData} />;
             case 'DRAWING':
                 return (
                     <DrawingPage

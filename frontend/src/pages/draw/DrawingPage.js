@@ -8,10 +8,10 @@ import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = ({ publisher, subscribers, nickname }) => {
+const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const scheduleId = 12;
+    const scheduleId = 1;
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
@@ -67,13 +67,19 @@ const DrawingPage = ({ publisher, subscribers, nickname }) => {
         }
         setIsLoading(false);
 
-        navigate('/session/draw-end', { state: { scheduleId } });
+        //navigate('/session/draw-end', { state: { scheduleId } });
     };
 
     return (
         <div className="h-screen bg-light-cream-yellow">
             <div className="w-full mb-5">
-                <Navigation stage="drawing" onTimeOut={handleTimeOut} />
+                <Navigation
+                    stage="drawing"
+                    stageDuration={sessionStageData.sessionDuration}
+                    sessionStartTime={sessionStageData.sessionStartTime}
+                    serverTime={sessionStageData.serverTime}
+                    onTimeOut={handleTimeOut}
+                />
             </div>
             {cutsState.loading && <p>Loading...</p>}
             {cutsState.error && <p>Error: {cutsState.error}</p>}

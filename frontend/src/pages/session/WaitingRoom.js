@@ -12,7 +12,16 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime, publisher, subscribers, nickname }) {
+function WaitingRoom({
+    scheduleId,
+    bookTitle,
+    sessionTime,
+    serverTime,
+    sessionDuration,
+    publisher,
+    subscribers,
+    nickname,
+}) {
     const [bookInfo, setBookInfo] = useState({
         partyId: 1,
         bookTitle: '용감한 기사',
@@ -36,7 +45,7 @@ function WaitingRoom({ scheduleId, bookTitle, sessionTime, serverTime, publisher
             <AudioPlayer audioType="WAITING" />
             <Navigation
                 stage={'waiting'}
-                stageDuration={10}
+                stageDuration={sessionDuration}
                 sessionStartTime={sessionTime}
                 serverTime={serverTime}
                 bookTitle={bookTitle}

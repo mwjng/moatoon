@@ -5,14 +5,16 @@ import randomStop from '../assets/random-stop.png';
 import { useNavigate } from 'react-router';
 import RandomResult from '../components/RandomResult';
 
-export default function RandomPage() {
+export default function RandomPage({sessionStageData}) {
     const [ready, setReady] = useState(false);
     const cut = 1; // todo: 내 담당 컷 번호 작성하기
 
     const navigate = useNavigate();
+    
     const handleTimeOut = () => {
-        handleStep();
+
     };
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setReady(true);
@@ -21,12 +23,16 @@ export default function RandomPage() {
         return () => clearTimeout(timer);
     }, []);
 
-    const handleStep = () => {
-        navigate('/session/draw');
-    };
+
     return (
         <div className="bg-[#FEFBEB] w-full h-screen">
-            <Navigation stage="picking" onTimeOut={handleTimeOut} stageTime="0.11" />
+            <Navigation 
+                stage="picking" 
+                onTimeOut={handleTimeOut} 
+                stageDuration={sessionStageData.sessionDuration}
+                sessionStartTime={sessionStageData.sessionStartTime}
+                serverTime={sessionStageData.serverTime}
+                 />
             {ready ? (
                 <img src={randomStop} style={{ margin: 'auto' }} />
             ) : (
