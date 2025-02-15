@@ -40,16 +40,16 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendR
         };
     }, [dispatch, scheduleId]);
 
-    // const handleTimeOut = async () => {
-    //     setIsLoading(true);
-    //     if (drawingRef.current) {
-    //         console.log('exportToSVGAndUpload 함수 호출??');
-    //         await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
-    //     }
-    //     setIsLoading(false);
+    const handleTimeOut = async () => {
+        setIsLoading(true);
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 함수 호출??');
+            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
+        }
+        setIsLoading(false);
 
-    //     //navigate('/session/draw-end', { state: { scheduleId } });
-    // };
+        //navigate('/session/draw-end', { state: { scheduleId } });
+    };
 
     const handlePageExit = async () => {
         setIsLoading(true);
@@ -61,13 +61,13 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendR
         setIsLoading(false);
     };
 
-    // // 추가된 버튼을 통한 exportToSVGAndUpload 확인
-    // const handleExportSVG = () => {
-    //     if (drawingRef.current) {
-    //         console.log('exportToSVGAndUpload 버튼 클릭됨');
-    //         drawingRef.current.exportToSVGAndUpload();
-    //     }
-    // };
+    // 추가된 버튼을 통한 exportToSVGAndUpload 확인
+    const handleExportSVG = () => {
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 버튼 클릭됨');
+            drawingRef.current.exportToSVGAndUpload();
+        }
+    };
 
     return (
         <div className="h-screen bg-light-cream-yellow">
@@ -110,8 +110,7 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendR
                     />
                 ))}
             {isLoading && <Loading />}
-
-            {/* Export SVG 버튼 */}
+            {/* Export SVG 버튼
             <div className="flex justify-center mt-5">
                 <button
                     className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600"
@@ -119,7 +118,7 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendR
                 >
                     SVG 내보내기 확인
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };
