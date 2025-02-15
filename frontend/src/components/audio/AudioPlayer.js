@@ -10,11 +10,9 @@ const audioState = {
 };
 
 const AudioPlayer = ({ audioType, isOn=true }) => {
-  console.log(`[AudioPlayer] audioType:${audioType} isOn: ${isOn}`)
   const audioRef = useRef(new Audio());
 
   useEffect(() => {
-    console.log(`[${new Date().toLocaleTimeString()}] 컴포넌트 마운트 - audioType:`, audioType);
 
     const stopCurrentAudio = async () => {
       if (audioState.playPromise) {

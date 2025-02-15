@@ -28,6 +28,7 @@ import SessionContainer from './pages/session/SessionContainer';
 import EBookPage from './pages/EBookPage';
 import LibraryPage from './pages/library/LibraryPage';
 import RandomPage from './pages/RandomPage';
+import QuizEndPage from './pages/session/QuizEndPage';
 
 function App() {
     const location = useLocation();

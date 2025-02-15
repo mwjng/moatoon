@@ -22,7 +22,7 @@ import duck from '../assets/duckduck.png';
 function Navigation({
     stage,
     leaveSession,
-    stageDuration = 1,
+    stageDuration = 60,
     sessionStartTime,
     serverTime,
     bookTitle,
@@ -134,7 +134,6 @@ function Navigation({
 
     // 남은 시간 형식 변환
     const getRemainingTimeFormatted = () => {
-        console.log(`remainTime: ${remainTime}`);
         if (remainTime <= 0) return '00:00'; // 시간이 지났다면 "00:00" 반환
 
         const minutes = Math.floor(remainTime / MINUTE);

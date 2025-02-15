@@ -6,8 +6,9 @@ import SockJS from 'sockjs-client';
 import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
+import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 
-const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
+const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
@@ -17,6 +18,12 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
 
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
+
+    // 웹소켓 훅 사용
+    const handleComplete = async () => {
+        await handleExportCanvasData(); // 캔버스 데이터 임시 저장
+        sendReady(); // 완료 신호 전송
+    };
 
     //redis에 cut 초기화 데이터 추가
     useEffect(() => {
@@ -289,12 +296,12 @@ const Canvas = ({ stageRef, toggleView, partyId, cutId, cutIds, userStory }) => 
                     >
                         전체 보기
                     </WordButton>
-                    {/* </Link> */}
                     <WordButton
                         color="bg-light-orange hover:bg-yellow-400"
                         textColor="text-white"
                         size="md"
                         textSize="large"
+                        onClick={handleComplete}
                     >
                         완료
                     </WordButton>
