@@ -19,6 +19,7 @@ const QuizPage = () => {
     const [correctCount, setCorrectCount] = useState(0);
     const [isEnd, setIsEnd] = useState(false);
     const [partyId, setPartyId] = useState(1); //임의 값
+    const [sessionStart] = useState(Date.now());  // 시작 시간을 상태로 관리
     const navigate = useNavigate();
 
     const handleCorrect = (quizIndex, wordIndex) => {
@@ -86,9 +87,10 @@ const QuizPage = () => {
             <Navigation 
                 stage={'quiz'} 
                 stageDuration={60*1}
-                sessionStartTime={Date.now()}
-                serverTime={Date.now()}
-                onTimeOut={handleTimeOut} />
+                sessionStartTime={sessionStart}
+                serverTime={sessionStart}
+                onTimeOut={handleTimeOut} 
+            />
             <div className="flex grow px-20 gap-20">
                 <DndProvider backend={HTML5Backend}>
                     <div

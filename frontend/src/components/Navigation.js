@@ -22,7 +22,7 @@ import duck from '../assets/duckduck.png';
 function Navigation({
     stage,
     leaveSession,
-    stageDuration = 1,
+    stageDuration = 60,
     sessionStartTime,
     serverTime,
     bookTitle,
