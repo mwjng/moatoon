@@ -126,6 +126,7 @@ function App() {
                         <Route path="pw" element={<FindPWPage />} />
                     </Route>
                     <Route path="/session" element={<SessionContainer />} />
+                    <Route path="/session" />
                     <Route path="/session">
                         <Route path="draw" element={<DrawingPage />} />
                         <Route path="draw-end" element={<DrawingEndPage />} />
