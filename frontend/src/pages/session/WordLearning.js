@@ -8,10 +8,11 @@ import { useNavigate } from 'react-router';
 import SubscriberVideo from '../../components/SubscriberVideo';
 import { useSession } from '../../hooks/SessionProvider';
 import MyCamera from '../../components/MyCamera';
+import AudioPlayer from '../../components/audio/AudioPlayer';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = ({ sessionTransferResponse }) => {
+const WordLearning = ({ sessionStageData }) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
@@ -77,11 +78,12 @@ const WordLearning = ({ sessionTransferResponse }) => {
 
     return (
         <div className="bg-seashell h-screen">
+            <AudioPlayer audioType="WORD" />
             <Navigation
                 stage={'learning'}
-                stageDuration={sessionTransferResponse.sessionDuration}
-                sessionStartTime={sessionTransferResponse.sessionStartTime}
-                serverTime={sessionTransferResponse.serverTime}
+                stageDuration={sessionStageData.sessionDuration}
+                sessionStartTime={sessionStageData.sessionStartTime}
+                serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
             />
             <div className="flex m-8 justify-between h-[600px]">

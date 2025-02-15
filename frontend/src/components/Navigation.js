@@ -39,9 +39,14 @@ function Navigation({
 
     const [logoutModal, setLogoutModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
+    const cutsState = useSelector(state => state.cuts);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        setPreviewUrl(userInfo.imageUrl); // userInfo가 변경될 때 previewUrl 업데이트
+    }, [userInfo.imageUrl]);
 
     // 서버와 클라이언트의 시간 차이 계산
     useEffect(() => {
@@ -111,9 +116,11 @@ function Navigation({
     const [selectedWord, setSelectedWord] = useState(null);
 
     useEffect(() => {
-        getLearningWords(1).then(response => {
-            setWords(response.data.words);
-        });
+        if (cutsState.cuts.length > 0) {
+            getLearningWords(cutsState.cuts[0].partyId).then(response => {
+                setWords(response.data.words);
+            });
+        }
     }, []);
 
     // 남은 시간 형식 변환
@@ -148,7 +155,7 @@ function Navigation({
                 if (remaining <= 0) {
                     remaining = 0;
                     if (timeoutNotEvented) {
-                        onTimeOut();
+                        onTimeOut && onTimeOut();
                         timeoutNotEvented = false;
                     }
                 }
@@ -312,7 +319,7 @@ function Navigation({
                                 <img src={`${booksIcon}`} alt="library" width="50"></img>
                                 <span>도서관</span>
                             </button>
-                            {userInfo.role === 'manager' ? (
+                            {userInfo.role === 'MANAGER' ? (
                                 <>
                                     <button
                                         className="flex flex-col text-center gap-3 items-center"

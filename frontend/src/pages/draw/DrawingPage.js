@@ -27,15 +27,42 @@ const DrawingPage = () => {
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isFirstDrawingVisit, setIsFirstDrawingVisit] = useState(true);
+    const [isFirstOverviewVisit, setIsFirstOverviewVisit] = useState(true);
     const drawingRef = useRef(null);
 
     const toggleView = () => {
         setIsDrawing(prev => !prev);
     };
 
+    useEffect(() => {
+        if (scheduleId) {
+            dispatch(fetchCutsInfo(scheduleId)); // API 호출
+        }
+
+        // Cleanup function to handle component unmounting
+        return () => {
+            console.log('Drawing 페이지 종료됨');
+            const handlePageExit = async () => {
+                setIsLoading(true);
+                console.log('handlePageExit');
+                console.log(drawingRef.current);
+                if (drawingRef.current) {
+                    console.log('exportToSVGAndUpload 함수 호출??');
+                    await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
+                }
+                setIsLoading(false);
+            };
+
+            // Call the async function
+            handlePageExit();
+        };
+    }, [dispatch, scheduleId]);
+
     const handleTimeOut = async () => {
         setIsLoading(true);
         if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 함수 호출??');
             await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
         }
         setIsLoading(false);
@@ -69,6 +96,8 @@ const DrawingPage = () => {
                         userId={userId}
                         publisher={publisher}
                         nickname={nickname}
+                        isFirstDrawingVisit={isFirstDrawingVisit}
+                        setIsFirstDrawingVisit={setIsFirstDrawingVisit}
                     />
                 ) : (
                     <Overview
@@ -77,6 +106,8 @@ const DrawingPage = () => {
                         subscribers={subscribers}
                         publisher={publisher}
                         nickname={nickname}
+                        isFirstOverviewVisit={isFirstOverviewVisit}
+                        setIsFirstOverviewVisit={setIsFirstOverviewVisit}
                     />
                 ))}
             {isLoading && <Loading />}

@@ -8,8 +8,9 @@ import WordButton from '../../components/WordButton.js';
 import SubscriberVideo from '../../components/SubscriberVideo.js';
 import MyCamera from '../../components/MyCamera.js';
 import { useSession } from '../../hooks/SessionProvider.js';
+import AudioPlayer from '../../components/audio/AudioPlayer';
 
-const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
+const DrawingEndPage = ({ sessionStageData, onTimeout }) => {
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
     const scheduledId = 12;
@@ -53,12 +54,13 @@ const DrawingEndPage = ({ sessionTransferResponse, onTimeout }) => {
 
     return (
         <div className="min-h-screen bg-light-cream-yellow">
+            <AudioPlayer audioType="SHARING" />
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"
                     stageDuration={3}
-                    sessionStartTime={sessionTransferResponse?.sessionStartTime}
-                    serverTime={sessionTransferResponse?.serverTime}
+                    sessionStartTime={sessionStageData?.sessionStartTime}
+                    serverTime={sessionStageData?.serverTime}
                     onTimeOut={onTimeout}
                 />
             </div>

@@ -6,21 +6,30 @@ import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
 import MyCamera from '../MyCamera.js';
 
-const Drawing = forwardRef(({ toggleView, cutsInfo, userId, publisher, nickname }, ref) => {
-    const stageRef = useRef(null);
-    //const [userId, setUserId] = useState(3);
-    console.log(userId);
-    const partyId = cutsInfo[0].partyId;
-    const cutIds = cutsInfo.map(item => item.cutId);
-    const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
-    const userStory = cutsInfo.filter(cut => cut.memberId === userId);
+import AudioPlayer from '../../components/audio/AudioPlayer';
 
-    // SVG 변환 및 다운로드 함수
-    const exportToSVGAndUpload = async () => {
-        if (!stageRef.current) return;
+const Drawing = forwardRef(
+    ({ toggleView, cutsInfo, userId, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname }, ref) => {
+        // 페이지 진입 시 Drawing 방문 상태 업데이트
+        useEffect(() => {
+            console.log();
+            setIsFirstDrawingVisit(false);
+        }, []);
 
-        const stage = stageRef.current;
-        const svgString = `
+        const stageRef = useRef(null);
+        //const [userId, setUserId] = useState(3);
+        console.log(userId);
+        const partyId = cutsInfo[0].partyId;
+        const cutIds = cutsInfo.map(item => item.cutId);
+        const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
+        const userStory = cutsInfo.filter(cut => cut.memberId === userId);
+
+        // SVG 변환 및 다운로드 함수
+        const exportToSVGAndUpload = async () => {
+            if (!stageRef.current) return;
+
+            const stage = stageRef.current;
+            const svgString = `
             <svg xmlns="http://www.w3.org/2000/svg" width="${stage.width()}" height="${stage.height()}">
                 ${stage
                     .find('Line')
@@ -34,60 +43,62 @@ const Drawing = forwardRef(({ toggleView, cutsInfo, userId, publisher, nickname 
             </svg>
         `;
 
-        // SVG 데이터를 Blob으로 변환
-        const blob = new Blob([svgString], { type: 'image/svg+xml' });
-        const file = new File([blob], 'drawing.svg', { type: 'image/svg+xml' });
+            // SVG 데이터를 Blob으로 변환
+            const blob = new Blob([svgString], { type: 'image/svg+xml' });
+            const file = new File([blob], 'drawing.svg', { type: 'image/svg+xml' });
 
-        // FormData 생성 후 파일 추가
-        const formData = new FormData();
-        formData.append('file', file);
+            // FormData 생성 후 파일 추가
+            const formData = new FormData();
+            formData.append('file', file);
 
-        try {
-            const response = await authInstance.patch(`/cuts/save-final/${cutId}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            console.log('서버 응답:', response.data);
-            // alert('SVG 파일이 성공적으로 업로드되었습니다!');
-        } catch (error) {
-            console.error('업로드 실패:', error);
-            // alert('업로드에 실패했습니다.');
-        }
-    };
+            try {
+                const response = await authInstance.patch(`/cuts/save-final/${cutId}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                console.log('서버 응답:', response.data);
+                // alert('SVG 파일이 성공적으로 업로드되었습니다!');
+            } catch (error) {
+                console.error('업로드 실패:', error);
+                // alert('업로드에 실패했습니다.');
+            }
+        };
 
-    // handleTimeOut 함수를 외부에서 호출할 수 있도록 설정
-    useImperativeHandle(ref, () => ({
-        exportToSVGAndUpload,
-    }));
+        // handleTimeOut 함수를 외부에서 호출할 수 있도록 설정
+        useImperativeHandle(ref, () => ({
+            exportToSVGAndUpload,
+        }));
 
-    return (
-        <div className="h-screen bg-light-cream-yellow">
-            <div className="flex gap-4 p-5">
-                <div className="w-72 mr-5">
-                    <div className="rounded-lg overflow-hidden mb-4">
-                        {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
-                        <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" />
-                        <WordButton color="bg-dark-yellow w-full mt-5" size="md">
-                            지난 이야기 전체 보기
-                        </WordButton>
+        return (
+            <div className="h-screen bg-light-cream-yellow">
+                <AudioPlayer audioType="MYCUT" isOn={isFirstDrawingVisit} />
+                <div className="flex gap-4 p-5">
+                    <div className="w-72 mr-5">
+                        <div className="rounded-lg overflow-hidden mb-4">
+                            {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
+                            <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" />
+                            <WordButton color="bg-dark-yellow w-full mt-5" size="md">
+                                지난 이야기 전체 보기
+                            </WordButton>
 
-                        <div className="relative w-full h-100 p-6 flex flex-col items-center mt-5">
-                            <StoryCard story={cutsInfo} />
+                            <div className="relative w-full h-100 p-6 flex flex-col items-center mt-5">
+                                <StoryCard story={cutsInfo} />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="relative w-full h-full">
-                    <Canvas
-                        stageRef={stageRef}
-                        toggleView={toggleView}
-                        partyId={partyId}
-                        cutId={cutId}
-                        cutIds={cutIds}
-                        userStory={userStory}
-                    />
+                    <div className="relative w-full h-full">
+                        <Canvas
+                            stageRef={stageRef}
+                            toggleView={toggleView}
+                            partyId={partyId}
+                            cutId={cutId}
+                            cutIds={cutIds}
+                            userStory={userStory}
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
-    );
-});
+        );
+    },
+);
 
 export default Drawing;

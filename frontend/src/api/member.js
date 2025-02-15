@@ -85,16 +85,18 @@ export const uploadImage = async file => {
     formData.append('file', file);
 
     try {
-        const response = await fetch('/files/upload', {
-            method: 'POST',
-            body: formData,
+        const response = await publicInstance.post('/files/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
         });
 
         if (response.status != 200) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const img = await response.text();
+        console.log(response);
+        const img = await response.data;
         return img;
     } catch (error) {
         console.error('이미지 업로드 실패', error);

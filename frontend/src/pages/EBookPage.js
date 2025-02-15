@@ -3,6 +3,7 @@ import { authInstance } from '../api/axios';
 import PaginationButton from '../components/PaginationButton';
 import backgroundImage from '../assets/ebook1.png';
 import CutCard from '../components/CutSvgCard';
+import { useParams } from 'react-router';
 
 const formatDate = dateString => {
     const date = new Date(dateString);
@@ -10,10 +11,10 @@ const formatDate = dateString => {
 };
 
 const EBookPage = () => {
+    const { partyId } = useParams();
     const [currentPage, setCurrentPage] = useState(0);
     const [comicData, setComicData] = useState({ bookTitle: '', cuts: [] });
     const cutsPerPage = 4;
-    const partyId = 6; //임시
 
     useEffect(() => {
         authInstance

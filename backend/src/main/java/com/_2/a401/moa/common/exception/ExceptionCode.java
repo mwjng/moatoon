@@ -46,6 +46,8 @@ public enum ExceptionCode {
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),
 
+    INVALID_AUDIO_TYPE(6001, "올바르지 않은 오디오를 요청하였습니다."),
+
     SERVER_ERROR(9000, "서버 에러가 발생하였습니다.");
 
     private final int code;

@@ -8,6 +8,7 @@ import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
+import RandomPage from '../RandomPage';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -91,6 +92,13 @@ const SessionContainer = () => {
 
     const renderStage = () => {
         console.log(`현재 스테이지: ${sessionStageData.currentStage}`);
+
+        // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
+        if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
+            console.log('현재 스테이지와 동일하여 렌더링 스킵');
+            return null;
+        }
+
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
@@ -102,11 +110,11 @@ const SessionContainer = () => {
                     />
                 );
             case 'WORD':
-                return <WordLearning sessionTransferResponse={sessionTransferResponse} />;
+                return <WordLearning sessionStageData={sessionStageData} />;
             case 'DRAWING':
-                return <DrawingPage sessionTransferResponse={sessionTransferResponse} />;
+                return <DrawingPage sessionStageData={sessionStageData} />;
             case 'DONE':
-                return <DrawingEndPage sessionTransferResponse={sessionTransferResponse} onTimeout={handleTimeout} />;
+                return <DrawingEndPage sessionStageData={sessionStageData} onTimeout={handleTimeout} />;
             case 'QUIZ':
                 return <QuizPage />;
             default:
@@ -130,7 +138,6 @@ const SessionContainer = () => {
                 </div>
             );
         }
-
         return renderStage();
     };
 
