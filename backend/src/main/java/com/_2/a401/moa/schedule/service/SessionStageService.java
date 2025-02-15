@@ -31,16 +31,16 @@ public class SessionStageService {
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
-    public void dummyRedis(){
+    public void dummyRedis(Long scheduleId, Long memberId) {
         // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WORD 상태임(세션 시작 30분전부터)
-        final Session session = new Session(1L, "openviduSessionId", WAITING, LocalDateTime.now());
+        final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
         sessionRedisRepository.save(session);
 
-        SessionMember sessionMember = new SessionMember(1L);
-        sessionMember.addMember(13L);
+        SessionMember sessionMember = new SessionMember(scheduleId);
+        sessionMember.addMember(memberId);
         sessionMemberRedisRepository.save(sessionMember);
 
-        setWaitingRoomTimer(1L);
+        setWaitingRoomTimer(scheduleId);
     }
 
     // 현재 세션 상태 얻어오기

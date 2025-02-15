@@ -10,7 +10,7 @@ import Loading from '../../components/Loading';
 const DrawingPage = ({sessionStageData}) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const scheduleId = 12;
+    const scheduleId = 1;
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);

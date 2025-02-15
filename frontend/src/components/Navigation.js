@@ -23,8 +23,8 @@ function Navigation({
     stage,
     leaveSession,
     stageDuration = 1,
-    sessionStartTime,
-    serverTime,
+    sessionStartTime = Date.now(),
+    serverTime = Date.now(),
     bookTitle,
     onTimeOut,
 }) {

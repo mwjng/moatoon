@@ -197,7 +197,7 @@ INSERT INTO PARTY_MEMBER (member_id, party_id, created_at, modified_at) VALUES
 -----------------------------------------------------------
 -- [BEFORE] 파티 1-3: 에피소드 수 10개
 INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) VALUES
-  (1, '2025-02-14 20:00:00', 'THURSDAY', 1, 'BEFORE'),
+  (1, '2025-02-15 20:00:00', 'THURSDAY', 1, 'BEFORE'),
   (1, '2025-02-20 18:00:00', 'THURSDAY', 2, 'BEFORE'),
   (2, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
   (2, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),
@@ -224,10 +224,10 @@ INSERT INTO SCHEDULE (party_id, session_time, day_week, episode_number, status) 
 -----------------------------------------------------------
 -- (BEFORE) 파티 1-3 : 담당자=NULL / image_url = NULL
 INSERT INTO CUT (member_id, image_url, content, cut_order, word_id, party_id, random_order, created_at, modified_at) VALUES
-  (NULL, NULL,  '파티1/ep1 : 옛날 어느 조용한 마을에, 하늘과 숲, 동물들을 담은 멋진 **그림**을 그리는 소녀가 살고 있었어요.',   1, 1, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (NULL, NULL,  '파티1/ep1 : 하지만 소녀는 너무 몰입한 나머지, 어머니가 “**그만**” 하라고 부르자도 손을 멈추지 못했답니다.',   2, 2, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (NULL, NULL,  '파티1/ep1 : 한참을 **글씨**에 빠져 있던 소녀는 잠시 쉬며, 오래된 동화책 속에 적힌 아름다운 **글씨**에 눈길을 돌렸어요.',   3, 3, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (NULL, NULL,  '파티1/ep1 : 그 책의 한 페이지에서 반짝이는 한 **글자**가 마치 살아 있는 듯 소녀에게 비밀을 속삭이는 것 같았어요.  ',   4, 4, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (3, '그림완성.jpg',  '파티1/ep1 : 옛날 어느 조용한 마을에, 하늘과 숲, 동물들을 담은 멋진 **그림**을 그리는 소녀가 살고 있었어요.',   1, 1, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (4, '그림완성.jpg',  '파티1/ep1 : 하지만 소녀는 너무 몰입한 나머지, 어머니가 “**그만**” 하라고 부르자도 손을 멈추지 못했답니다.',   2, 2, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (5, '그림완성.jpg',  '파티1/ep1 : 한참을 **글씨**에 빠져 있던 소녀는 잠시 쉬며, 오래된 동화책 속에 적힌 아름다운 **글씨**에 눈길을 돌렸어요.',   3, 3, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (6, '그림완성.jpg',  '파티1/ep1 : 그 책의 한 페이지에서 반짝이는 한 **글자**가 마치 살아 있는 듯 소녀에게 비밀을 속삭이는 것 같았어요.  ',   4, 4, 1, 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (NULL, NULL,  '파티1/ep2 : 그날은 특별히 **금요일**이어서, 마을에서는 축제 준비로 분주했고 소녀의 마음에도 모험의 설렘이 넘쳤어요.',   5, 5, 1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (NULL, NULL,  '파티1/ep2 : 소녀는 모험의 시작을 알리는 약속 장소에서 오랫동안 **기다리다** 보니, 두근거리는 마음을 감출 수 없었어요.',   6, 6, 1, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (NULL, NULL,  '파티1/ep2 : 그러던 중, 숲 가장자리에서 우아하게 걸어오는 한 **기린**이 나타나 소녀의 눈을 반짝이게 했답니다.',   7, 7, 1, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
