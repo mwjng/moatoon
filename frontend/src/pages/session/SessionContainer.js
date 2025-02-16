@@ -185,6 +185,7 @@ const SessionContainer = () => {
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
             return null;
         }
+
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
@@ -227,7 +228,7 @@ const SessionContainer = () => {
             case 'DONE':
                 return (
                     <DrawingEndPage
-                        scheduledId={sessionData.scheduleId}
+                        scheduleId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -253,7 +254,7 @@ const SessionContainer = () => {
     }, [isConnected]);
 
     const CurrentStage = () => {
-        if (isLoading) {
+        if (isLoading || !sessionData) {
             return (
                 <div className="min-h-screen flex items-center justify-center">
                     <p>로딩 중...</p>

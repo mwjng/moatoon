@@ -1,23 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import { Client } from '@stomp/stompjs';
-import { Link } from 'react-router';
 import SockJS from 'sockjs-client';
 import ToolBar from './ToolBar';
 import WordButton from '../WordButton';
 import { authInstance } from '../../api/axios';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
+import { useDispatch, useSelector } from 'react-redux';
+import { setLines, addLine, undoLine, redoLine, clearCanvas } from '../../store/canvasSlice';
 
 const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
-    const [lines, setLines] = useState([]);
-    const [undoneLines, setUndoneLines] = useState([]);
     const isDrawing = useRef(false);
 
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
+
+    const dispatch = useDispatch();
+    const { lines, undoneLines } = useSelector(state => state.canvas);
 
     // 웹소켓 훅 사용
     const handleComplete = async () => {
@@ -115,25 +117,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         return () => clearInterval(intervalId);
     }, [lines, connected]);
 
-    //임시저장한 데이터 불러오기
-    useEffect(() => {
-        const fetchCanvasData = async () => {
-            try {
-                const response = await authInstance.get(`/cuts/${cutId}`);
-                if (response.status !== 200) throw new Error('캔버스 데이터 조회 실패');
-
-                const data = response.data;
-                if (data.canvasData) {
-                    setLines(JSON.parse(data.canvasData)); // 저장된 데이터를 캔버스에 반영
-                }
-            } catch (error) {
-                console.error('캔버스 데이터를 불러오는 중 오류 발생:', error);
-            }
-        };
-
-        fetchCanvasData();
-    }, [cutId]);
-
     const handleMouseDown = e => {
         isDrawing.current = true;
         const pos = e.target.getStage().getPointerPosition();
@@ -144,7 +127,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
             points: [pos.x, pos.y],
         };
 
-        setLines(prevLines => [...prevLines, newLine]);
+        dispatch(addLine(newLine));
     };
 
     const handleMouseMove = e => {
@@ -153,27 +136,25 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         const stage = e.target.getStage();
         const point = stage.getPointerPosition();
 
-        setLines(prevLines => {
-            const newLines = [...prevLines];
-            const lastLine = { ...newLines[newLines.length - 1] };
-            lastLine.points = [...lastLine.points, point.x, point.y];
-            newLines[newLines.length - 1] = lastLine;
+        const updatedLines = [...lines];
+        const lastLine = { ...updatedLines[updatedLines.length - 1] };
+        lastLine.points = [...lastLine.points, point.x, point.y];
+        updatedLines[updatedLines.length - 1] = lastLine;
 
-            if (connected && stompClient.current) {
-                const messageData = {
-                    partyId: partyId,
-                    cutId: cutId,
-                    type: 'draw',
-                    line: lastLine,
-                };
-                stompClient.current.publish({
-                    destination: '/app/draw',
-                    body: JSON.stringify(messageData),
-                });
-            }
+        dispatch(setLines(updatedLines));
 
-            return newLines;
-        });
+        if (connected && stompClient.current) {
+            const messageData = {
+                partyId,
+                cutId,
+                type: 'draw',
+                line: lastLine,
+            };
+            stompClient.current.publish({
+                destination: '/app/draw',
+                body: JSON.stringify(messageData),
+            });
+        }
     };
 
     const handleMouseUp = () => {
@@ -182,8 +163,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     const handleUndo = () => {
         if (lines.length === 0) return;
-        setUndoneLines([...undoneLines, lines[lines.length - 1]]);
-        setLines(lines.slice(0, -1));
+        dispatch(undoLine());
 
         //서버로 UNDO 신호 전송
         if (connected && stompClient.current) {
@@ -200,8 +180,8 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     const handleRedo = () => {
         if (undoneLines.length === 0) return;
-        setLines([...lines, undoneLines[undoneLines.length - 1]]);
-        setUndoneLines(undoneLines.slice(0, -1));
+        dispatch(redoLine());
+
         console.log(undoneLines[undoneLines.length - 1]);
 
         //서버로 REDO 신호 전송
@@ -219,8 +199,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     };
 
     const handleClear = () => {
-        setLines([]);
-        setUndoneLines([]);
+        dispatch(clearCanvas());
     };
 
     const exportCanvasState = () => {

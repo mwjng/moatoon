@@ -7,6 +7,8 @@ import Navigation from '../../components/Navigation';
 import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
+import { authInstance } from '../../api/axios';
+import { setLines } from '../../store/canvasSlice';
 
 const DrawingPage = ({
     scheduleId,
@@ -23,6 +25,7 @@ const DrawingPage = ({
     const cutsState = useSelector(state => state.cuts);
 
     const userId = useSelector(state => state.user.userInfo.id);
+    const cutId = cutsState.cuts.find(item => item.memberId === userId)?.cutId;
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -39,41 +42,34 @@ const DrawingPage = ({
             dispatch(fetchCutsInfo(scheduleId)); // API 호출
         }
 
-        // Cleanup function to handle component unmounting
+        // 컴포넌트가 언마운트 될 때 이벤트 리스너 제거
         return () => {
             console.log('Drawing 페이지 종료됨');
-            handlePageExit(); // 페이지 종료 시 함수 호출
         };
     }, [dispatch, scheduleId]);
 
-    const handleTimeOut = async () => {
-        setIsLoading(true);
-        if (drawingRef.current) {
-            console.log('exportToSVGAndUpload 함수 호출??');
-            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
-        }
-        setIsLoading(false);
+    const handleTimeOut = async () => {};
 
-        //navigate('/session/draw-end', { state: { scheduleId } });
-    };
+    const { lines, undoneLines } = useSelector(state => state.canvas);
 
-    const handlePageExit = async () => {
-        setIsLoading(true);
-        console.log('handlePageExit');
-        if (drawingRef.current) {
-            console.log('exportToSVGAndUpload 함수 호출??');
-            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
-        }
-        setIsLoading(false);
-    };
+    useEffect(() => {
+        const fetchCanvasData = async () => {
+            try {
+                const response = await authInstance.get(`/cuts/${cutId}`);
+                if (response.status !== 200) throw new Error('캔버스 데이터 조회 실패');
 
-    // 추가된 버튼을 통한 exportToSVGAndUpload 확인
-    const handleExportSVG = () => {
-        if (drawingRef.current) {
-            console.log('exportToSVGAndUpload 버튼 클릭됨');
-            drawingRef.current.exportToSVGAndUpload();
-        }
-    };
+                const data = response.data;
+                if (data.canvasData) {
+                    const parsedData = JSON.parse(data.canvasData);
+                    dispatch(setLines(parsedData)); // 저장된 데이터를 캔버스에 반영
+                }
+            } catch (error) {
+                console.error('캔버스 데이터를 불러오는 중 오류 발생:', error);
+            }
+        };
+
+        fetchCanvasData();
+    }, [cutId]);
 
     return (
         <div className="h-screen bg-light-cream-yellow">

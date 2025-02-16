@@ -1,7 +1,7 @@
 -----------------------------------------------------------
 -- 1. KEYWORD 테이블 (키워드)
 -----------------------------------------------------------
-INSERT INTO `KEYWORD` (`keyword`, `option`) VALUES
+INSERT INTO `KEYWORD` (`keyword`, `type`) VALUES
   ('신비로운', 'MOOD'),
   ('따뜻한', 'MOOD'),
   ('평화로운', 'MOOD'),
