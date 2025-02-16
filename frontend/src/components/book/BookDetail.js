@@ -5,8 +5,10 @@ import { getPartyDetail, addPartyMembers, removePartyMember, getPartyDetailByPin
 import Alert from "../common/AlertModal";
 import ConfirmModal from "../common/ConfirmModal";
 import defaultProfileImage from "../../assets/duckduck.png"
+import { useNavigate } from 'react-router-dom';
 
 const BookDetail = ({partyIdOrPin, onClose}) => {
+  const navigate = useNavigate();
   const [partyDetails, setPartyDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +16,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [memberToRemove, setMemberToRemove] = useState(null);
+  const [partyId, setPartyId] = useState(null);
 
   // 모달 상태 관리
   const [alertModalState, setAlertModalState] = useState(false);
@@ -27,14 +30,13 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
       try {
         let data;
         if (typeof partyIdOrPin === 'number') {
-          // Fetch by partyId if number provided
           data = await getPartyDetail(partyIdOrPin); 
         } else {
-          // Else assume it's a pin and fetch by pin
-          console.log("핀번호 검색 : ", data)
           data = await getPartyDetailByPin(partyIdOrPin);
         }
+
         setPartyDetails(data);
+        setPartyId(data.id);
       } catch (err) {
         setError(err.message);
         setAlertMessage("데이터를 불러오는데 실패했습니다.");
@@ -54,6 +56,46 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
     return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
   };
 
+  const getActiveSchedule = () => {
+    if (!partyDetails?.schedules) return null;
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    // 오늘 스케줄 찾기
+    const todaySchedules = partyDetails.schedules.filter(schedule => {
+      const scheduleDate = new Date(schedule.sessionTime);
+      return scheduleDate.toISOString().split('T')[0] === today;
+    });
+
+    if (todaySchedules.length === 0) return null;
+
+    // 현재 시간으로부터 10분 이내에 시작하는 스케줄 찾기
+    return todaySchedules.find(schedule => {
+      const sessionTime = new Date(schedule.sessionTime);
+      const remainingMinutes = (sessionTime.getTime() - now.getTime()) / (1000 * 60);
+      return remainingMinutes <= 10 && remainingMinutes > 0;
+    });
+  };
+
+  const isRegistrationVisible = getRemainingTime() > 1;
+  const activeSchedule = getActiveSchedule();
+
+  const handleJoinSession = () => {
+    if (activeSchedule) {
+      navigate('/session', {
+        state: {
+          partyId: partyDetails.id,
+          scheduleId: activeSchedule.scheduleId
+        }
+      });
+    }
+  };
+
+  //이북보기
+  const handlePreviousStory = () => {
+    navigate(`/ebook/${partyDetails.id}`);
+  };
   // 멤버 관리 함수들
   const handleAddChild = (childId) => {
     const selectedChild = userChildren.find(child => child.id === childId);
@@ -138,6 +180,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
       setAlertMessage("삭제되었습니다.");
       setAlertModalState(true);
     } catch (err) {
+      console.log("삭제 시 에러 이유 ", err);
       setAlertMessage("멤버 삭제 중 오류가 발생했습니다.");
       setAlertModalState(true);
     } finally {
@@ -153,6 +196,17 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
 
   const closeConfirmModal = () => {
     setConfirmModalState(false);
+  };
+
+  const dayOrder = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+  const dayWeekMapping = {
+    'MONDAY': '월',
+    'TUESDAY': '화',
+    'WEDNESDAY': '수',
+    'THURSDAY': '목',
+    'FRIDAY': '금',
+    'SATURDAY': '토',
+    'SUNDAY': '일'
   };
 
   if (loading) return <div className="loading loading-spinner loading-lg"></div>;
@@ -181,8 +235,21 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
           <div className="flex justify-between items-center bg-white rounded-xl p-4 mt-2 shadow-sm" style={{ fontFamily: 'S-CoreDream-3Light', color: 'red' }}>
             <div className="flex items-center gap-4 text-gray-600">
               <span className="text-sm">시작일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
-              <span className="text-sm">요일: {partyDetails.dayWeeks.join(", ")}</span>
-              <span className="text-sm">시간: {new Date(partyDetails.startDate).toLocaleTimeString()}</span>
+              <span className="text-sm">
+                요일: {partyDetails.dayWeeks
+                  .sort((a, b) => dayOrder.indexOf(a) - dayOrder.indexOf(b))
+                  .map(day => dayWeekMapping[day])
+                  .join(", ")}
+              </span>
+              <span className="text-sm">
+                시간: {new Date(partyDetails.startDate).toLocaleTimeString('ko-KR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                })}
+              </span>
+              
+              
               <span className="text-sm">난이도: Lv.{partyDetails.level}</span>
               <span className="text-sm">진행률: {partyDetails.progressCount}/{partyDetails.episodeCount}</span>
             </div>
@@ -197,7 +264,12 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                 className="w-[280px] h-[400px] object-cover rounded-lg shadow-md"
               />
               {showPreviousStory && (
-                <button className="btn btn-warning absolute bottom-4 left-1/2 transform -translate-x-1/2 w-4/5 shadow-lg">
+                <button 
+                  onClick={handlePreviousStory}
+                  className="btn btn-warning btn-md absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5
+                    normal-case font-medium
+                    hover:brightness-95"
+                >
                   이전 이야기 보기
                 </button>
               )}
@@ -224,67 +296,74 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
               {/* 참여하는 아동 섹션 */}
               <div className="bg-gray-200 rounded-xl p-4 shadow-inner">
                 <p className="text-sm font-semibold mb-3">참여하는 사람</p>
-                <div className="flex flex-col gap-2">
-                  {/* 기존 멤버 */}
-                  {partyDetails.members.map((member) => (
-                    <div key={member.memberId} className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img 
-                              src={member.imgUrl || defaultProfileImage} 
-                              alt={member.name}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{member.name}</span>
-                          <span className="text-sm text-gray-500">{member.nickname}</span>
-                        </div>
-                      </div>
-                      {showControls && (
-                        <button 
-                          onClick={() => handleRemoveExistingMember(member.memberId)}
-                          disabled={isSubmitting}
-                          className="btn btn-circle btn-sm btn-error"
-                        >
-                          <X size={16} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                <div className="flex space-x-3 overflow-x-auto py-2">
+                  {/* 기존 멤버 슬롯 */}
+                  {partyDetails.members.map((member) => {
+                    const currentUserChildrenIds = userChildren.map(child => child.id);
+                    const isMemberOwnChild = currentUserChildrenIds.includes(member.memberId);
 
-                  {/* 임시 추가된 아동 */}
-                  {selectedNewChildren.map((child) => (
-                    <div key={child.id} className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img 
-                              src={child.imgUrl || defaultProfileImage} 
-                              alt={child.name}
-                            />
-                          </div>
+                    return (
+                      <div key={member.memberId} className="flex flex-col items-center relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                          <img 
+                            src={member.imgUrl || defaultProfileImage} 
+                            alt={member.name}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{child.name}</span>
-                          <span className="text-sm text-gray-500 opacity-70">(예정)</span>
-                        </div>
+                        <span className="text-xs text-gray-600 mt-1 text-center">
+                          {member.nickname}
+                        </span>
+                        {showControls && isMemberOwnChild && (
+                          <button 
+                            onClick={() => handleRemoveExistingMember(member.memberId)}
+                            disabled={isSubmitting}
+                            className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-error"
+                          >
+                            <X size={12} />
+                          </button>
+                        )}
                       </div>
+                    );
+                  })}
+
+                  {/* 임시 추가된 아동 슬롯 */}
+                  {selectedNewChildren.map((child) => (
+                    <div key={child.id} className="flex flex-col items-center relative">
+                      <div className="w-12 h-12 rounded-full overflow-hidden">
+                        <img 
+                          src={child.imgUrl || defaultProfileImage} 
+                          alt={child.name}
+                          className="w-full h-full object-cover opacity-70"
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600 mt-1 text-center">
+                        {child.name}
+                      </span>
                       <button 
                         onClick={() => handleRemoveNewChild(child.id)}
                         disabled={isSubmitting}
-                        className="btn btn-circle btn-sm btn-warning"
+                        className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-warning"
                       >
-                        <X size={16} />
+                        <X size={12} />
                       </button>
+                    </div>
+                  ))}
+
+                  {/* 추가 슬롯 */}
+                  {[...Array(4 - partyDetails.members.length - selectedNewChildren.length)].map((_, index) => (
+                    <div 
+                      key={`empty-slot-${index}`} 
+                      className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center"
+                    >
+                      <span className="text-xs text-gray-400">+</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
+                            
               {/* 아동 추가 섹션 */}
-              {showControls && (
+              {isRegistrationVisible ? (
                 <div className="mt-4 flex gap-2">
                   <select 
                     className="select select-bordered flex-1"
@@ -310,6 +389,19 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                   >
                     등록하기
                   </button>
+                </div>
+              ) : (
+                <div className="mt-4 flex justify-end">
+                  <button 
+                    className={`btn px-8 shadow-md hover:shadow-lg transition-shadow ${
+                      activeSchedule ? 'btn-primary' : 'btn-disabled'
+                    }`}
+                    onClick={handleJoinSession}
+                    disabled={!activeSchedule}
+                  >
+                    입장하기
+                  </button>
+
                 </div>
               )}
             </div>
@@ -341,6 +433,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
             ? confirmRemoveMember
             : () => {}
         }
+        cancelHandler={closeConfirmModal} 
       />
       </div>
 

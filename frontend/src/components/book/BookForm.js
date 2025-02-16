@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchKeywords } from '../../api/party';
 import { GiCancel } from 'react-icons/gi';
 import {useSelector} from "react-redux";
+import AlertModal from '../../components/common/AlertModal';
 
 const levelOptions = ['Lv1 (4~6세)', 'Lv2 (7세)', 'Lv3 (8세)', 'Lv4 (9세)', 'Lv5 (10세)', 'Lv6 (11세)'];
 const episodeOptions = Array.from({ length: 9 }, (_, i) => i + 2);
@@ -28,6 +29,13 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     const [moods, setMoods] = useState([]);
     const [themes, setThemes] = useState([]);
     const [genres, setGenres] = useState([]);
+
+    const [modalText, setModalText] = useState('모든 요소를 선택하세요.');
+    const [modalState, setModalState] = useState(false);
+
+    const handleCloseModal = () => {
+        setModalState(false);
+    };
 
     // 🔹 API에서 키워드 가져오기
     useEffect(() => {
@@ -100,7 +108,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
             selectedChildren.length === 0 ||
             selectedDays.length === 0
         ) {
-            alert('모든 요소를 선택하세요');
+            setModalState(true);
             return;
         }
         onSubmit({
@@ -125,7 +133,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     return (
         <>
             <div className="grid grid-cols-[1fr 50%] gap-x-2 gap-y-6 w-full ">
-                {/* 📌 방 시작일 선택 */}
+                {/* 방 시작일 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="start" className="w-[120px]">
                         시작일
@@ -138,7 +146,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                         className="p-2 outline-none border-[2px] focus:border-[#FFBD73] rounded-xl w-[50%] bg-white"
                     />
                 </div>
-                {/* 📌 시간 선택 */}
+                {/* 시간 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="time" className="w-[120px]">
                         시간
@@ -158,7 +166,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                         ))}
                     </select>
                 </div>
-                {/* 📌 에피소드 분량 선택 */}
+                {/* 에피소드 분량 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="length" className="w-[120px]">
                         에피소드 분량
@@ -176,7 +184,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                         ))}
                     </select>
                 </div>
-                {/* 📌 난이도 선택 */}
+                {/* 난이도 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="level" className="w-[120px]">
                         레벨
@@ -194,7 +202,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                         ))}
                     </select>
                 </div>
-                {/* 📌 요일 선택 */}
+                {/* 요일 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="select-day" className="w-[120px]">
                         진행 요일
@@ -221,7 +229,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                         ))}
                     </div>
                 </div>
-                {/* 📌 공개 여부 선택 */}
+                {/* 공개 여부 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="select-open" className="w-[120px]">
                         공개 여부
@@ -245,7 +253,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     <label className="w-[120px]" htmlFor="select-keyword">
                         키워드
                     </label>
-                    {/* 📌 분위기 선택 */}
+                    {/* 분위기 선택 */}
                     <div className="flex flex-col w-[50%] gap-2 " id="select-keyword">
                         <select
                             value={mood}
@@ -262,7 +270,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                             ))}
                         </select>
 
-                        {/* 📌 테마 선택 */}
+                        {/* 테마 선택 */}
                         <select
                             value={theme}
                             onChange={e => setTheme(e.target.value)}
@@ -278,7 +286,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                             ))}
                         </select>
 
-                        {/* 📌 장르 선택 */}
+                        {/* 장르 선택 */}
                         <select
                             value={genre}
                             onChange={e => setGenre(e.target.value)}
@@ -296,7 +304,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     </div>
                 </div>
 
-                {/* 📌 참여 아동 선택 */}
+                {/* 참여 아동 선택 */}
                 <div className="flex flex-col gap-3">
                 <select
                     onChange={handleChildSelect}
@@ -332,6 +340,12 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     </button>
                 </div>
             </div>
+
+            <AlertModal 
+                text={modalText} 
+                modalState={modalState} 
+                closeHandler={handleCloseModal} 
+            />
         </>
     );
 };

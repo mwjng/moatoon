@@ -167,6 +167,13 @@ public class PartyService {
 
         List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(partyId);
 
+        List<ScheduleResponse> scheduleResponses = schedules.stream()
+                .map(schedule -> ScheduleResponse.builder()
+                        .scheduleId(schedule.getId())
+                        .sessionTime(schedule.getSessionTime())
+                        .build())
+                .toList();
+
         List<Day> dayWeeks = schedules.stream()
                 .map(Schedule::getDayWeek)
                 .distinct()
@@ -177,6 +184,7 @@ public class PartyService {
                 .toList();
 
         return PartyDetailResponse.builder()
+                .id(party.getId())
                 .pinNumber(party.getPinNumber())
                 .title(party.getBookTitle())
                 .startDate(party.getStartDate())
@@ -188,6 +196,7 @@ public class PartyService {
                 .bookCover(party.getBookCover())
                 .keywords(keywords)
                 .members(members)
+                .schedules(scheduleResponses)
                 .build();
     }
 
@@ -212,12 +221,10 @@ public class PartyService {
         Party party = partyRepository.findByPinNumberAndStatus(pinNumber, PartyState.BEFORE)
                 .orElseThrow(()-> new MoaException(SCHEDULE_NOT_FOUND));
 
-
         LocalDateTime now = LocalDateTime.now();
         if (party.getStartDate().minusHours(1).isBefore(now)) {
             throw new MoaException(SCHEDULE_NOT_FOUND);
         }
-
 
         List<PartyMemberResponse> members = party.getPartyMembers().stream()
                 .map(pm -> PartyMemberResponse.builder()
@@ -231,6 +238,13 @@ public class PartyService {
 
         List<Schedule> schedules = scheduleRepository.findByPartyIdOrderBySessionTimeAsc(party.getId());
 
+        List<ScheduleResponse> scheduleResponses = schedules.stream()
+                .map(schedule -> ScheduleResponse.builder()
+                        .scheduleId(schedule.getId())
+                        .sessionTime(schedule.getSessionTime())
+                        .build())
+                .toList();
+
         List<Day> dayWeeks = schedules.stream()
                 .map(Schedule::getDayWeek)
                 .distinct()
@@ -241,6 +255,7 @@ public class PartyService {
                 .toList();
 
         return PartyDetailResponse.builder()
+                .id(party.getId())
                 .pinNumber(party.getPinNumber())
                 .title(party.getBookTitle())
                 .startDate(party.getStartDate())
@@ -252,6 +267,7 @@ public class PartyService {
                 .bookCover(party.getBookCover())
                 .keywords(keywords)
                 .members(members)
+                .schedules(scheduleResponses)
                 .build();
     }
 
