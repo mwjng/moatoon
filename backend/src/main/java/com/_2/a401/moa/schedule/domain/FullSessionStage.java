@@ -6,7 +6,8 @@ public enum FullSessionStage {
     WORD(60L),      // TODO:7분
     CUT_ASSIGN(7L), //
     DRAWING(60L),   // TODO:15분
-    DONE(20L);   // SHARING 단계 (완성그림 단계부터는 프론트에서 다음으로 이동처리)
+    DONE(120L),    // 8분 뒤 이메일 알람 설정 위함
+    TIMER_END(0L);     // 타이머 종료 상태
 
     private final Long duration; // SECOND 기준
 
@@ -19,6 +20,6 @@ public enum FullSessionStage {
     }
 
     public static FullSessionStage next(FullSessionStage stage) {
-        return stage == DONE ? DONE : values()[stage.ordinal() + 1];
+        return stage == DONE ? TIMER_END : values()[stage.ordinal() + 1]; // DONE이면 TIMER_END를 반환
     }
 }

@@ -35,4 +35,14 @@ public class SessionMailService {
         String managerEmail = member.getManager().getEmail();
         mailService.sendNoticeMail(managerEmail, childName, words);
     }
+
+    public void sendBadChildNotice(List<Long> uncompletedMembers) {
+        uncompletedMembers.forEach(memberId -> {
+            Member member = memberRepository.findById(memberId)
+                    .orElseThrow(() -> new MoaException(INVALID_CHILD));
+            String childName = member.getName();
+            String managerEmail = member.getManager().getEmail();
+            mailService.sendBadChildNoticeMail(managerEmail, childName);
+        });
+    }
 }

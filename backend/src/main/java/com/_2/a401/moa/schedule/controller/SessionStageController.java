@@ -1,5 +1,6 @@
 package com._2.a401.moa.schedule.controller;
 
+import com._2.a401.moa.auth.dto.MemberDetails;
 import com._2.a401.moa.common.jwt.JwtUtil;
 import com._2.a401.moa.schedule.dto.request.ReadyRequest;
 import com._2.a401.moa.schedule.dto.response.CurrentSessionStageResponse;
@@ -10,10 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,6 +33,15 @@ public class SessionStageController {
             @PathVariable("scheduleId") Long scheduleId
     ) {
         return ResponseEntity.ok(sessionStageService.getCurrentSessionStage(scheduleId));
+    }
+
+    @PostMapping("schedules/{scheduleId}/quiz-done")
+    public ResponseEntity<Void> quizDone (
+            @AuthenticationPrincipal MemberDetails memberDetails,
+            @PathVariable("scheduleId") Long scheduleId
+    ){
+        sessionStageService.quizDone(scheduleId, memberDetails.getMember().getId());
+        return ResponseEntity.ok().build();
     }
 
     @MessageMapping("/ready")

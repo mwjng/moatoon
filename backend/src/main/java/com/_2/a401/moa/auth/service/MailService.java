@@ -32,6 +32,7 @@ public class MailService {
             "<br><br>" +
             "임시 비밀번호 %s";
     private static final String EMAIL_TITLE_FOR_NOTICE = "모아책방 알림장";
+    private static final String EMAIL_TITLE_FOR_BAD_CHILD_NOTICE = "모아책방 출결 알림";
 
     @Async
     public void sendCodeMail(String email) {
@@ -100,5 +101,18 @@ public class MailService {
             );
         }
         mailSend(managerEmail, EMAIL_TITLE_FOR_NOTICE, content);
+    }
+
+    @Async
+    public void sendBadChildNoticeMail(String managerEmail, String name) {
+        String content =
+                String.format(
+                        "<h2>안녕하세요! %s님의 학습 알림장입니다.</h2><br><br>" +
+                                "오늘 독서 세션을 끝까지 완료하지 않았습니다. 😢<br><br>" +
+                                "다음 세션에는 끝까지 참여할 수 있도록 많은 격려 부탁드립니다.",
+                        name
+                );
+
+        mailSend(managerEmail, EMAIL_TITLE_FOR_BAD_CHILD_NOTICE, content);
     }
 }
