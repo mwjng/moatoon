@@ -13,7 +13,7 @@ public record ScheduleInfo(
         String pinNumber
 ) {
     public LocalDateTime getSessionTimeAsLocalDateTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // 형식에 맞게 패턴 설정
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); // 형식에 맞게 패턴 설정 (구 h2 버전: "yyyy-MM-dd HH:mm:ss")
         return LocalDateTime.parse(sessionTime, formatter); // sessionTime을 LocalDateTime으로 변환
     }
 }
