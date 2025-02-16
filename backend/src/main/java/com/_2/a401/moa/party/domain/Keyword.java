@@ -15,7 +15,7 @@ public class Keyword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "type", nullable = false, unique = true)
     private String keyword;
 
     @Enumerated(EnumType.STRING)
