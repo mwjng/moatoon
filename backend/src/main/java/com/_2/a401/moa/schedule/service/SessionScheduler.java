@@ -64,9 +64,9 @@ public class SessionScheduler {
             log.info("schedule: {}", schedule.getId());
             final String sessionId = videoConferenceManager.createSession();
             final Session session = new Session(schedule.getId(), sessionId, WAITING, schedule.getSessionTime());
-            sessionStageService.setWaitingRoomTimer(schedule.getId()); // 10분뒤 다음 단계로 넘어가기 위한 타이머 설정
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
+            sessionStageService.setWaitingRoomTimer(schedule.getId()); // 10분뒤 다음 단계로 넘어가기 위한 타이머 설정
         }
         final Set<Long> scheduleIds = schedules.stream()
             .map(Schedule::getId)
