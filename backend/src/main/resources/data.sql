@@ -197,7 +197,7 @@ INSERT INTO word_example (example, word_id) VALUES
 -----------------------------------------------------------
 -- [BEFORE] 파티 1-3: 에피소드 수 10개
 -- INSERT INTO schedule (party_id, session_time, day_week, episode_number, status) VALUES
---   (1, '2025-02-16 20:00:00', 'THURSDAY', 1, 'BEFORE'),
+--   (1, '2025-02-17 20:00:00', 'THURSDAY', 1, 'BEFORE'),
 --   (1, '2025-02-20 18:00:00', 'THURSDAY', 2, 'BEFORE'),
 --   (2, '2025-02-13 08:00:00', 'THURSDAY', 1, 'BEFORE'),
 --   (2, '2025-02-20 08:00:00', 'THURSDAY', 2, 'BEFORE'),

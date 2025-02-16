@@ -17,9 +17,9 @@ public class SessionMember {
     @Id
     private Long scheduleId;
 
-    private final Map<Long, Boolean> sessionMembers;
+    private Map<Long, Boolean> sessionMembers;
 
-    private final Map<Long, Boolean> quizDoneMembers; // 퀴즈 완료했는지 여부
+    private Map<Long, Boolean> quizDoneMembers; // 퀴즈 완료했는지 여부
 
     public SessionMember(final Long scheduleId) {
         this.scheduleId = scheduleId;
