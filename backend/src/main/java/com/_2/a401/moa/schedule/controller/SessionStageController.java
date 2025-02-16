@@ -42,9 +42,4 @@ public class SessionStageController {
         Long memberId = jwtUtil.getMemberId(token);
         sessionStageService.updateReadyStatus(request.scheduleId(), memberId, true); // 확장성(ready 해제)을 위해 true 파라미터도 넣음
     }
-
-    @GetMapping("session/pinNumber/{pinNumber}")
-    public ResponseEntity<enterSessionResponse> enterSession(@PathVariable String pinNumber) {
-        return ResponseEntity.ok(sessionService.getEnterSession(pinNumber));
-    }
 }
