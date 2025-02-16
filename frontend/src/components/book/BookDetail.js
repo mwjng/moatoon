@@ -24,6 +24,8 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const [confirmModalType, setConfirmModalType] = useState('');
 
   const userChildren = useSelector(state => state.user.userInfo?.childrenList || []);
+  const userRole = useSelector(state => state.user.userInfo?.role);
+
 
   useEffect(() => {
     const fetchPartyDetails = async () => {
@@ -78,8 +80,14 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
     });
   };
 
-  const isRegistrationVisible = getRemainingTime() > 1;
+  // const isRegistrationVisible = getRemainingTime() > 1;
+  // const activeSchedule = getActiveSchedule();
+  // const showControls = getRemainingTime() > 1;
+  const remainingTime = getRemainingTime();
+  const isRegistrationEnabled = remainingTime > 1 && userRole === 'MANAGER';
   const activeSchedule = getActiveSchedule();
+  const canManageMembers = remainingTime > 1 && userRole === 'MANAGER';
+  const showPreviousStory = partyDetails ? partyDetails.progressCount > 0 : false;
 
   const handleJoinSession = () => {
     if (activeSchedule) {
@@ -91,6 +99,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const handlePreviousStory = () => {
     navigate(`/ebook/${partyDetails.id}`);
   };
+
   // 멤버 관리 함수들
   const handleAddChild = (childId) => {
     const selectedChild = userChildren.find(child => child.id === childId);
@@ -118,8 +127,12 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   };
 
   const handleRemoveNewChild = (childId) => {
-    // 임시 리스트에서 해당 자녀 제거
-    setSelectedNewChildren(prev => prev.filter(child => child.id !== childId));
+    setSelectedNewChildren(prevChildren => prevChildren.filter(child => child.id !== childId));
+    // 드롭다운 초기화로 삭제된 아동을 즉시 선택 가능하게 함
+    const selectElement = document.querySelector('select');
+    if (selectElement) {
+      selectElement.selectedIndex = 0;
+    }
   };
 
   const handleSubmitNewMembers = () => {
@@ -207,9 +220,6 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   if (loading) return <div className="loading loading-spinner loading-lg"></div>;
   if (error) return <div className="text-red-600">오류가 발생했습니다: {error}</div>;
 
-  const showControls = getRemainingTime() > 1;
-  const showPreviousStory = partyDetails.progressCount > 0;
-
   return (
 
     <div className="min-h-screen bg-gray-100 p-4" >
@@ -294,8 +304,9 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                 <div className="flex space-x-3 overflow-x-auto py-2">
                   {/* 기존 멤버 슬롯 */}
                   {partyDetails.members.map((member) => {
-                    const currentUserChildrenIds = userChildren.map(child => child.id);
-                    const isMemberOwnChild = currentUserChildrenIds.includes(member.memberId);
+                    // const currentUserChildrenIds = userChildren.map(child => child.id);
+                    // const isMemberOwnChild = currentUserChildrenIds.includes(member.memberId);
+                    const isMemberOwnChild = userChildren.map(child => child.id).includes(member.memberId);
 
                     return (
                       <div key={member.memberId} className="flex flex-col items-center relative">
@@ -309,7 +320,8 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                         <span className="text-xs text-gray-600 mt-1 text-center">
                           {member.nickname}
                         </span>
-                        {showControls && isMemberOwnChild && (
+                        {/* 아동 추가 삭제 X 표시 부모만 */}
+                        {userRole === 'MANAGER' && canManageMembers && isMemberOwnChild && (
                           <button 
                             onClick={() => handleRemoveExistingMember(member.memberId)}
                             disabled={isSubmitting}
@@ -322,48 +334,52 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                     );
                   })}
 
-                  {/* 임시 추가된 아동 슬롯 */}
-                  {selectedNewChildren.map((child) => (
-                    <div key={child.id} className="flex flex-col items-center relative">
-                      <div className="w-12 h-12 rounded-full overflow-hidden">
-                        <img 
-                          src={child.imgUrl || defaultProfileImage} 
-                          alt={child.name}
-                          className="w-full h-full object-cover opacity-70"
-                        />
+                  {/* 보호자 일때만 보이게 */}
+                  {userRole === 'MANAGER' && (
+                  <>
+                    {selectedNewChildren.map((child) => (
+                      <div key={child.id} className="flex flex-col items-center relative">
+                        <div className="w-12 h-12 rounded-full overflow-hidden">
+                          <img 
+                            src={child.imgUrl || defaultProfileImage} 
+                            alt={child.name}
+                            className="w-full h-full object-cover opacity-70"
+                          />
+                        </div>
+                        <span className="text-xs text-gray-600 mt-1 text-center">
+                          {child.name}
+                        </span>
+                        <button 
+                          onClick={() => handleRemoveNewChild(child.id)}
+                          disabled={isSubmitting}
+                          className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-warning"
+                        >
+                          <X size={12} />
+                        </button>
                       </div>
-                      <span className="text-xs text-gray-600 mt-1 text-center">
-                        {child.name}
-                      </span>
-                      <button 
-                        onClick={() => handleRemoveNewChild(child.id)}
-                        disabled={isSubmitting}
-                        className="absolute -top-1 -right-1 btn btn-circle btn-xs btn-warning"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
+                    ))}
 
-                  {/* 추가 슬롯 */}
-                  {[...Array(4 - partyDetails.members.length - selectedNewChildren.length)].map((_, index) => (
-                    <div 
-                      key={`empty-slot-${index}`} 
-                      className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center"
-                    >
-                      <span className="text-xs text-gray-400">+</span>
-                    </div>
-                  ))}
-                </div>
+                    {[...Array(4 - partyDetails.members.length - selectedNewChildren.length)].map((_, index) => (
+                      <div 
+                        key={`empty-slot-${index}`} 
+                        className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center"
+                      >
+                        <span className="text-xs text-gray-400">+</span>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
+            </div>
                             
               {/* 아동 추가 섹션 */}
-              {isRegistrationVisible ? (
-                <div className="mt-4 flex gap-2">
+              <div className="mt-4 flex justify-end">
+              {userRole === 'MANAGER' ? (
+                <div className="flex gap-2 w-full">
                   <select 
                     className="select select-bordered flex-1"
                     onChange={(e) => handleAddChild(Number(e.target.value))}
-                    disabled={isSubmitting}
+                    disabled={!isRegistrationEnabled || isSubmitting}
                   >
                     <option value="" disabled selected>참여자 선택</option>
                     {userChildren
@@ -380,29 +396,27 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                   <button 
                     className="btn btn-warning px-8 shadow-md hover:shadow-lg transition-shadow"
                     onClick={handleSubmitNewMembers}
-                    disabled={isSubmitting}
+                    disabled={!isRegistrationEnabled || isSubmitting || selectedNewChildren.length === 0}
                   >
                     등록하기
                   </button>
                 </div>
-              ) : (
-                <div className="mt-4 flex justify-end">
-                  <button 
-                    className={`btn px-8 shadow-md hover:shadow-lg transition-shadow ${
-                      activeSchedule ? 'btn-primary' : 'btn-disabled'
-                    }`}
-                    onClick={handleJoinSession}
-                    disabled={!activeSchedule}
-                  >
-                    입장하기
-                  </button>
-
-                </div>
+              ) : userRole === 'CHILD' && (
+                <button 
+                  className={`btn px-8 shadow-md hover:shadow-lg transition-shadow ${
+                    activeSchedule ? 'btn-primary' : 'btn-disabled'
+                  }`}
+                  onClick={handleJoinSession}
+                  disabled={!activeSchedule}
+                >
+                  입장하기
+                </button>
               )}
             </div>
           </div>
         </div>
       </div>
+    </div>
 
       {/* 알림 모달 */}
       <Alert 
