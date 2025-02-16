@@ -12,14 +12,16 @@ import { useNavigate } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
 
 import useOpenViduSession from '../../hooks/useOpenViduSession';
+import { getEBookCover } from '../../api/book';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+    
+    const [bookInfo, setBookInfo] = useState(null); // {partyId, bookTitle, bookCover, cuts: Array(4)}
     const [sessionData, setSessionData] = useState({
         scheduleId: 1,
-        partyId: 1,
-        bookTitle: '용감한 기사',
+        partyId: 1
     });
 
     const [sessionStageData, setSessionStageData] = useState({
@@ -29,10 +31,23 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
-    const scheduleId = 12;
+    // partyId로 bookTitle, bookCover, cuts 가져옴
+    useEffect(() => {
+        const fetchCover = async () => {
+            try {
+                const data = await getEBookCover(sessionData.partyId);
+                console.log('SessionContainer: getEBookCover:', data);
+                setBookInfo(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        
+        fetchCover();
+    }, [sessionData.partyId]);
 
     // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(scheduleId);
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
 
     // 컴포넌트 마운트될 때 세션 참여
     useEffect(() => {
@@ -113,19 +128,16 @@ const SessionContainer = () => {
     }, [sessionTransferResponse]);
 
     const renderStage = () => {
-        console.log('=========[SessionContainer의 renderStage => WaitingRoom]===============');
-        console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
-            console.log('현재 스테이지와 동일하여 렌더링 스킵');
             return null;
         }
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
                     <WaitingRoom
+                        bookInfo={bookInfo}
                         scheduleId={sessionData.scheduleId}
-                        bookTitle={sessionData.bookTitle}
                         sessionTime={sessionStageData.sessionStartTime}
                         serverTime={sessionStageData.serverTime}
                         publisher={publisher}
@@ -137,10 +149,12 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
+                        partyId = {sessionData.partyId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
+                        sendReady = {sendReady}
                     />
                 );
             case 'CUT_ASSIGN':
@@ -148,6 +162,7 @@ const SessionContainer = () => {
             case 'DRAWING':
                 return (
                     <DrawingPage
+                        scheduleId = {sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
@@ -159,6 +174,7 @@ const SessionContainer = () => {
             case 'DONE':
                 return (
                     <DrawingEndPage
+                        scheduledId = {sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -169,6 +185,7 @@ const SessionContainer = () => {
             case 'QUIZ':
                 return(
                     <QuizPage
+                    partyId={sessionData.partyId}
                     onChangeStage={handleQuizTimeout}/>
                 );
             case 'QUIZ_END':

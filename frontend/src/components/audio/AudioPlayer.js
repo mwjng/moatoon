@@ -15,8 +15,11 @@ const audioState = {
 };
 
 const AudioPlayer = ({ audioType, isOn=true }) => {
-  const audioRef = useRef(new Audio());
-  const [guideOn, setGuideOn] = useState(() => { // tts on/off 설정정
+    const audioRef = useRef(new Audio());
+    const initializingRef = useRef(false);  // 초기화 상태를 추적하는 ref 추가
+    const mountedRef = useRef(true);  // 컴포넌트 마운트 상태 추적
+
+    const [guideOn, setGuideOn] = useState(() => { // tts on/off 설정정
       const savedState = localStorage.getItem(GUIDE_ENABLED_KEY);
       return savedState === null ? true : JSON.parse(savedState);
   });
@@ -35,6 +38,7 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
 
     const stopCurrentAudio = async () => {
       if (audioState.playPromise) {
@@ -51,45 +55,66 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
     };
 
     const initializeAudio = async () => {
-      // 가이드가 꺼져있고, 타이머 알림음이 아닌 경우에만 리턴
+      // 초기 조건 체크
+      if (!isOn || initializingRef.current || !mountedRef.current) return;
+    
       if (!guideOn && !TIMER_AUDIO_TYPES.includes(audioType)) {
         return;
       }
-
-      // isOn이 true일 때만 오디오 실행
-      if (!isOn) return;
-
+    
+      if (audioState.currentType === audioType && audioState.isPlaying) {
+        return;
+      }
+    
+      initializingRef.current = true;
+    
       try {
-        // 반드시 이전 오디오 정지
         await stopCurrentAudio();
-
         await navigator.mediaDevices.getUserMedia({ audio: true });
         
+        if (!mountedRef.current) return;
+    
         const response = await fetchAudio(audioType);
         const url = URL.createObjectURL(response);
         
+        if (!mountedRef.current) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+    
         audioRef.current = new Audio(url);
         audioState.instance = audioRef.current;
         
         audioRef.current.onended = () => {
           console.log(`[${new Date().toLocaleTimeString()}] 오디오 재생 완료:`, audioType);
           if (audioState.instance === audioRef.current) {
+            URL.revokeObjectURL(url);
             audioState.instance = null;
             audioState.isPlaying = false;
             audioState.currentType = null;
           }
+          initializingRef.current = false;
         };
-
-        // play() Promise를 저장
+    
         audioState.playPromise = audioRef.current.play();
         await audioState.playPromise;
         
+        if (!mountedRef.current) {
+          stopCurrentAudio();
+          return;
+        }
+    
         audioState.isPlaying = true;
         audioState.currentType = audioType;
         console.log(`[${new Date().toLocaleTimeString()}] 재생 시작:`, audioType);
       } catch (error) {
         console.error(`[${new Date().toLocaleTimeString()}] 오류 발생:`, error);
         await stopCurrentAudio();
+      } finally {
+        // onended 이벤트에서 처리되지 않는 경우를 위한 안전장치
+        if (!audioState.isPlaying) {
+          initializingRef.current = false;
+        }
       }
     };
 
@@ -97,11 +122,13 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
 
     return () => {
       console.log(`[${new Date().toLocaleTimeString()}] 컴포넌트 언마운트 - audioType:`, audioType);
+      mountedRef.current = false;
       if (audioRef.current === audioState.instance) {
         stopCurrentAudio();
       }
+      initializingRef.current = false;
     };
-  }, [audioType, isOn, guideOn]); 
+  }, [audioType, isOn, guideOn]);
 
   return null;
 };

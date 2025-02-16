@@ -12,17 +12,12 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = ({ sessionStageData, publisher, subscribers, nickname }) => {
+const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickname, sendReady }) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
     const [checkedWords, setCheckedWords] = useState(new Set());
-    const [partyId, setPartyId] = useState(1); //TODO: 임의 값
-    const [scheduleId, setScheduleId] = useState(1); //TODO: 임의 값
     const navigate = useNavigate();
-
-    // 웹소켓 훅 사용
-    const { sendReady } = useSessionStageWebSocket(scheduleId);
 
     const handleCheck = wordId => {
         setCheckedWords(prev => {
@@ -45,7 +40,7 @@ const WordLearning = ({ sessionStageData, publisher, subscribers, nickname }) =>
 
     const sendReadyRequest = async () => {
         try {
-            sendReady(scheduleId);
+            sendReady();
             // 성공 로직
         } catch (error) {
             console.error('레디 요청 중 에러 발생:', error.message);
