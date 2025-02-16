@@ -4,12 +4,14 @@ import Canvas from '../draw/Canvas.js';
 import ChildImg from '../../assets/child.svg';
 import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
-import AudioPlayer from '../../components/audio/AudioPlayer'
+import AudioPlayer from '../../components/audio/AudioPlayer';
 import MyCamera from '../MyCamera.js';
 
 const Drawing = forwardRef(
-    ({ toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname }, ref) => {
-
+    (
+        { toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname },
+        ref,
+    ) => {
         // 페이지 진입 시 Drawing 방문 상태 업데이트
         useEffect(() => {
             setIsFirstDrawingVisit(false);
@@ -84,7 +86,7 @@ const Drawing = forwardRef(
                     </div>
                     <div className="relative w-full h-full">
                         <Canvas
-                            sendReady = {sendReady}
+                            sendReady={sendReady}
                             stageRef={stageRef}
                             toggleView={toggleView}
                             partyId={partyId}
