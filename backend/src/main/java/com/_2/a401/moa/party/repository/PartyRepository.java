@@ -14,8 +14,6 @@ import org.springframework.data.repository.query.Param;
 public interface PartyRepository extends JpaRepository<Party, Long>, CustomPartyRepository {
     Optional<Party> findById(Long partyId);
 
-    Optional<Long> findIdByScheduleId(Long scheduleId);
-
     // h2: DATEADD('DAY', 1, CURRENT_DATE)
     @Query(value = """
         SELECT s.episode_number, p.level

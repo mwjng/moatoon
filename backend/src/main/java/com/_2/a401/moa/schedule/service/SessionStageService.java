@@ -10,6 +10,7 @@ import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.dto.response.CurrentSessionStageResponse;
 import com._2.a401.moa.schedule.dto.response.WsReadyStatusResponse;
 import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
+import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import reactor.core.scheduler.Scheduler;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -34,7 +36,7 @@ public class SessionStageService {
     private final SessionRedisRepository sessionRedisRepository;
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final PartyMemberRepository partyMemberRepository;
-    private final PartyRepository partyRepository;
+    private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final SessionMailService sessionMailService;
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
@@ -188,8 +190,8 @@ public class SessionStageService {
     }
 
     public void handleUncompletedQuizMembers(Long scheduleId) {
-        Long partyId = partyRepository.findIdByScheduleId(scheduleId)
-                .orElseThrow(() -> new MoaException(ExceptionCode.INVALID_PARTY));
+        Long partyId = scheduleRepository.findPartyIdById(scheduleId)
+                .orElseThrow(() -> new MoaException(ExceptionCode.SCHEDULE_NOT_ACTIVE));
 
         // 1. 파티에 참여중인 모든 아이들 정보
         List<Long> allPartyMembers = partyMemberRepository.findMemberIdsByPartyId(partyId);
