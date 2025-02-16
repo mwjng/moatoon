@@ -13,6 +13,8 @@ import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.member.dto.request.MemberModify;
 import com._2.a401.moa.member.dto.response.*;
 import com._2.a401.moa.member.repository.MemberRepository;
+import com._2.a401.moa.party.domain.PartyState;
+import com._2.a401.moa.party.repository.PartyMemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PartyMemberRepository partyMemberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final JwtUtil jwtUtil;
@@ -167,7 +170,20 @@ public class MemberService {
     public void deleteMember(HttpServletRequest req) {
         Member member = memberRepository.findById(jwtUtil.getMemberId(jwtUtil.getTokenFromRequest(req))).orElseThrow(()->new MoaException(INVALID_MEMBER));
         member.setStatus(MemberState.DELETED);
-        memberRepository.findByManagerId(member.getId()).forEach(m -> m.setManager(null));
+        if(member.getRole().equals(MemberRole.MANAGER)){
+            memberRepository.findByManagerId(member.getId())
+                    .forEach(m -> {
+                        m.setManager(null);
+                        partyMemberRepository.findByMember(m)
+                                .stream()
+                                .filter(partyMember -> partyMember.getParty().getStatus() == PartyState.BEFORE)
+                                .forEach(partyMemberRepository::delete);
+                    });
+        }else{
+            partyMemberRepository.findByMember(member).stream()
+                    .filter(partyMember -> partyMember.getParty().getStatus() == PartyState.BEFORE)
+                    .forEach(partyMemberRepository::delete);
+        }
     }
 
     public List<ChildInfo> getChildrenInfo(HttpServletRequest req) {
