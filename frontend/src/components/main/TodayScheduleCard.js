@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
+  const navigate = useNavigate();
   const [isWithinTenMinutes, setIsWithinTenMinutes] = useState(false);
   const [timeUntilSession, setTimeUntilSession] = useState(null);
+
+  const handleEnterSession = () => {
+    if (schedule && schedule.pinNumber) {
+      navigate(`/session/${schedule.pinNumber}`);
+    }
+  };
 
   useEffect(() => {
     const checkTimeWindow = () => {
@@ -136,6 +144,7 @@ const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
           <button 
             className={`text-lg font-bold px-4 py-2 rounded-full shadow-sm transition-colors w-full break-keep ${getButtonStyles()}`}
             disabled={!isButtonEnabled}
+            onClick={handleEnterSession}
           >
             입장하기
           </button>

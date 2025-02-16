@@ -71,7 +71,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                    p.book_cover as bookCover,
                    s.episode_number as episodeNumber,
                    DATE_FORMAT(s.session_time, '%Y-%m-%dT%H:%i:%s') AS sessionTime,
-                   s.status as status
+                   s.status as status,
+                   p.pinNumber as pinNumber
             FROM schedule s
             JOIN party p ON s.party_id = p.id
             JOIN party_member pm ON p.id = pm.party_id

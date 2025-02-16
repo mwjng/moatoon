@@ -31,7 +31,7 @@ export const getTodayAndUpComingSchedule = async () => {
 
 export const getSessionInfoByPinNumber = async (pinNumber) => {
     try {
-        const response = await authInstance.get(`/pinNumber/${pinNumber}`, {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/pinNumber/${pinNumber}`, {
         });
         return response.data;  
     } catch (error) {

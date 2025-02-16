@@ -67,16 +67,13 @@ const SessionContainer = () => {
         
         fetchCover();
     }, [sessionData.partyId]);
-     // ===========[api 호출 끝]==========
 
-    // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
-
-    // 컴포넌트 마운트될 때 세션 참여
+    // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
-        joinSession();
-        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
-    }, []);
+    if (sessionData.scheduleId) {  // 여기서 scheduleId 체크
+        fetchCurrentStage();
+    }
+}, [sessionData.scheduleId]);  // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
@@ -105,6 +102,17 @@ const SessionContainer = () => {
             setIsLoading(false);
         }
     };
+    
+     // ===========[api 호출 끝]==========
+
+    // useOpenViduSession 훅 사용
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
+
+    // 컴포넌트 마운트될 때 세션 참여
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    }, []);
 
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
@@ -122,11 +130,6 @@ const SessionContainer = () => {
             currentStage: 'QUIZ_END'
         }));
     };
-
-    // 초기 로딩 시 스테이지 정보 가져오기
-    useEffect(() => {
-        fetchCurrentStage();
-    }, [sessionData.scheduleId]);
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     // useEffect(() => {
