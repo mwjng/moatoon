@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 
 function ChildLibraryPage() {
     const userInfo = useSelector(state => state.user.userInfo);
-    const { bookList, loading, hasMore, observerRef } = useFetchBooks(3, true); // TODO: userInfo.id 뽑아서 넣어줘야함.
+    const { bookList, loading, hasMore, observerRef } = useFetchBooks(userInfo.id, true); // TODO: userInfo.id 뽑아서 넣어줘야함.
     const colsPerRow = 5; // 한 줄당 책 개수
     const backgroundColors = ['bg-light-cream', 'bg-white', 'bg-lime-cream'];
 
