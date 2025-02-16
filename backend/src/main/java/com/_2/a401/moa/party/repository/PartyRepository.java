@@ -35,4 +35,8 @@ public interface PartyRepository extends JpaRepository<Party, Long>, CustomParty
             @Param("now") LocalDateTime now,
             @Param("thirtyMinutesLater") LocalDateTime thirtyMinutesLater
     );
+
+    @Query("SELECT p.id FROM Party p WHERE p.pinNumber = :pinNumber")
+    Optional<Long> findPartyIdByPinNumber(@Param("pinNumber") String pinNumber);
+
 }

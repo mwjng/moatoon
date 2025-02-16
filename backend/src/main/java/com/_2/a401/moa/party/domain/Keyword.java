@@ -19,7 +19,7 @@ public class Keyword {
     private String keyword;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private Option option;
 
 }

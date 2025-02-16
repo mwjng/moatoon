@@ -8,14 +8,13 @@ import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendReady, readyStatusResponse }) => {
-    const navigate = useNavigate();
+const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nickname, sendReady, readyStatusResponse }) => {
     const dispatch = useDispatch();
-    const scheduleId = 1;
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
 
+    // TODO: 위에껄로 바꿔야함
     // const userId = useSelector(state => state.user.userInfo.id);
     const userId = 3;
 

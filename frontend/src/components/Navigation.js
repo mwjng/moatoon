@@ -17,6 +17,7 @@ import WordModal from './WordModal';
 import { logout } from '../api/member';
 import bbi from '../assets/bbi.png';
 import duck from '../assets/duckduck.png';
+import AudioPlayer from './audio/AudioPlayer';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
 function Navigation({
@@ -48,8 +49,15 @@ function Navigation({
     const [logoutModal, setLogoutModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const cutsState = useSelector(state => state.cuts);
-    const dispatch = useDispatch();
+    
+    // tts 관련 10분, 5분, 1분전 체크
+    const [timeThresholds, setTimeThresholds] = useState({
+        tenMinutes: false,
+        fiveMinutes: false,
+        oneMinute: false
+    });
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -89,6 +97,7 @@ function Navigation({
             const res = await logout();
             if (res.status == 200) {
                 localStorage.removeItem('accessToken');
+                localStorage.removeItem('guideEnabled'); // 로그아웃 시 tts 설정 초기화
                 navigate('/login', { state: { fromLogout: true } });
             }
         } catch (err) {
@@ -125,12 +134,11 @@ function Navigation({
 
     useEffect(() => {
         if (cutsState.cuts.length > 0) {
-            console.log(cutsState.cuts[0].partyId);
             getLearningWords(cutsState.cuts[0].partyId).then(response => {
                 setWords(response.data.words);
             });
         }
-    }, []);
+    }, [cutsState.cuts.length]);
 
     // 남은 시간 형식 변환
     const getRemainingTimeFormatted = () => {
@@ -172,6 +180,23 @@ function Navigation({
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);
+
+                // tts 설정
+                if (stage === 'drawing') {
+                const remainingMinutes = remaining / MINUTE;
+                
+                if (remainingMinutes <= 10 && remainingMinutes > 9.9 && !timeThresholds.tenMinutes) {
+                    setTimeThresholds(prev => ({ ...prev, tenMinutes: true }));
+                }
+                
+                if (remainingMinutes <= 5 && remainingMinutes > 4.9 && !timeThresholds.fiveMinutes) {
+                    setTimeThresholds(prev => ({ ...prev, fiveMinutes: true }));
+                }
+                
+                if (remainingMinutes <= 1 && remainingMinutes > 0.9 && !timeThresholds.oneMinute) {
+                    setTimeThresholds(prev => ({ ...prev, oneMinute: true }));
+                }
+                }
             };
 
             // 1초마다 갱신
@@ -190,6 +215,13 @@ function Navigation({
                 cancelHandler={cancelModal}
                 confirmHandler={logoutHandler}
             />
+             {stage === 'drawing' && (
+                <>
+                    {timeThresholds.tenMinutes && <AudioPlayer audioType="TEN_LEFT" />}
+                    {timeThresholds.fiveMinutes && <AudioPlayer audioType="FIVE_LEFT" />}
+                    {timeThresholds.oneMinute && <AudioPlayer audioType="ONE_LEFT" />}
+                </>
+            )}
             <header className="shadow-lg rounded-b-3xl bg-white w-full">
                 {stage ? (
                     <div className="flex flew-row justify-between py-4 px-10 items-center">

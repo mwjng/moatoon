@@ -153,12 +153,16 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: create
 
   sql:
     init:
       mode: never
+
+  flyway:
+    enabled: false
 
   data:
     redis:
