@@ -19,6 +19,8 @@ public class SessionMember {
 
     private Map<Long, Boolean> sessionMembers;
 
+    //퀴즈 참여여부
+
     public SessionMember(final Long scheduleId) {
         this.scheduleId = scheduleId;
         this.sessionMembers = new HashMap<>();

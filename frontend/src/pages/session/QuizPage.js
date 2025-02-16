@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navigation from '../../components/Navigation';
 import quizBook from '../../assets/quiz-book.png';
 import quizTitle from '../../assets/quiz-title.png';
@@ -21,6 +21,7 @@ const QuizPage = ({onChangeStage}) => {
     const [isEnd, setIsEnd] = useState(false);
     const [partyId, setPartyId] = useState(1); //임의 값
     const [sessionStart] = useState(Date.now());  // 시작 시간을 상태로 관리
+    const failWordsForMail = useRef(new Set()); // 틀린 단어들을 담을 배열 생성
     const navigate = useNavigate();
 
     const handleCorrect = (quizIndex, wordIndex) => {
@@ -37,37 +38,36 @@ const QuizPage = ({onChangeStage}) => {
         });
     };
 
-    const handleFail = quizWordIndex => {
+    const handleFail = (quizWordIndex, quizWord) => {
         setFailList(prevFailList => new Set(prevFailList).add(quizWordIndex));
+        console.log("틀린 단어: ", quizWord);
+        failWordsForMail.current.add(quizWord);
+        console.log("현재 failWords: ", failWordsForMail.current);
     };
 
     const handleStep = async () => {
         // 마지막에 실행되는 함수
         const newFailList = new Set(failList);
-        const failWordsForMail = []; // 틀린 단어들을 담을 배열 생성
 
-        // 한번이라도 틀린 문제들 넣기
-        newFailList.forEach((quizWordIndex)=>{
-            failWordsForMail.push(quizs[quizWordIndex].word);
-        })
-
+        console.log("forEach전  failWords: ", failWordsForMail.current);
         correctList.forEach((isCorrect, index) => {
             if (!isCorrect) {
                 const wordId = quizs[index]?.wordId;
                 const word = quizs[index]?.word;
                 if (wordId) {
                     newFailList.add(wordId);
-                    failWordsForMail.push(word);
+                    failWordsForMail.current.add(word);
                 }
             }
         });
+        console.log("forEach후후  failWords: ", failWordsForMail.current);
 
         setFailList(newFailList);
         const failWordIds = Array.from(newFailList);
 
         addToMyWords(failWordIds)
         .then(() => {
-            return sendReportMail(failWordsForMail);
+            return sendReportMail(Array.from(failWordsForMail.current));
         })
         .then(() => {
             setTimeout(() => {
