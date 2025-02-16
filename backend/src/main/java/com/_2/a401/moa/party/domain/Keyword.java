@@ -15,11 +15,11 @@ public class Keyword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "type", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String keyword;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private Option option;
 
 }
