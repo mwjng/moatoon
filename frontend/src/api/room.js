@@ -1,10 +1,8 @@
 import { authInstance } from './axios';
 
-const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
-
 export const getSessionToken = async (scheduleId, token) => {
     try {
-        const response = await authInstance.post(`${APPLICATION_SERVER_URL}/${scheduleId}/session/join`, {});
+        const response = await authInstance.post(`/schedules/${scheduleId}/session/join`, {});
         return response.data;
     } catch (error) {
         console.error('토큰 발급 에러', error);
@@ -14,7 +12,7 @@ export const getSessionToken = async (scheduleId, token) => {
 
 export const closeSession = async (scheduleId, token) => {
     try {
-        const response = await authInstance.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {});
+        const response = await authInstance.delete(`/schedules/${scheduleId}/session/leave`, {});
         return response;
     } catch (error) {
         console.error('세션 종료 에러', error);
@@ -22,7 +20,7 @@ export const closeSession = async (scheduleId, token) => {
     }
 };
 
-export const getEnterSession = async (pinNumber) => {
+export const getEnterSession = async pinNumber => {
     try {
         const response = await authInstance.get(`/session/pinNumber/${pinNumber}`); // ✅ 올바른 URL 확인
         return response.data;
@@ -31,4 +29,3 @@ export const getEnterSession = async (pinNumber) => {
         throw error;
     }
 };
-
