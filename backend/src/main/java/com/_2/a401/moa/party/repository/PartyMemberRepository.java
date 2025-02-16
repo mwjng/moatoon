@@ -25,4 +25,6 @@ public interface PartyMemberRepository extends JpaRepository<PartyMember, Long> 
     void deleteByPartyAndMember(Party party, Member member);
 
     List<PartyMember> findByPartyOrderByModifiedAtAsc(Party party);
+
+    List<PartyMember> findByMember(Member member);
 }
