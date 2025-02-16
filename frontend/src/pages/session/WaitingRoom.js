@@ -16,6 +16,7 @@ const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
 function WaitingRoom({
     bookInfo, // {partyId, bookTitle, bookCover, cuts: Array(4)}
+    scheduleId,
     sessionTime,
     serverTime,
     sessionDuration,
@@ -23,6 +24,7 @@ function WaitingRoom({
     subscribers,
     nickname,
 }) {
+    console.log(bookInfo);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -70,7 +72,7 @@ function WaitingRoom({
                             ))}
                         </div>
                     </div>
-                    <BookDisplay bookInfo={bookInfo} />
+                    {bookInfo && <BookDisplay bookInfo={bookInfo} />}
                 </div>
                 <div className="flex items-center justify-center">
                     <FooterNotice />

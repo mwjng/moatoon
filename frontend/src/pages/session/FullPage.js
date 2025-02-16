@@ -11,7 +11,7 @@ const FullPage = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-amber-50 px-4">
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-amber-50 z-50 flex flex-col items-center justify-center px-4">
             <AudioPlayer audioType="QUIZEND" />
             <style>
                 {`
