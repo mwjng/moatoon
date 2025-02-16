@@ -73,7 +73,7 @@ const SessionContainer = () => {
     if (sessionData.scheduleId) {  // 여기서 scheduleId 체크
         fetchCurrentStage();
     }
-}, [sessionData.scheduleId]);  // sessionData.scheduleId가 변경될 때만 실행
+    }, [sessionData.scheduleId]);  // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
