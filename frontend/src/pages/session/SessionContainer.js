@@ -17,11 +17,11 @@ import { getEBookCover } from '../../api/book';
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    
+
     const [bookInfo, setBookInfo] = useState(null); // {partyId, bookTitle, bookCover, cuts: Array(4)}
     const [sessionData, setSessionData] = useState({
         scheduleId: 1,
-        partyId: 1
+        partyId: 1,
     });
 
     const [sessionStageData, setSessionStageData] = useState({
@@ -42,12 +42,14 @@ const SessionContainer = () => {
                 console.log(error);
             }
         };
-        
+
         fetchCover();
     }, [sessionData.partyId]);
 
     // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+        sessionData.scheduleId,
+    );
 
     // 컴포넌트 마운트될 때 세션 참여
     useEffect(() => {
@@ -96,7 +98,7 @@ const SessionContainer = () => {
         console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
-            currentStage: 'QUIZ_END'
+            currentStage: 'QUIZ_END',
         }));
     };
 
@@ -149,12 +151,12 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
-                        partyId = {sessionData.partyId}
+                        partyId={sessionData.partyId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
-                        sendReady = {sendReady}
+                        sendReady={sendReady}
                     />
                 );
             case 'CUT_ASSIGN':
@@ -162,19 +164,19 @@ const SessionContainer = () => {
             case 'DRAWING':
                 return (
                     <DrawingPage
-                        scheduleId = {sessionData.scheduleId}
+                        scheduleId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
-                        sendReady = {sendReady}
-                        readyStatusResponse = {readyStatusResponse}
+                        sendReady={sendReady}
+                        readyStatusResponse={readyStatusResponse}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage
-                        scheduledId = {sessionData.scheduleId}
+                        scheduledId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -183,15 +185,9 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return(
-                    <QuizPage
-                    partyId={sessionData.partyId}
-                    onChangeStage={handleQuizTimeout}/>
-                );
+                return <QuizPage partyId={sessionData.partyId} onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
-                return(
-                    <QuizEndPage/>
-                );
+                return <QuizEndPage />;
             default:
                 navigate('/home');
                 return null;
