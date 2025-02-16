@@ -81,8 +81,8 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
                 serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
             />
-            <div className="flex m-8 justify-between h-[600px]">
-                <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
+            <div className="flex m-8 justify-between gap-4">
+                <div className="flex flex-col mt-4 gap-8 content-evenly w-[400px]">
                     <MyCamera streamManager={publisher} nickname={nickname} />
                     {subscribers.map((subscriber, index) => (
                         <SubscriberVideo key={index} streamManager={subscriber} />
@@ -90,14 +90,15 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
                 </div>
                 <WordInfo
                     word={words[currentWordIdx]}
+                    index={currentWordIdx}
                     isChecked={checkedWords.has(words[currentWordIdx]?.wordId)}
                     onCheck={() => handleCheck(words[currentWordIdx]?.wordId)}
                 />
-                <div className="flex flex-col w-[400px] gap-8 justify-between mt-4">
+                <div className="flex flex-col w-[400px] gap-4 justify-between mt-4">
                     {words.map((word, index) => (
                         <div
                             key={index}
-                            className={`p-8 text-center text-[46px] rounded-2xl cursor-pointer transition-all font-bold relative
+                            className={`p-8 text-center text-[32px] rounded-2xl cursor-pointer transition-all font-bold relative
                         ${bgColors[index % bgColors.length]} 
                         ${currentWordIdx === index ? 'border-solid border-4 border-burnt-sienna' : 'border-solid border-4 border-transparent'}`}
                             onClick={() => setCurrentWordIdx(index)}
