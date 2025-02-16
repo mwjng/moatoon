@@ -60,7 +60,7 @@ export default function FindIdPage() {
                                     <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="로그인" />
                                 </Link>
                                 <Link to="/find/pw" className="flex-1">
-                                    <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="비밀번호 찾기" />
+                                    <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="PW 찾기" />
                                 </Link>
                             </div>
                         </>

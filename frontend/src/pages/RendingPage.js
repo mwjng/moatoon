@@ -29,18 +29,7 @@ function RendingPage() {
                         모아책방
                     </h2>
                     <Link to="/login">
-                        <div
-                            style={{
-                                backgroundColor: '#FAE34C',
-                                color: 'white',
-                                borderRadius: '50px',
-                                width: '244px',
-                                height: '80px',
-                                fontSize: '32px',
-                                cursor: 'pointer',
-                                padding: '20px',
-                            }}
-                        >
+                        <div className="bg-[#FAE34C] text-white rounded-full w-[244px] h-[80px] text-[32px] cursor-pointer flex items-center justify-center">
                             시작하기
                         </div>
                     </Link>

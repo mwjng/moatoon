@@ -12,10 +12,10 @@ export default function FindInfo() {
             <AuthModal>
                 <div className="w-[340px] flex flex-col gap-5">
                     <Link to="/find/id" className=" w-full">
-                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="보호자 아이디 찾기" />
+                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="보호자 ID 찾기" />
                     </Link>
                     <Link to="/find/pw" className="w-full">
-                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="비밀번호 찾기" />
+                        <Btn bgColor="#FEEE91" bgHoverColor="#FFEB74" text="PW 찾기" />
                     </Link>
                 </div>
             </AuthModal>

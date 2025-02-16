@@ -22,10 +22,21 @@ export default function ModifyInput(props) {
                         onBlur={e => (e.target.style.borderColor = '')}
                     />
 
-                    <p className="absolute text-xs left-[15px]" style={{ color: input.cmtColor }}>
+                    <p
+                        className="absolute  left-[15px]"
+                        style={{
+                            color: input.cmtColor,
+                            whiteSpace: 'nowrap',
+                            overflow: 'visible',
+                            fontSize: '10px',
+                            top: '85%',
+                        }}
+                    >
                         {input.comment}
                     </p>
-                    {input.default && <p className="absolute text-xs top-[-6px] left-[18px]">{input.label}</p>}
+                    {input.default && (
+                        <p className="absolute text-xs top-[-6px] left-[18px] text-[#aaa]">{input.label}</p>
+                    )}
                 </div>
             ))}
         </>

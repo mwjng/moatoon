@@ -99,7 +99,12 @@ public class MemberService {
     @Transactional
     public void sendUserPwMail(FindPwRequest req) {
         Member member = memberRepository.findByLoginId(req.loginId())
-                .orElseThrow(()->new MoaException(INVALID_MEMBER));;
+                .orElseThrow(()->new MoaException(INVALID_MEMBER));
+
+        if(!member.getStatus().equals(MemberState.ACTIVE)){
+            throw new MoaException(INVALID_MEMBER_STATUS);
+        }
+
         if(member.getRole().equals(MemberRole.CHILD)){
             if(!member.getManager().getEmail().equals(req.email())){
                 throw new MoaException(INVALID_MEMBER);
@@ -109,6 +114,7 @@ public class MemberService {
                 throw new MoaException(INVALID_MEMBER);
             }
         }
+
         String newPw = getTempPassword();
         mailService.sendPwMail(req.email(), newPw);
         member.setPassword(passwordEncoder.encode(newPw));
@@ -117,6 +123,9 @@ public class MemberService {
     public FindIdInfo getLoginIdByNameAndEmail(FindIdRequest req) {
         Member member = memberRepository.findByEmailAndName(req.email(), req.name())
                 .orElseThrow(()->new MoaException(INVALID_MEMBER));
+        if (!member.getStatus().equals(MemberState.ACTIVE)){
+             throw new MoaException(INVALID_MEMBER_STATUS);
+        }
 
         return FindIdInfo.from(member);
     }
@@ -158,7 +167,7 @@ public class MemberService {
     public void deleteMember(HttpServletRequest req) {
         Member member = memberRepository.findById(jwtUtil.getMemberId(jwtUtil.getTokenFromRequest(req))).orElseThrow(()->new MoaException(INVALID_MEMBER));
         member.setStatus(MemberState.DELETED);
-        member.setManager(null);
+        memberRepository.findByManagerId(member.getId()).forEach(m -> m.setManager(null));
     }
 
     public List<ChildInfo> getChildrenInfo(HttpServletRequest req) {

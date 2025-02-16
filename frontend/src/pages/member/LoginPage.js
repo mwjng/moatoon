@@ -55,6 +55,12 @@ export default function LoginPage() {
         }
     };
 
+    const keyDownHandler = event => {
+        if (event.key === 'Enter') {
+            loginHandler();
+        }
+    };
+
     const closeModal = () => {
         setModalState(false);
     };
@@ -63,7 +69,7 @@ export default function LoginPage() {
         <div style={{ position: 'relative' }}>
             <Background />
             <AuthModal title="로그인">
-                <Input inputs={inputs} width="300px" changeFunction={changeValue} />
+                <Input inputs={inputs} width="300px" changeFunction={changeValue} onKeyDown={keyDownHandler} />
                 <Btn onClickHandler={loginHandler} bgColor="#FFBD73" bgHoverColor="#FFB25B" text="로그인" />
                 <hr className="w-full border-[1px] border-white shadow-md" />
                 <div className="flex gap-3 w-full">
