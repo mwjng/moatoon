@@ -38,6 +38,9 @@ function WaitingRoom({
         }
     }, [dispatch, scheduleId]);
 
+    const cutsState = useSelector(state => state.cuts);
+    //console.log(cutsState);
+
     const handleTimeOut = () => {
         // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
     };

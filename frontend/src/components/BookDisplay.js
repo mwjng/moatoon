@@ -12,10 +12,17 @@ function BookDisplay({ bookInfo }) {
             >
                 만들고 있는 그림책
             </div>
+
             <div className="mt-2 flex h-full">
                 <img src={bookInfo.bookCover} alt="그림책 이미지" className="w-full h-full object-cover rounded-lg" />
             </div>
-            <div className="mt-2 text-center text-black text-sm font-medium">새창에서 크게 보기</div>
+            <div
+                key={bookInfo.partyId}
+                className="mt-2 text-center text-black text-sm font-medium"
+                onClick={() => window.open(`/ebook/${bookInfo.partyId}`, '_blank')}
+            >
+                새창에서 크게 보기
+            </div>
         </div>
     );
 }

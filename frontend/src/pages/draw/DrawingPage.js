@@ -16,7 +16,7 @@ const DrawingPage = ({ sessionStageData, publisher, subscribers, nickname, sendR
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
 
-    const userId = 3;
+    const userId = useSelector(state => state.user.userInfo.id);
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
