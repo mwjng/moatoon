@@ -83,12 +83,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
 
   const handleJoinSession = () => {
     if (activeSchedule) {
-      navigate('/session', {
-        state: {
-          partyId: partyDetails.id,
-          scheduleId: activeSchedule.scheduleId
-        }
-      });
+      navigate(`/session/${partyDetails.pinNumber}}`)
     }
   };
 
