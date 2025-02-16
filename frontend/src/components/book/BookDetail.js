@@ -13,6 +13,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedNewChildren, setSelectedNewChildren] = useState([]);
+  const [selectedChildId, setSelectedChildId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [memberToRemove, setMemberToRemove] = useState(null);
@@ -36,7 +37,6 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
         } else {
           data = await getPartyDetailByPin(partyIdOrPin);
         }
-
         setPartyDetails(data);
         setPartyId(data.id);
       } catch (err) {
@@ -80,9 +80,6 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
     });
   };
 
-  // const isRegistrationVisible = getRemainingTime() > 1;
-  // const activeSchedule = getActiveSchedule();
-  // const showControls = getRemainingTime() > 1;
   const remainingTime = getRemainingTime();
   const isRegistrationEnabled = remainingTime > 1 && userRole === 'MANAGER';
   const activeSchedule = getActiveSchedule();
@@ -102,37 +99,15 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
 
   // 멤버 관리 함수들
   const handleAddChild = (childId) => {
+    if (!childId) return;
     const selectedChild = userChildren.find(child => child.id === childId);
-    
-    // 이미 참여 중이거나 임시 추가 리스트에 있는 멤버인지 확인
-    const isAlreadyMember = 
-      partyDetails.members.some(member => member.memberId === childId) ||
-      selectedNewChildren.some(child => child.id === childId);
-
-    if (isAlreadyMember) {
-      setAlertMessage("이미 참여 중인 멤버입니다.");
-      setAlertModalState(true);
-      return;
-    }
-
     if (selectedChild) {
       setSelectedNewChildren(prev => [...prev, selectedChild]);
-    }
-
-      // 드롭다운 초기화
-    const selectElement = document.querySelector('select');
-    if (selectElement) {
-      selectElement.selectedIndex = 0;
     }
   };
 
   const handleRemoveNewChild = (childId) => {
     setSelectedNewChildren(prevChildren => prevChildren.filter(child => child.id !== childId));
-    // 드롭다운 초기화로 삭제된 아동을 즉시 선택 가능하게 함
-    const selectElement = document.querySelector('select');
-    if (selectElement) {
-      selectElement.selectedIndex = 0;
-    }
   };
 
   const handleSubmitNewMembers = () => {
@@ -377,10 +352,15 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
               {userRole === 'MANAGER' ? (
                 <div className="flex gap-2 w-full">
                   <select 
-                    className="select select-bordered flex-1"
-                    onChange={(e) => handleAddChild(Number(e.target.value))}
-                    disabled={!isRegistrationEnabled || isSubmitting}
-                  >
+                      className="select select-bordered flex-1"
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        handleAddChild(value);
+                        // 선택 후 드롭다운을 초기화합니다.
+                        e.target.value = "";
+                      }}
+                      disabled={!isRegistrationEnabled || isSubmitting}
+                    >
                     <option value="" disabled selected>참여자 선택</option>
                     {userChildren
                       .filter(child => 
