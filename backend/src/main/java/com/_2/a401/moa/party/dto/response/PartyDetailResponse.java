@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 @Builder
 public class PartyDetailResponse {
+
+    private long id;
     private String pinNumber;
     private String title;
     private String bookCover;
@@ -23,5 +25,6 @@ public class PartyDetailResponse {
     private String introduction;
     private List<KeywordResponse> keywords;
     private List<PartyMemberResponse> members;
+    private List<ScheduleResponse> schedules;
 
 }
