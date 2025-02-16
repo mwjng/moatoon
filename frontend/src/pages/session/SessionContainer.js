@@ -10,7 +10,7 @@ import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
-
+import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 
 const SessionContainer = () => {
@@ -21,6 +21,8 @@ const SessionContainer = () => {
         partyId: 1,
         bookTitle: '용감한 기사',
     });
+
+    const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
 
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
@@ -33,6 +35,25 @@ const SessionContainer = () => {
 
     // useOpenViduSession 훅 사용
     const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(scheduleId);
+
+    // 창 크기 체크 함수
+    const checkWindowSize = () => {
+        if (window.innerWidth < 800 || window.innerHeight < 600) {
+            setIsFullScreen(false);
+        } else {
+            setIsFullScreen(true);
+        }
+    };
+
+    useEffect(() => {
+        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
+        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 제거
+        return () => {
+            window.removeEventListener('resize', checkWindowSize);
+        };
+    }, []);
 
     // 컴포넌트 마운트될 때 세션 참여
     useEffect(() => {
@@ -81,7 +102,7 @@ const SessionContainer = () => {
         console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
-            currentStage: 'QUIZ_END'
+            currentStage: 'QUIZ_END',
         }));
     };
 
@@ -152,8 +173,8 @@ const SessionContainer = () => {
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
-                        sendReady = {sendReady}
-                        readyStatusResponse = {readyStatusResponse}
+                        sendReady={sendReady}
+                        readyStatusResponse={readyStatusResponse}
                     />
                 );
             case 'DONE':
@@ -167,14 +188,9 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return(
-                    <QuizPage
-                    onChangeStage={handleQuizTimeout}/>
-                );
+                return <QuizPage onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
-                return(
-                    <QuizEndPage/>
-                );
+                return <QuizEndPage />;
             default:
                 navigate('/home');
                 return null;
@@ -199,11 +215,7 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return (
-        <div className="min-h-screen">
-            <CurrentStage />
-        </div>
-    );
+    return <div className="min-h-screen">{isFullScreen ? <CurrentStage /> : <FullPage />}</div>;
 };
 
 export default SessionContainer;
