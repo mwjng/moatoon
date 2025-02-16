@@ -8,20 +8,21 @@ import QuizPage from './QuizPage';
 import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
-import { useNavigate } from 'react-router';
-import { SessionProvider } from '../../hooks/SessionProvider';
-
+import { useNavigate, useParams } from 'react-router';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
+import { getSessionInfoByPinNumber } from '../../api/schedule';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
+    const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
 
-    const [bookInfo, setBookInfo] = useState(null); // {partyId, bookTitle, bookCover, cuts: Array(4)}
+    const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
     const [sessionData, setSessionData] = useState({
-        scheduleId: 1,
-        partyId: 1,
+        // api로 정보 가져옴
+        scheduleId: null,
+        partyId: null,
     });
 
     const [sessionStageData, setSessionStageData] = useState({
@@ -30,6 +31,27 @@ const SessionContainer = () => {
         serverTime: new Date(),
         sessionDuration: 60,
     });
+
+    // ===========[api 호출]==========
+    // pinNumber로 초기 데이터 가져오기
+    useEffect(() => {
+        const fetchSessionInfo = async () => {
+            try {
+                const data = await getSessionInfoByPinNumber(pinNumber);
+                setSessionData({
+                    scheduleId: data.scheduleId,
+                    partyId: data.partyId,
+                });
+            } catch (error) {
+                console.error('핀넘버로 세션 정보 조회 실패:', error);
+                navigate('/home');
+            }
+        };
+
+        if (pinNumber) {
+            fetchSessionInfo();
+        }
+    }, [pinNumber, navigate]);
 
     // partyId로 bookTitle, bookCover, cuts 가져옴
     useEffect(() => {
@@ -46,16 +68,13 @@ const SessionContainer = () => {
         fetchCover();
     }, [sessionData.partyId]);
 
-    // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
-        sessionData.scheduleId,
-    );
-
-    // 컴포넌트 마운트될 때 세션 참여
+    // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
-        joinSession();
-        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
-    }, []);
+        if (sessionData.scheduleId) {
+            // 여기서 scheduleId 체크
+            fetchCurrentStage();
+        }
+    }, [sessionData.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
@@ -85,6 +104,19 @@ const SessionContainer = () => {
         }
     };
 
+    // ===========[api 호출 끝]==========
+
+    // useOpenViduSession 훅 사용
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+        sessionData.scheduleId,
+    );
+
+    // 컴포넌트 마운트될 때 세션 참여
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    }, []);
+
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
         console.log('타임아웃 처리: QUIZ 스테이지로 전환');
@@ -101,11 +133,6 @@ const SessionContainer = () => {
             currentStage: 'QUIZ_END',
         }));
     };
-
-    // 초기 로딩 시 스테이지 정보 가져오기
-    useEffect(() => {
-        fetchCurrentStage();
-    }, [sessionData.scheduleId]);
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     // useEffect(() => {
