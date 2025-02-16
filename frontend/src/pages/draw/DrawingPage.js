@@ -8,21 +8,21 @@ import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
 import { useSession } from '../../hooks/SessionProvider';
 
-const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nickname, sendReady, readyStatusResponse }) => {
+const DrawingPage = ({
+    scheduleId,
+    sessionStageData,
+    publisher,
+    subscribers,
+    nickname,
+    sendReady,
+    readyStatusResponse,
+}) => {
     const dispatch = useDispatch();
 
     //redux 상태 가져오기
     const cutsState = useSelector(state => state.cuts);
 
-    // TODO: 위에껄로 바꿔야함
-    // const userId = useSelector(state => state.user.userInfo.id);
-    const userId = 3;
-
-    useEffect(() => {
-        if (scheduleId) {
-            dispatch(fetchCutsInfo(scheduleId)); // API 호출
-        }
-    }, [dispatch, scheduleId]);
+    const userId = useSelector(state => state.user.userInfo.id);
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -42,19 +42,7 @@ const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nic
         // Cleanup function to handle component unmounting
         return () => {
             console.log('Drawing 페이지 종료됨');
-            const handlePageExit = async () => {
-                setIsLoading(true);
-                console.log('handlePageExit');
-                console.log(drawingRef.current);
-                if (drawingRef.current) {
-                    console.log('exportToSVGAndUpload 함수 호출??');
-                    await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
-                }
-                setIsLoading(false);
-            };
-
-            // Call the async function
-            handlePageExit();
+            handlePageExit(); // 페이지 종료 시 함수 호출
         };
     }, [dispatch, scheduleId]);
 
@@ -67,6 +55,24 @@ const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nic
         setIsLoading(false);
 
         //navigate('/session/draw-end', { state: { scheduleId } });
+    };
+
+    const handlePageExit = async () => {
+        setIsLoading(true);
+        console.log('handlePageExit');
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 함수 호출??');
+            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
+        }
+        setIsLoading(false);
+    };
+
+    // 추가된 버튼을 통한 exportToSVGAndUpload 확인
+    const handleExportSVG = () => {
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 버튼 클릭됨');
+            drawingRef.current.exportToSVGAndUpload();
+        }
     };
 
     return (
@@ -91,7 +97,7 @@ const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nic
                         toggleView={toggleView}
                         cutsInfo={cutsState.cuts}
                         userId={userId}
-                        sendReady = {sendReady}
+                        sendReady={sendReady}
                         publisher={publisher}
                         nickname={nickname}
                         isFirstDrawingVisit={isFirstDrawingVisit}
@@ -106,10 +112,19 @@ const DrawingPage = ({ scheduleId, sessionStageData, publisher, subscribers, nic
                         nickname={nickname}
                         isFirstOverviewVisit={isFirstOverviewVisit}
                         setIsFirstOverviewVisit={setIsFirstOverviewVisit}
-                        readyStatusResponse = {readyStatusResponse}
+                        readyStatusResponse={readyStatusResponse}
                     />
                 ))}
             {isLoading && <Loading />}
+            {/* Export SVG 버튼
+            <div className="flex justify-center mt-5">
+                <button
+                    className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600"
+                    onClick={handleExportSVG} // exportToSVGAndUpload 호출
+                >
+                    SVG 내보내기 확인
+                </button>
+            </div> */}
         </div>
     );
 };

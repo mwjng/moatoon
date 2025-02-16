@@ -8,7 +8,9 @@ import QuizPage from './QuizPage';
 import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
-import { useNavigate, useParams  } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { SessionProvider } from '../../hooks/SessionProvider';
+import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -16,14 +18,17 @@ import { getSessionInfoByPinNumber } from '../../api/schedule';
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    const { pinNumber } = useParams();  // 프론트 url에 담겨서 옴
+    const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
+
+    const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
 
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
-    const [sessionData, setSessionData] = useState({ // api로 정보 가져옴
+    const [sessionData, setSessionData] = useState({
+        // api로 정보 가져옴
         scheduleId: null,
-        partyId: null
+        partyId: null,
     });
-    
+
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
         sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
@@ -31,7 +36,26 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
+    // 창 크기 체크 함수
+    const checkWindowSize = () => {
+        if (window.innerWidth < 800 || window.innerHeight < 600) {
+            setIsFullScreen(false);
+        } else {
+            setIsFullScreen(true);
+        }
+    };
 
+    useEffect(() => {
+        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
+        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 제거
+        return () => {
+            window.removeEventListener('resize', checkWindowSize);
+        };
+    }, []);
+
+    // 컴포넌트 마운트될 때 세션 참여
     // ===========[api 호출]==========
     // pinNumber로 초기 데이터 가져오기
     useEffect(() => {
@@ -40,7 +64,7 @@ const SessionContainer = () => {
                 const data = await getSessionInfoByPinNumber(pinNumber);
                 setSessionData({
                     scheduleId: data.scheduleId,
-                    partyId: data.partyId
+                    partyId: data.partyId,
                 });
             } catch (error) {
                 console.error('핀넘버로 세션 정보 조회 실패:', error);
@@ -64,16 +88,17 @@ const SessionContainer = () => {
                 console.log(error);
             }
         };
-        
+
         fetchCover();
     }, [sessionData.partyId]);
 
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
-    if (sessionData.scheduleId) {  // 여기서 scheduleId 체크
-        fetchCurrentStage();
-    }
-}, [sessionData.scheduleId]);  // sessionData.scheduleId가 변경될 때만 실행
+        if (sessionData.scheduleId) {
+            // 여기서 scheduleId 체크
+            fetchCurrentStage();
+        }
+    }, [sessionData.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
@@ -102,11 +127,13 @@ const SessionContainer = () => {
             setIsLoading(false);
         }
     };
-    
-     // ===========[api 호출 끝]==========
+
+    // ===========[api 호출 끝]==========
 
     // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+        sessionData.scheduleId,
+    );
 
     // 컴포넌트 마운트될 때 세션 참여
     useEffect(() => {
@@ -127,7 +154,7 @@ const SessionContainer = () => {
         console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
-            currentStage: 'QUIZ_END'
+            currentStage: 'QUIZ_END',
         }));
     };
 
@@ -175,12 +202,12 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
-                        partyId = {sessionData.partyId}
+                        partyId={sessionData.partyId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
-                        sendReady = {sendReady}
+                        sendReady={sendReady}
                     />
                 );
             case 'CUT_ASSIGN':
@@ -188,19 +215,19 @@ const SessionContainer = () => {
             case 'DRAWING':
                 return (
                     <DrawingPage
-                        scheduleId = {sessionData.scheduleId}
+                        scheduleId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
-                        sendReady = {sendReady}
-                        readyStatusResponse = {readyStatusResponse}
+                        sendReady={sendReady}
+                        readyStatusResponse={readyStatusResponse}
                     />
                 );
             case 'DONE':
                 return (
                     <DrawingEndPage
-                        scheduledId = {sessionData.scheduleId}
+                        scheduledId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -209,15 +236,9 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return(
-                    <QuizPage
-                    partyId={sessionData.partyId}
-                    onChangeStage={handleQuizTimeout}/>
-                );
+                return <QuizPage partyId={sessionData.partyId} onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
-                return(
-                    <QuizEndPage/>
-                );
+                return <QuizEndPage />;
             default:
                 navigate('/home');
                 return null;
@@ -242,11 +263,7 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return (
-        <div className="min-h-screen">
-            <CurrentStage />
-        </div>
-    );
+    return <div className="min-h-screen">{isFullScreen ? <CurrentStage /> : <FullPage />}</div>;
 };
 
 export default SessionContainer;
