@@ -2,18 +2,24 @@ import React from 'react';
 
 const UpcomingScheduleCard = ({ bookTitle, bookImg, sessionTime }) => {
   return (
-    <div className="p-2 inline-block"> {/* inline-block으로 변경하고 너비는 내용물에 맞게 */}
-      <div className="w-[130px] pb-1 bg-butter-cream rounded-xl shadow-md">
+    <div className="p-2 inline-block">
+      <div className="w-44 pb-2 bg-butter-cream rounded-xl">
         <div className="pt-3 px-3 pb-1">
-          <img 
-            src={bookImg} 
-            alt="Book cover"
-            className="w-full  aspect-square object-cover rounded-lg"
-          />
+          <div className="rounded-lg overflow-hidden">
+            <img 
+              src={bookImg} 
+              alt="Book cover"
+              className="w-full aspect-square object-cover"
+            />
+          </div>
         </div>
-        <div className="p-1 text-center whitespace-nowrap">
-          <p className="text-base">{bookTitle}</p>
-          <p className="text-sm">{sessionTime}</p>
+        <div className="px-2 pt-2 text-center">
+          <p className="text-base truncate px-1 text-gray-800" title={bookTitle}>
+            {bookTitle}
+          </p>
+          <p className="text-sm text-gray-600 mt-1">
+            {sessionTime}
+          </p>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OpenAI from "openai";
 import { fetchRandomWords, sendStoryToBackend } from "../../api/party";
+import Loading from "../Loading";
 
 const openai = new OpenAI({
   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
@@ -30,6 +31,7 @@ const BookStoryGenerator = ({
   const [partyId, setPartyId] = useState(null);
   const [isCreatingParty, setIsCreatingParty] = useState(false);
   const [showBookDetail, setShowBookDetail] = useState(false);
+  const [regenerateCount, setRegenerateCount] = useState(0);
 
 
   const fetchWords = async () => {
@@ -57,6 +59,11 @@ const BookStoryGenerator = ({
 
   
   const generateStory = async () => {
+
+    if(currentStory) {
+      setRegenerateCount(prev => prev+1);
+    }
+
     setIsGenerating(true);
     try {
       // const data = await fetchRandomWords(difficulty, episodeLength);
@@ -266,6 +273,8 @@ const BookStoryGenerator = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+      {isGenerating && <Loading />}
+      {(isGeneratingImage || isCreatingParty) && <Loading />}
       <div className="w-[90%] md:w-[80%] lg:w-[70%] bg-blue-100 rounded-lg shadow-lg h-[90vh] flex flex-col">
         {/* 헤더 영역 - 고정 높이 */}
         <div className="p-4 border-b bg-blue-100">
@@ -283,7 +292,7 @@ const BookStoryGenerator = ({
         {/* 컨텐츠 영역 - 남은 공간 모두 차지하고 스크롤 가능 */}
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
-            {isGenerating ? (
+            {isGenerating ?  (
               <div className="flex items-center justify-center h-full">
                 <p className="text-lg">스토리를 생성하고 있습니다...</p>
               </div>
@@ -317,10 +326,10 @@ const BookStoryGenerator = ({
           <div className="flex justify-center gap-3">
             <button 
               onClick={generateStory} 
-              disabled={isGenerating} 
+              disabled={isGenerating || regenerateCount >=3} 
               className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
             >
-              재생성하기 (1/3)
+              재생성하기 ({regenerateCount + 1}/3)
             </button>
             <button 
               onClick={handleDecide}

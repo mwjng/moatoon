@@ -320,7 +320,7 @@ export default function ManagerModify(props) {
                             <ul className="w-[300px] flex overflow-x-auto whitespace-nowrap gap-2">
                                 {addedChildren.map((child, index) => (
                                     <dic className="flex">
-                                        <li key={index} className="mt-1 inline-block">
+                                        <li key={index} className="mt-1 inline-block text-lg">
                                             {child.name}
                                         </li>
                                         <GiCancel className="w-3" onClick={e => deleteChild(index)} />

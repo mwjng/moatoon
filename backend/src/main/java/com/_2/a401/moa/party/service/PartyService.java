@@ -89,22 +89,26 @@ public class PartyService {
         DayOfWeek currentDay = startDate.getDayOfWeek();
 
         List<DayOfWeek> selectedDays = dayWeek.stream()
-                .map(day -> DayOfWeek.valueOf(day.name()))
-                .sorted(Comparator.comparingInt(DayOfWeek::getValue))
-                .collect(Collectors.toList());
+            .map(day -> DayOfWeek.valueOf(day.name()))
+            .sorted(Comparator.comparingInt(DayOfWeek::getValue))
+            .collect(Collectors.toList());
 
+        // 현재 요일이 선택된 요일 리스트에 포함되어 있으면 그대로 반환
         if (selectedDays.contains(currentDay)) {
             return startDate;
         }
 
+        // 현재 요일보다 뒤에 있는 요일 찾기
         for (DayOfWeek nextDay : selectedDays) {
             if (nextDay.getValue() > currentDay.getValue()) {
-                return startDate.with(nextDay);
+                return startDate.plusDays(nextDay.getValue() - currentDay.getValue());
             }
         }
 
-        return startDate.plusWeeks(1).with(selectedDays.get(0));
+        // 모든 요일이 이미 지나갔다면 다음 주 첫 번째 선택된 요일로 이동
+        return startDate.plusDays(7 - currentDay.getValue() + selectedDays.get(0).getValue());
     }
+
 
 
     private void savePartyKeywords(Party party, int genreId, int moodId, int themeId) {

@@ -3,10 +3,8 @@ import Navigation from '../../components/Navigation';
 import WordInfo from '../../components/word/WordInfo';
 import CheckIcon from '../../assets/icon-check.png';
 import { getLearningWords } from '../../api/word';
-import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket'; // 세션 상태 전달 받을 웹소켓
 import { useNavigate } from 'react-router';
 import SubscriberVideo from '../../components/SubscriberVideo';
-import { useSession } from '../../hooks/SessionProvider';
 import MyCamera from '../../components/MyCamera';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 

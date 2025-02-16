@@ -71,6 +71,24 @@ const DrawingPage = ({
         fetchCanvasData();
     }, [cutId]);
 
+    const handlePageExit = async () => {
+        setIsLoading(true);
+        console.log('handlePageExit');
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 함수 호출??');
+            await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
+        }
+        setIsLoading(false);
+    };
+
+    // 추가된 버튼을 통한 exportToSVGAndUpload 확인
+    const handleExportSVG = () => {
+        if (drawingRef.current) {
+            console.log('exportToSVGAndUpload 버튼 클릭됨');
+            drawingRef.current.exportToSVGAndUpload();
+        }
+    };
+
     return (
         <div className="h-screen bg-light-cream-yellow">
             <div className="w-full mb-5">
