@@ -36,7 +36,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public void checkEmailDup(String email) {
-        if(memberRepository.findByEmail(email).isPresent()) {
+        if(memberRepository.findByEmailAndStatus(email, MemberState.ACTIVE).isPresent()) {
             throw new MoaException(DUPLICATED_EMAIL);
         }
     }

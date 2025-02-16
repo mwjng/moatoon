@@ -3,11 +3,11 @@ POST localhost:8080/members
 Content-Type: application/json
 
 {
-  "nickname": "root",
-  "name": "root",
+  "nickname": "child",
+  "name": "child",
   "email": "abcd123@gmail.com",
-  "loginId": "root",
-  "password": "Asdf1234!",
+  "loginId": "child",
+  "password": "alsdntjdghks123!!",
   "role": "CHILD"
 }
 
@@ -16,8 +16,8 @@ POST localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "loginId": "root",
-  "password": "Asdf1234!"
+  "loginId": "child",
+  "password": "alsdntjdghks123!!"
 }
 
 ###

@@ -14,6 +14,7 @@ export default function Input(props) {
                     disabled={input.disabled}
                     style={{ backgroundColor: input.color, width: props.width }}
                     onChange={e => props.changeFunction(input.id, e.target.value)}
+                    onKeyDown={props.onKeyDown}
                 />
             ))}
         </>

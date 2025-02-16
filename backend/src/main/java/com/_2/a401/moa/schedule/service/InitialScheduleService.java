@@ -52,8 +52,10 @@ public class InitialScheduleService {
 
     private LocalDateTime adjustStartDateToNearestDay(LocalDateTime startDate, List<Day> days) {
         List<DayOfWeek> selectedDays = convertToDayOfWeek(days);
-
-        for (int i = 0; i < 7; i++) {
+        if (selectedDays.contains(startDate.getDayOfWeek())) {
+            return startDate;
+        }
+        for (int i = 1; i < 7; i++) {
             LocalDateTime nextDate = startDate.plusDays(i);
             if (selectedDays.contains(nextDate.getDayOfWeek())) {
                 return nextDate;
@@ -61,6 +63,7 @@ public class InitialScheduleService {
         }
         return startDate;
     }
+
 
     private LocalDateTime getNextSessionDate(LocalDateTime current, List<Day> days) {
         List<DayOfWeek> selectedDays = convertToDayOfWeek(days);

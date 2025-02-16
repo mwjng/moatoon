@@ -29,15 +29,21 @@ export default function CheckPw(props) {
     const changeVal = e => {
         setPassword(e.target.value);
     };
+
+    const keyDownHandler = event => {
+        if (event.key === 'Enter') {
+            checkPwHandler();
+        }
+    };
     return (
         <>
-            {' '}
-            <AuthModal title="비밀번호 확인" top={true}>
+            <AuthModal title="비밀번호 확인">
                 <input
                     type="password"
                     placeholder="비밀번호를 입력해주세요."
-                    className="rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] bg-[white]"
+                    className="w-[120%] rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] bg-[white]"
                     onChange={changeVal}
+                    onKeyDown={keyDownHandler}
                 />
                 <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="확인하기" onClickHandler={checkPwHandler} />
             </AuthModal>

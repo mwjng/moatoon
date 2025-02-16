@@ -44,14 +44,15 @@ const ScheduleSection = ({ className, scheduleData }) => {
           {/* 다가오는 일정 - 일정이 있을 때만 표시 */}
           {upcomingSchedules?.length > 0 && (
             <div className="flex flex-col items-center md:items-start justify-center pl-6 pt-4"> 
-              <h2 className="text-[21px] font-bold pb-2 mt-2">다가오는 일정</h2>
-              <div className="flex pt-2 gap-2 overflow-x-auto no-scrollbar">
+              <h2 className="text-[21px] font-bold pb-2 mt-2">
+                다가오는 일정
+              </h2>
+              <div className="flex pt-2 gap-3 overflow-x-auto scrollbar-hide pb-4">
                 {upcomingSchedules.map((schedule) => (
                   <UpcomingScheduleCard 
                     key={schedule.scheduleId}
                     bookImg={schedule.bookCover}
                     bookTitle={schedule.bookTitle}
-                    bookCover={schedule.bookCover}
                     sessionTime={formatSessionTime(schedule.sessionTime)}
                   />
                 ))}
