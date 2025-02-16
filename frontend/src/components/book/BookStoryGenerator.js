@@ -20,6 +20,7 @@ const BookStoryGenerator = ({
   genre,
   difficulty,
   onClose,
+  onComplete
 }) => {
   const [currentStory, setCurrentStory] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -30,17 +31,42 @@ const BookStoryGenerator = ({
   const [isCreatingParty, setIsCreatingParty] = useState(false);
   const [showBookDetail, setShowBookDetail] = useState(false);
 
-  const generateStory = async () => {
-    setIsGenerating(true);
+
+  const fetchWords = async () => {
     try {
       const data = await fetchRandomWords(difficulty, episodeLength);
-      
       if (!data || !data.words || data.words.length === 0) {
         throw new Error("단어를 가져오는 데 실패했습니다.");
       }
+      setWords(data.words); // ✅ 상태 업데이트
+    } catch (error) {
+      console.error("단어 가져오기 실패:", error.message);
+    }
+  };
 
-      setWords(data.words);
-      const wordList = data.words.map((w) => w.word).join(", ");
+  useEffect(() => {
+    fetchWords();
+  }, [difficulty, episodeLength]);
+
+
+  useEffect(() => {
+    if (words.length > 0) {
+      generateStory();
+    }
+  }, [words]);
+
+  
+  const generateStory = async () => {
+    setIsGenerating(true);
+    try {
+      // const data = await fetchRandomWords(difficulty, episodeLength);
+      
+      if (!words || words.length === 0) {
+        throw new Error("단어 리스트가 없습니다. 먼저 단어를 가져와야 합니다.");
+    }
+
+    const wordList = words.map((w) => w.word).join(", ");
+
       const prompt = `
             동화책 제목: 생성된 이야기와 어울리는 동화책 제목을 지어줘.
             역할: ${mood} 분위기의 ${theme} 테마 ${genre} 동화를 작성하는 동화 작가.
@@ -121,10 +147,10 @@ const BookStoryGenerator = ({
                   "title": "CH${index + 1}",
                   "words": [${chapterWords.map(w => `{"id": ${w.wordId}, "word": "${w.word}"}`).join(", ")}],
                   "sentences": [
-                    "첫 번째 문장: **${chapterWords[0]?.word}**을 사용해야 합니다.",
-                    "두 번째 문장: **${chapterWords[1]?.word}**을 사용해야 합니다.",
-                    "세 번째 문장: **${chapterWords[2]?.word}**을 사용해야 합니다.",
-                    "네 번째 문장: **${chapterWords[3]?.word}**을 사용해야 합니다."
+                    "첫 번째 문장: ${chapterWords[0]?.word}을 사용해야 합니다.",
+                    "두 번째 문장: ${chapterWords[1]?.word}을 사용해야 합니다.",
+                    "세 번째 문장: ${chapterWords[2]?.word}을 사용해야 합니다.",
+                    "네 번째 문장: ${chapterWords[3]?.word}을 사용해야 합니다."
                   ]
                 }`).join(", ")}
               ]
@@ -152,7 +178,7 @@ const BookStoryGenerator = ({
         throw new Error("OpenAI에서 올바른 JSON 응답을 받지 못했습니다.");
       }
 
-      // ✅ overview를 하나의 문자열로 변환
+      // overview를 하나의 문자열로 변환
       if (Array.isArray(generatedStory.overview)) {
         generatedStory.overview = generatedStory.overview.join(" ");
       }
@@ -164,11 +190,6 @@ const BookStoryGenerator = ({
       setIsGenerating(false);
     }
   };
-
-  useEffect(() => {
-    generateStory();
-  }, []);
-
 
   const convertDayOfWeekToEnum = (dayList) => {
     const dayMap = {
@@ -183,8 +204,6 @@ const BookStoryGenerator = ({
     return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
   };
 
-
-  
 
   // 🔹 표지 이미지 생성 및 최종 데이터 전송
   const handleDecide = async () => {
@@ -223,9 +242,13 @@ const BookStoryGenerator = ({
 
       const result = await sendStoryToBackend(payload, generatedCover);
       console.log("스토리 전송 성공", result);//result = partyId
-      // setPartyId(result);
+      setPartyId(result);
 
-      onClose();
+      if (result) {
+        onComplete(result); // 파티 생성 성공 시 handleStoryComplete 호출
+        setTimeout(() => onClose(), 0);
+    }
+
     } catch (error) {
       console.error("최종 전송 오류:", error.message);
     } finally {
@@ -241,72 +264,76 @@ const BookStoryGenerator = ({
     }
   }, [partyId]);
 
-return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-            <div className="w-[90%] md:w-[80%] lg:w-[70%]  bg-blue-100 rounded-lg shadow-lg">
-                <div className="h-full grid grid-rows-[auto_1fr_auto]">
-                    {/* 헤더 */}
-                    <div className="flex justify-between items-center p-4 border-b">
-                        <h2 className="text-lg font-bold text-center flex-grow">📖 스토리라인</h2>
-                        <button 
-                            onClick={onClose}
-                            className="text-gray-500 hover:text-gray-700"
-                        >
-                            ✕
-                        </button>
-                    </div>
-
-                    {/* 스크롤 가능한 컨텐츠 영역 */}
-                    <div className="flex-1 overflow-y-auto p-4">
-                        {isGenerating ? (
-                            <div className="flex items-center justify-center h-full">
-                                <p className="text-lg">스토리를 생성하고 있습니다...</p>
-                            </div>
-                        ) : (
-                            <>
-                                {currentStory && (
-                                    <div className="mb-4 p-3 border border-gray-300 rounded bg-gray-50">
-                                        <h3 className="font-bold mb-2 text-base">개요</h3>
-                                        <p className="text-sm">{currentStory.overview}</p>
-                                    </div>
-                                )}
-
-                                {currentStory?.chapters?.map((chapter, index) => (
-                                    <div key={index} className="mb-4 p-3 border border-gray-300 rounded bg-gray-50">
-                                        <h3 className="font-bold mb-2 text-base">에피소드 {index + 1}</h3>
-                                        <p className="text-sm mb-2">
-                                            <strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}
-                                        </p>
-                                        {chapter.sentences.map((sentence, idx) => (
-                                            <p key={idx} className="text-sm mb-1">{sentence}</p>
-                                        ))}
-                                    </div>
-                                ))}
-                            </>
-                        )}
-                    </div>
-
-                    {/* 하단 버튼 */}
-                    <div className="p-4 border-t bg-blue-100 flex justify-center gap-3">
-                        <button 
-                            onClick={generateStory} 
-                            disabled={isGenerating} 
-                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
-                        >
-                            재생성하기 (1/3)
-                        </button>
-                        <button 
-                            onClick={handleDecide} 
-                            disabled={isGeneratingImage} 
-                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
-                        >
-                            결정하기
-                        </button>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+      <div className="w-[90%] md:w-[80%] lg:w-[70%] bg-blue-100 rounded-lg shadow-lg h-[90vh] flex flex-col">
+        {/* 헤더 영역 - 고정 높이 */}
+        <div className="p-4 border-b bg-blue-100">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-bold text-center flex-grow">📖 스토리라인</h2>
+            <button 
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+          </div>
         </div>
-    );
+
+        {/* 컨텐츠 영역 - 남은 공간 모두 차지하고 스크롤 가능 */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4">
+            {isGenerating ? (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-lg">스토리를 생성하고 있습니다...</p>
+              </div>
+            ) : (
+              <>
+                {currentStory && (
+                  <div className="mb-4 p-3 border border-gray-300 rounded bg-white">
+                    <h3 className="font-bold mb-2 text-base">개요</h3>
+                    <p className="text-sm">{currentStory.overview}</p>
+                  </div>
+                )}
+
+                {currentStory?.chapters?.map((chapter, index) => (
+                  <div key={index} className="mb-4 p-3 border border-gray-300 rounded bg-white">
+                    <h3 className="font-bold mb-2 text-base">에피소드 {index + 1}</h3>
+                    <p className="text-sm mb-2">
+                      <strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}
+                    </p>
+                    {chapter.sentences.map((sentence, idx) => (
+                      <p key={idx} className="text-sm mb-1">{sentence}</p>
+                    ))}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* 하단 버튼 영역 - 고정 높이 */}
+        <div className="p-4 border-t bg-blue-100">
+          <div className="flex justify-center gap-3">
+            <button 
+              onClick={generateStory} 
+              disabled={isGenerating} 
+              className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+            >
+              재생성하기 (1/3)
+            </button>
+            <button 
+              onClick={handleDecide}
+              disabled={isGeneratingImage} 
+              className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+            >
+              결정하기
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default BookStoryGenerator;
