@@ -46,6 +46,11 @@ const QuizPage = ({onChangeStage}) => {
         const newFailList = new Set(failList);
         const failWordsForMail = []; // 틀린 단어들을 담을 배열 생성
 
+        // 한번이라도 틀린 문제들 넣기
+        newFailList.forEach((quizWordIndex)=>{
+            failWordsForMail.push(quizs[quizWordIndex].word);
+        })
+
         correctList.forEach((isCorrect, index) => {
             if (!isCorrect) {
                 const wordId = quizs[index]?.wordId;
