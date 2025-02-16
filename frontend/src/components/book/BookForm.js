@@ -74,23 +74,21 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         return times;
     };
 
+    // 🔹 선택된 날짜가 오늘이면 한 시간 이후 시간대만 선택 가능하도록 필터링
     const availableTimeOptions = (() => {
         const allTimes = generateTimeOptions();
         if (!startDate) return allTimes;
-
-        const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' });
-
+        const todayStr = new Date().toISOString().split('T')[0];
         if (startDate === todayStr) {
             const now = new Date();
             const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-
             return allTimes.filter(option => {
                 const [hour, minute] = option.split(':').map(Number);
-                const optionDate = new Date(startDate + 'T' + option + ':00+09:00');
+                const optionDate = new Date(startDate);
+                optionDate.setHours(hour, minute, 0, 0);
                 return optionDate > oneHourLater;
             });
         }
-
         return allTimes;
     })();
 
