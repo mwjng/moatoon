@@ -3,7 +3,6 @@ package com._2.a401.moa.schedule.service;
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
-import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
@@ -19,13 +18,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
-import reactor.core.scheduler.Scheduler;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 
