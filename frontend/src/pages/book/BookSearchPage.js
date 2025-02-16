@@ -222,27 +222,65 @@ const BookSearchPage = () => {
     from: searchParams.startDate,
     to: searchParams.endDate
   }}
-  onSelect={handleDaySelect}
-  disabled={{ 
-    before: new Date() // 오늘 이전 날짜 선택 제한
-  }}
-  modifiersStyles={{
-    selected: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
-    },
-    range_middle: { 
-      backgroundColor: 'rgb(219 234 254)', 
-      color: 'rgb(37 99 235)' 
-    },
-    range_start: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
-    },
-    range_end: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
+  onSelect={(range) => {
+    if (!range) {
+      setSearchParams(prev => ({
+        ...prev,
+        startDate: null,
+        endDate: null
+      }));
+      return;
     }
+    setSearchParams(prev => ({
+      ...prev,
+      startDate: range.from,
+      endDate: range.to
+    }));
+  }}
+  disabled={{ before: new Date() }}
+  modifiers={{
+    selected: { 
+      from: searchParams.startDate,
+      to: searchParams.endDate 
+    }
+  }}
+  modifiersClassNames={{
+    selected: 'bg-blue-600 text-white hover:bg-blue-700',
+    today: 'bg-orange-100 text-orange-600 font-semibold',
+    range_start: 'rounded-l-full',
+    range_end: 'rounded-r-full',
+    range_middle: 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+  }}
+  className="w-[320px]"
+  classNames={{
+    root: 'w-full',
+    months: 'flex flex-col',
+    month: 'space-y-4',
+    caption: 'flex justify-between px-2 py-2 mb-2',
+    caption_label: 'text-sm font-medium text-gray-900',
+    nav: 'flex space-x-1',
+    nav_button: 'inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:bg-gray-50',
+    nav_button_previous: '',
+    nav_button_next: '',
+    table: 'w-full border-collapse space-y-1',
+    head_row: 'grid grid-cols-7',
+    // head_cell: 'text-gray-500 font-normal text-center text-sm w-10',
+    head_cell: 'text-gray-500 font-normal text-center text-sm w-10 h-10',
+    row: 'grid grid-cols-7 mt-2',
+    cell: 'text-center text-sm p-0 relative w-10 h-10 focus-within:relative',
+    day: 'inline-flex items-center justify-center w-8 h-8 p-0 font-normal hover:bg-gray-100 rounded-full',
+    day_selected: 'bg-blue-600 text-white hover:bg-blue-700 hover:text-white focus:bg-blue-600 focus:text-white rounded-full',
+    day_today: 'bg-gray-50 text-gray-900',
+    day_outside: 'text-gray-400',
+    day_disabled: 'text-gray-400 hover:bg-transparent',
+    day_hidden: 'invisible',
+    day_range_middle: 'rounded-none',
+    day_range_end: 'rounded-r-full',
+    day_range_start: 'rounded-l-full'
+  }}
+  components={{
+    IconLeft: () => <ChevronLeftIcon className="h-4 w-4" />,
+    IconRight: () => <ChevronRightIcon className="h-4 w-4" />
   }}
 />
         </div>
