@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
@@ -31,13 +32,14 @@ public class SessionStageService {
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
-    public void dummyRedis(Long scheduleId, Long memberId) {
-        // 13번 사용자가 1번 세션에 참여하고 있음, 1번 세션은 지금 WORD 상태임(세션 시작 30분전부터)
+    public void dummyRedis(Long scheduleId, List<Long> memberIds) {
         final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
         sessionRedisRepository.save(session);
 
         SessionMember sessionMember = new SessionMember(scheduleId);
-        sessionMember.addMember(memberId);
+        memberIds.forEach(memberId -> {
+            sessionMember.addMember(memberId);
+        });
         sessionMemberRedisRepository.save(sessionMember);
 
         setWaitingRoomTimer(scheduleId);
