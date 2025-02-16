@@ -8,21 +8,26 @@ import QuizPage from './QuizPage';
 import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
 import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
+import { getEBookCover } from '../../api/book';
+import { getSessionInfoByPinNumber } from '../../api/schedule';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    const [sessionData, setSessionData] = useState({
-        scheduleId: 1,
-        partyId: 1,
-        bookTitle: '용감한 기사',
-    });
+    const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
 
     const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
+
+    const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
+    const [sessionData, setSessionData] = useState({
+        // api로 정보 가져옴
+        scheduleId: null,
+        partyId: null,
+    });
 
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
@@ -30,11 +35,6 @@ const SessionContainer = () => {
         serverTime: new Date(),
         sessionDuration: 60,
     });
-
-    const scheduleId = 12;
-
-    // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(scheduleId);
 
     // 창 크기 체크 함수
     const checkWindowSize = () => {
@@ -56,10 +56,49 @@ const SessionContainer = () => {
     }, []);
 
     // 컴포넌트 마운트될 때 세션 참여
+    // ===========[api 호출]==========
+    // pinNumber로 초기 데이터 가져오기
     useEffect(() => {
-        joinSession();
-        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
-    }, []);
+        const fetchSessionInfo = async () => {
+            try {
+                const data = await getSessionInfoByPinNumber(pinNumber);
+                setSessionData({
+                    scheduleId: data.scheduleId,
+                    partyId: data.partyId,
+                });
+            } catch (error) {
+                console.error('핀넘버로 세션 정보 조회 실패:', error);
+                navigate('/home');
+            }
+        };
+
+        if (pinNumber) {
+            fetchSessionInfo();
+        }
+    }, [pinNumber, navigate]);
+
+    // partyId로 bookTitle, bookCover, cuts 가져옴
+    useEffect(() => {
+        const fetchCover = async () => {
+            try {
+                const data = await getEBookCover(sessionData.partyId);
+                console.log('SessionContainer: getEBookCover:', data);
+                setBookInfo(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchCover();
+    }, [sessionData.partyId]);
+
+    // 초기 로딩 시 스테이지 정보 가져오기
+    useEffect(() => {
+        if (sessionData.scheduleId) {
+            // 여기서 scheduleId 체크
+            fetchCurrentStage();
+        }
+    }, [sessionData.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
@@ -89,6 +128,19 @@ const SessionContainer = () => {
         }
     };
 
+    // ===========[api 호출 끝]==========
+
+    // useOpenViduSession 훅 사용
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+        sessionData.scheduleId,
+    );
+
+    // 컴포넌트 마운트될 때 세션 참여
+    useEffect(() => {
+        joinSession();
+        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    }, []);
+
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
         console.log('타임아웃 처리: QUIZ 스테이지로 전환');
@@ -105,11 +157,6 @@ const SessionContainer = () => {
             currentStage: 'QUIZ_END',
         }));
     };
-
-    // 초기 로딩 시 스테이지 정보 가져오기
-    useEffect(() => {
-        fetchCurrentStage();
-    }, [sessionData.scheduleId]);
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     // useEffect(() => {
@@ -134,19 +181,16 @@ const SessionContainer = () => {
     }, [sessionTransferResponse]);
 
     const renderStage = () => {
-        console.log('=========[SessionContainer의 renderStage => WaitingRoom]===============');
-        console.log(`sessionStageData:`, JSON.stringify(sessionStageData));
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
-            console.log('현재 스테이지와 동일하여 렌더링 스킵');
             return null;
         }
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
                     <WaitingRoom
+                        bookInfo={bookInfo}
                         scheduleId={sessionData.scheduleId}
-                        bookTitle={sessionData.bookTitle}
                         sessionTime={sessionStageData.sessionStartTime}
                         serverTime={sessionStageData.serverTime}
                         publisher={publisher}
@@ -158,10 +202,12 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
+                        partyId={sessionData.partyId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
+                        sendReady={sendReady}
                     />
                 );
             case 'CUT_ASSIGN':
@@ -169,6 +215,7 @@ const SessionContainer = () => {
             case 'DRAWING':
                 return (
                     <DrawingPage
+                        scheduleId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
@@ -180,6 +227,7 @@ const SessionContainer = () => {
             case 'DONE':
                 return (
                     <DrawingEndPage
+                        scheduledId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -188,7 +236,7 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return <QuizPage onChangeStage={handleQuizTimeout} />;
+                return <QuizPage partyId={sessionData.partyId} onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
                 return <QuizEndPage />;
             default:

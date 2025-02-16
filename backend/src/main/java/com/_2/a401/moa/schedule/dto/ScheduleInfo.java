@@ -9,7 +9,8 @@ public record ScheduleInfo(
         String bookCover,
         Integer episodeNumber,
         String sessionTime,
-        String status
+        String status,
+        String pinNumber
 ) {
     public LocalDateTime getSessionTimeAsLocalDateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // 형식에 맞게 패턴 설정

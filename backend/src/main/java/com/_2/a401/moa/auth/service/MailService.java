@@ -1,7 +1,5 @@
 package com._2.a401.moa.auth.service;
 
-import com._2.a401.moa.schedule.dto.request.NoticeRequest;
-import com._2.a401.moa.word.domain.Word;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

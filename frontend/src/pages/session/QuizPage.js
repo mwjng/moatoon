@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navigation from '../../components/Navigation';
 import quizBook from '../../assets/quiz-book.png';
 import quizTitle from '../../assets/quiz-title.png';
@@ -9,8 +9,9 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer'
+import { sendReportMail } from '../../api/mail';
 
-const QuizPage = ({onChangeStage}) => {
+const QuizPage = ({partyId, onChangeStage}) => {
     const [quizs, setQuizs] = useState([]);
     const [words, setWords] = useState([]);
     const [correctList, setCorrectList] = useState([false, false, false, false]);
@@ -18,8 +19,8 @@ const QuizPage = ({onChangeStage}) => {
     const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
     const [correctCount, setCorrectCount] = useState(0);
     const [isEnd, setIsEnd] = useState(false);
-    const [partyId, setPartyId] = useState(1); //임의 값
     const [sessionStart] = useState(Date.now());  // 시작 시간을 상태로 관리
+    const failWordsForMail = useRef(new Set()); // 틀린 단어들을 담을 배열 생성
     const navigate = useNavigate();
 
     const handleCorrect = (quizIndex, wordIndex) => {
@@ -36,32 +37,52 @@ const QuizPage = ({onChangeStage}) => {
         });
     };
 
-    const handleFail = quizWordIndex => {
+    const handleFail = (quizWordIndex, quizWord) => {
         setFailList(prevFailList => new Set(prevFailList).add(quizWordIndex));
+        console.log("틀린 단어: ", quizWord);
+        failWordsForMail.current.add(quizWord);
+        console.log("현재 failWords: ", failWordsForMail.current);
     };
 
     const handleStep = async () => {
+        // 마지막에 실행되는 함수
         const newFailList = new Set(failList);
 
+        console.log("forEach전  failWords: ", failWordsForMail.current);
         correctList.forEach((isCorrect, index) => {
             if (!isCorrect) {
                 const wordId = quizs[index]?.wordId;
+                const word = quizs[index]?.word;
                 if (wordId) {
                     newFailList.add(wordId);
+                    failWordsForMail.current.add(word);
                 }
             }
         });
+        console.log("forEach후후  failWords: ", failWordsForMail.current);
 
         setFailList(newFailList);
-        await addToMyWords(Array.from(newFailList))
-            .then(
-                setTimeout(() => {
-                    onChangeStage();
-                }, 3000),
-            )
-            .catch(error => {
-                console.error('에러 발생:', error);
-            });
+        const failWordIds = Array.from(newFailList);
+
+        addToMyWords(failWordIds)
+        .then(() => {
+            return sendReportMail(Array.from(failWordsForMail.current));
+        })
+        .then(() => {
+            setTimeout(() => {
+                onChangeStage();
+            }, 3000);
+        })
+        .catch(error => {
+            if (error.config?.url?.includes('/mywords')) {
+                console.error('단어장 추가 중 에러 발생:', error);
+            } else if (error.config?.url?.includes('/mail')) {
+                console.error('메일 전송 중 에러 발생:', error);
+            } else {
+                console.error('알 수 없는 에러 발생:', error);
+            }
+        });
+        
     };
 
     const handleTimeOut = () => {

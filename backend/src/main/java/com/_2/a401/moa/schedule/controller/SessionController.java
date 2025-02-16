@@ -2,6 +2,7 @@ package com._2.a401.moa.schedule.controller;
 
 import com._2.a401.moa.auth.dto.MemberDetails;
 import com._2.a401.moa.schedule.dto.response.SessionTokenResponse;
+import com._2.a401.moa.schedule.dto.response.enterSessionResponse;
 import com._2.a401.moa.schedule.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +39,10 @@ public class SessionController {
     ) {
         sessionService.close(scheduleId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/pinNumber/{pinNumber}")
+    public ResponseEntity<enterSessionResponse> getSessionInfoByPinNumber(@PathVariable String pinNumber) {
+        return ResponseEntity.ok(sessionService.getEnterSession(pinNumber));
     }
 }

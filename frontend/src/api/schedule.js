@@ -28,3 +28,14 @@ export const getTodayAndUpComingSchedule = async () => {
         return error.response;
     }
 };
+
+export const getSessionInfoByPinNumber = async (pinNumber) => {
+    try {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/pinNumber/${pinNumber}`, {
+        });
+        return response.data;  
+    } catch (error) {
+        console.error('핀넘버로 partyId, scheduleId 조회 중 오류 발생:', error);
+        return error.response?.data; 
+    }
+};

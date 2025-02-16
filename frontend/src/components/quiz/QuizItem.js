@@ -22,7 +22,7 @@ const QuizItem = ({ onCorrect, quiz, index, isCorrect, isEnd, onFail }) => {
         if (quiz.wordId === item.wordId) {
             onCorrect(index, item.wordIndex);
         } else {
-            onFail(quiz.wordId);
+            onFail(quiz.wordId, quiz.word);
         }
     };
 
