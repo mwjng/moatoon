@@ -14,6 +14,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 public class SessionStageController {
@@ -23,8 +25,8 @@ public class SessionStageController {
 
     @Operation(summary = "현재 시간을 기준으로 scheduleId의 대기방 생성, 멤버에는 memberId 참여")
     @GetMapping("/redis-dummy")
-    public void testRedis(@RequestParam Long scheduleId, @RequestParam Long memberId) {
-        sessionStageService.dummyRedis(scheduleId, memberId);
+    public void testRedis(@RequestParam Long scheduleId, @RequestParam List<Long> memberIds) {
+        sessionStageService.dummyRedis(scheduleId, memberIds);
     }
 
     @Operation(summary = "세션 stage 정보 조회", description = "현재 세션의 단계와, 시작시간, 서버시간을 얻어옵니다.")
