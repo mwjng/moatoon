@@ -5,7 +5,7 @@ public enum FullSessionStage {
     WAITING(30L),    // TODO: 10분
     WORD(60L),      // TODO:7분
     CUT_ASSIGN(7L), //
-    DRAWING(60L),   // TODO:15분
+    DRAWING(30L),   // TODO:15분
     DONE(20L);   // SHARING 단계 (완성그림 단계부터는 프론트에서 다음으로 이동처리)
 
     private final Long duration; // SECOND 기준

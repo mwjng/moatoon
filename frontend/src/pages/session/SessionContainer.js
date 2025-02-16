@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import WaitingRoom from './WaitingRoom';
 import WordLearning from './WordLearning';
 import RandomPage from '../RandomPage';
@@ -36,7 +36,7 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
-    // 창 크기 체크 함수
+    //창 크기 체크 함수
     const checkWindowSize = () => {
         if (window.innerWidth < 800 || window.innerHeight < 600) {
             setIsFullScreen(false);
@@ -180,11 +180,18 @@ const SessionContainer = () => {
         }
     }, [sessionTransferResponse]);
 
+    useEffect(() => {
+        if (sessionStageData.currentStage === 'NONE' || sessionStageData.currentStage === 'INVALID_STAGE') {
+            navigate('/home');
+        }
+    }, [sessionStageData.currentStage, navigate]);
+
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
             return null;
         }
+
         switch (sessionStageData.currentStage) {
             case 'WAITING':
                 return (
@@ -227,7 +234,7 @@ const SessionContainer = () => {
             case 'DONE':
                 return (
                     <DrawingEndPage
-                        scheduledId={sessionData.scheduleId}
+                        scheduleId={sessionData.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -240,7 +247,7 @@ const SessionContainer = () => {
             case 'QUIZ_END':
                 return <QuizEndPage />;
             default:
-                navigate('/home');
+                //navigate('/home');
                 return null;
         }
     };
@@ -253,7 +260,7 @@ const SessionContainer = () => {
     }, [isConnected]);
 
     const CurrentStage = () => {
-        if (isLoading) {
+        if (isLoading || !sessionData) {
             return (
                 <div className="min-h-screen flex items-center justify-center">
                     <p>로딩 중...</p>
@@ -263,7 +270,12 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return <div className="min-h-screen">{isFullScreen ? <CurrentStage /> : <FullPage />}</div>;
+    return (
+        <div className="min-h-screen relative">
+            {renderStage()}
+            {!isFullScreen && <FullPage />}
+        </div>
+    );
 };
 
 export default SessionContainer;

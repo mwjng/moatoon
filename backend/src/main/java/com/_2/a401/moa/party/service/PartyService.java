@@ -22,6 +22,7 @@ import com._2.a401.moa.party.dto.response.ApiResponse;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PartyService {
@@ -57,7 +59,7 @@ public class PartyService {
                 LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
                 request.getDayWeek()
         );
-
+        log.info("startDate = {}", startDate);
         LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
 
 
