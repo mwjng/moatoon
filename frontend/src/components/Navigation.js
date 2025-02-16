@@ -134,12 +134,11 @@ function Navigation({
 
     useEffect(() => {
         if (cutsState.cuts.length > 0) {
-            console.log(cutsState.cuts[0].partyId);
             getLearningWords(cutsState.cuts[0].partyId).then(response => {
                 setWords(response.data.words);
             });
         }
-    }, []);
+    }, [cutsState.cuts.length]);
 
     // 남은 시간 형식 변환
     const getRemainingTimeFormatted = () => {

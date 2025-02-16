@@ -10,7 +10,7 @@ import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 
-const QuizPage = ({onChangeStage}) => {
+const QuizPage = ({partyId, onChangeStage}) => {
     const [quizs, setQuizs] = useState([]);
     const [words, setWords] = useState([]);
     const [correctList, setCorrectList] = useState([false, false, false, false]);
@@ -18,7 +18,6 @@ const QuizPage = ({onChangeStage}) => {
     const [useList, setUseList] = useState([false, false, false, false, false, false, false, false]);
     const [correctCount, setCorrectCount] = useState(0);
     const [isEnd, setIsEnd] = useState(false);
-    const [partyId, setPartyId] = useState(1); //임의 값
     const [sessionStart] = useState(Date.now());  // 시작 시간을 상태로 관리
     const navigate = useNavigate();
 

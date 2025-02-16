@@ -13,8 +13,7 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
 function WaitingRoom({
-    scheduleId,
-    bookTitle,
+    bookInfo, // {partyId, bookTitle, bookCover, cuts: Array(4)}
     sessionTime,
     serverTime,
     sessionDuration,
@@ -22,23 +21,11 @@ function WaitingRoom({
     subscribers,
     nickname,
 }) {
-    const [bookInfo, setBookInfo] = useState({
-        partyId: 1,
-        bookTitle: '용감한 기사',
-        bookCover: 'cover.jpg',
-        cuts: [],
-    });
-
     const handleTimeOut = () => {
         // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
     };
 
     // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
-
-    // useEffect(() => {
-    //     joinSession();
-    //     // return () => leaveSession();
-    // }, []);
 
     return (
         <div className="min-h-screen bg-custom-blue flex flex-col items-center p-4 space-y-4">
@@ -48,7 +35,7 @@ function WaitingRoom({
                 stageDuration={sessionDuration}
                 sessionStartTime={sessionTime}
                 serverTime={serverTime}
-                bookTitle={bookTitle}
+                bookTitle={bookInfo?.bookTitle}
                 onTimeOut={handleTimeOut}
             />
             <div className="justify-center items-center gap-4">
