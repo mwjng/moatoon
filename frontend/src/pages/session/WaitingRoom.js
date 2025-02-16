@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
 import Navigation from '../../components/Navigation';
 import MyCamera from '../../components/MyCamera';
-import OtherCameras from '../../components/OtherCameras';
 import CameraMicControls from '../../components/CameraMicControls';
 import BookDisplay from '../../components/BookDisplay';
 import FooterNotice from '../../components/FooterNotice';
+import { useSession } from '../../hooks/SessionProvider';
+import SubscriberVideo from '../../components/SubscriberVideo';
 import { getSessionToken } from '../../api/room';
 import base64 from 'base-64';
 import AudioPlayer from '../../components/audio/AudioPlayer';
