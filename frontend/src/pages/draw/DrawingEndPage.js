@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation.js';
-import ChildImg from '../../assets/child.svg';
 import bbi from '../../assets/bbi_normal.png';
 import { authInstance } from '../../api/axios';
 import CutCard from '../../components/CutSvgCard.js';
 import WordButton from '../../components/WordButton.js';
 import SubscriberVideo from '../../components/SubscriberVideo.js';
 import MyCamera from '../../components/MyCamera.js';
-import { useSession } from '../../hooks/SessionProvider.js';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 
 const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, subscribers, nickname }) => {
@@ -57,7 +55,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"
-                    stageDuration={sessionStageData.sessionDuration}
+                    stageDuration={30} // ! DrawingEndPage Duration은 3*60=180
                     sessionStartTime={sessionStageData?.sessionStartTime}
                     serverTime={sessionStageData?.serverTime}
                     onTimeOut={onTimeout}
