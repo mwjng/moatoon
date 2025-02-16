@@ -8,28 +8,50 @@ import QuizPage from './QuizPage';
 import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
-import { useNavigate } from 'react-router';
-import { SessionProvider } from '../../hooks/SessionProvider';
-
+import { useNavigate, useParams  } from 'react-router';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
+import { getSessionInfoByPinNumber } from '../../api/schedule';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    
-    const [bookInfo, setBookInfo] = useState(null); // {partyId, bookTitle, bookCover, cuts: Array(4)}
-    const [sessionData, setSessionData] = useState({
-        scheduleId: 1,
-        partyId: 1
-    });
+    const { pinNumber } = useParams();  // 프론트 url에 담겨서 옴
 
+    const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
+    const [sessionData, setSessionData] = useState({ // api로 정보 가져옴
+        scheduleId: null,
+        partyId: null
+    });
+    
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
         sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
         serverTime: new Date(),
         sessionDuration: 60,
     });
+
+
+    // ===========[api 호출]==========
+    // pinNumber로 초기 데이터 가져오기
+    useEffect(() => {
+        const fetchSessionInfo = async () => {
+            try {
+                const data = await getSessionInfoByPinNumber(pinNumber);
+                setSessionData({
+                    scheduleId: data.scheduleId,
+                    partyId: data.partyId
+                });
+            } catch (error) {
+                console.error('핀넘버로 세션 정보 조회 실패:', error);
+                navigate('/home');
+            }
+        };
+
+        if (pinNumber) {
+            fetchSessionInfo();
+        }
+    }, [pinNumber, navigate]);
 
     // partyId로 bookTitle, bookCover, cuts 가져옴
     useEffect(() => {
@@ -45,6 +67,7 @@ const SessionContainer = () => {
         
         fetchCover();
     }, [sessionData.partyId]);
+     // ===========[api 호출 끝]==========
 
     // useOpenViduSession 훅 사용
     const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(sessionData.scheduleId);
