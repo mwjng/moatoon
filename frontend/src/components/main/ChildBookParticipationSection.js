@@ -3,12 +3,37 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import ParticipatingBookCard from "./ParticipatingBookCard";
 import useFetchBooks from '../../hooks/useLibraryBooks';
 import { useSelector } from 'react-redux';
+import BookDetail from '../../components/book/BookDetail';
 
 const ChildBookParticipationSection = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const userInfo = useSelector(state => state.user.userInfo);
   const { bookList, loading } = useFetchBooks(userInfo.id, false);
   const [formattedBooks, setFormattedBooks] = useState([]);
+
+  // 방 상세 모달
+  const [currentPartyId, setCurrentPartyId] = useState(0);
+  const [showBookDetail, setShowBookDetail] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const handleCardClick = async(partyId) => {
+    console.log("카드 클릭 시도:", partyId);
+    if (!partyId || typeof partyId !== "number") {
+      console.log("유효하지 않은 partyId:", partyId);
+      return;
+    }
+    try {
+      await setCurrentPartyId(partyId);
+      setShowBookDetail(true);
+    } catch (error) {
+      console.error("카드 클릭 처리 중 에러:", error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowBookDetail(false);
+    setCurrentPartyId(null);
+  };
 
   useEffect(() => {
     if (bookList) {
@@ -72,7 +97,13 @@ const ChildBookParticipationSection = () => {
               
               <div style={{ width: `${fixedWidth}px` }} className="flex gap-8">
                 {formattedBooks[currentPage]?.map((item) => (
-                  <ParticipatingBookCard key={item.id} item={item} />
+                  <ParticipatingBookCard 
+                    key={item.id} 
+                    item={item}
+                    onClick={() => {
+                      handleCardClick(item.id);
+                    }} 
+                  />
                 ))}
               </div>
             </div>
@@ -90,8 +121,34 @@ const ChildBookParticipationSection = () => {
           </div>
         </div>
       </div>
+
+      {showBookDetail && currentPartyId && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div 
+              className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                <BookDetail
+                  partyIdOrPin={currentPartyId}
+                  onClose={handleCloseModal}
+                  setModalLoading={setModalLoading}
+                />
+              </div>
+            </div>
+          </div>
+          {modalLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="loading loading-spinner loading-lg text-primary"></div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
+
 
 export default ChildBookParticipationSection;
