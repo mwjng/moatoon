@@ -201,6 +201,17 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     const handleClear = () => {
         dispatch(clearCanvas());
+
+        if (connected && stompClient.current) {
+            stompClient.current.publish({
+                destination: '/app/draw',
+                body: JSON.stringify({
+                    partyId: partyId,
+                    cutId: cutId,
+                    type: 'CLEAR',
+                }),
+            });
+        }
     };
 
     const exportCanvasState = () => {

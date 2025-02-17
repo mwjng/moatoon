@@ -4,8 +4,10 @@ export const updateLines = (prevLines, data) => {
             return prevLines.slice(0, -1); // Undo 처리
         case 'REDO':
             return data.redoLine ? [...prevLines, data.redoLine] : prevLines; // Redo 처리
-        case 'draw': // draw 타입 처리
+        case 'draw':
             return handleDraw(prevLines, data.line);
+        case 'CLEAR':
+            return [];
         default:
             return prevLines;
     }

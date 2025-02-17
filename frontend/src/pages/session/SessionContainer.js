@@ -114,8 +114,6 @@ const SessionContainer = () => {
         }
     }, [dispatch, sessionData.scheduleId]);
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
         if (sessionData.scheduleId) {
             dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
