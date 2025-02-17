@@ -34,8 +34,6 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     const handleCloseModal = () => {
         setModalState(false);
     };
-
-    // 🔹 API에서 키워드 가져오기
     useEffect(() => {
         const loadKeywords = async () => {
             try {
@@ -64,7 +62,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         }
     };
 
-    // 🔹 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
+    // 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
     const generateTimeOptions = () => {
         let times = [];
         for (let hour = 9; hour <= 22; hour++) {
@@ -92,7 +90,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         return allTimes;
     })();
 
-    // 🔹 폼 제출
+    // 폼 제출
     const handleSubmit = () => {
         if (
             !startDate ||
@@ -114,10 +112,22 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
             dayOfWeek: selectedDays,
             publicStatus,
             participatingChildren: selectedChildren,
-            mood,
-            theme,
-            genre,
-            difficulty,
+            mood: {
+                id: parseInt(mood),
+                keyword: moods.find(m => m.id === parseInt(mood))?.keyword || "",
+            },
+            theme: {
+                id: parseInt(theme),
+                keyword: themes.find(t => t.id === parseInt(theme))?.keyword || "",
+            },
+            genre: {
+                id: parseInt(genre),
+                keyword: genres.find(g => g.id === parseInt(genre))?.keyword || "",
+            },
+            
+            
+            
+            difficulty
         });
     };
 
@@ -136,6 +146,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     <input
                         id="start"
                         type="date"
+                        min={new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0]}
                         value={startDate}
                         onChange={e => setStartDate(e.target.value)}
                         className="p-2 outline-none border-[2px] focus:border-[#FFBD73] rounded-xl w-[50%] bg-white"
@@ -164,7 +175,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                 {/* 에피소드 분량 선택 */}
                 <div className="flex items-center">
                     <label htmlFor="length" className="w-[120px]">
-                        에피소드 분량
+                        챕터 수
                     </label>
                     <select
                         id="length"
@@ -202,12 +213,16 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     <label htmlFor="select-day" className="w-[120px]">
                         진행 요일
                     </label>
+
                     <div
                         id="select-day"
-                        className="flex justify-between w-[60%] rounded-xl p-2 pl-3 pr-3 bg-white border-[2px]"
+                        className="flex gap-5 justify-between w-[60%] rounded-xl p-2 pl-3 pr-3 bg-white border-[2px]"
                     >
                         {dayOptions.map(day => (
-                            <label key={day} className="mr-3">
+                            <label
+                                key={day}
+                                className="flex-col-reverse relative flex items-center cursor-pointer border-gray-300 text-sm "
+                            >
                                 <input
                                     type="checkbox"
                                     checked={selectedDays.includes(day)}
@@ -218,8 +233,16 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                                                 : [...selectedDays, day],
                                         )
                                     }
-                                />{' '}
-                                {day}
+                                    className="hidden"
+                                />
+                                <span
+                                    className={`w-4 h-4 flex items-center justify-center rounded-lg border-2  transition-all border-[#aaa] ${
+                                        selectedDays.includes(day)
+                                            ? 'bg-[#FFBD73] border-[#FFBD73] text-white'
+                                            : 'bg-[#eee] shadow-sm text-black'
+                                    }`}
+                                ></span>
+                                <span>{day} </span>
                             </label>
                         ))}
                     </div>
@@ -229,18 +252,31 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     <label htmlFor="select-open" className="w-[120px]">
                         공개 여부
                     </label>
-                    <div className="col-span-2" id="select-open">
-                        {publicStatusOptions.map(option => (
-                            <label key={option} className="mr-4">
-                                <input
-                                    type="radio"
-                                    value={option}
-                                    checked={publicStatus === option}
-                                    onChange={() => setPublicStatus(option)}
-                                />{' '}
-                                {option}
-                            </label>
-                        ))}
+                    <div id="select-open" className="col-span-2 flex">
+                        {publicStatusOptions.map(option => {
+                            const isChecked = publicStatus === option;
+                            return (
+                                <label key={option} className="flex items-center mr-4 cursor-pointer relative">
+                                    <input
+                                        type="radio"
+                                        name="publicStatus"
+                                        value={option}
+                                        checked={isChecked}
+                                        onChange={() => setPublicStatus(option)}
+                                        className="hidden"
+                                    />
+                                    {/* 커스텀 라디오 */}
+                                    <span
+                                        className={`w-4 h-4 rounded-full border-2 transition-all flex-shrink-0 flex items-center justify-center ${
+                                            isChecked ? 'bg-[#FFBD73] border-[#FFBD73]' : 'bg-white border-[#FFBD73]'
+                                        }`}
+                                    >
+                                        {isChecked && <span className="w-2 h-2 rounded-full bg-white" />}
+                                    </span>
+                                    <span className="ml-2">{option}</span>
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
 
