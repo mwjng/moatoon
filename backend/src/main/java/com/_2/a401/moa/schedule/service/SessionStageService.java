@@ -36,7 +36,7 @@ public class SessionStageService {
     private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final SessionMailService sessionMailService;
-    @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
+    @Qualifier("taskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
