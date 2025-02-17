@@ -149,6 +149,7 @@ const SessionContainer = () => {
             navigate('/home');
         } finally {
             setIsLoading(false);
+            console.log(sessionStageData);
         }
     };
 
