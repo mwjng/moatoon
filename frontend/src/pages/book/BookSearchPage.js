@@ -468,11 +468,11 @@ const BookSearchPage = () => {
             <div className="space-y-8">
               {Object.entries(groupPartysByLevel())
                 .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
-                .map(([level, levelParties]) => (
+                .map(([level, levelParties],index) => (
                   <div
                     key={level}
                     className={`p-6 rounded-lg ${
-                      Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
+                      index % 2 === 0 ? 'bg-blue-50' : 'bg-white'
                     }`}
                   >
                     <h2 className="text-xl font-bold mb-4">
