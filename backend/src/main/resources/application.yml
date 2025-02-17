@@ -110,6 +110,8 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: false
     hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: validate
     properties:
       hibernate:
