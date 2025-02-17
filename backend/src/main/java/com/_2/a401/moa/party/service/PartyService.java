@@ -71,7 +71,7 @@ public class PartyService {
                 .pinNumber(pinNumber)
                 .level(request.getLevel())
                 .episodeCount(request.getEpisodeLength())
-                .startDate(startDate.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
+                .startDate(startDate.minusHours(9L))
                 .endDate(endDate)
                 .status(PartyState.BEFORE)
                 .isPublic(request.isPublicStatus())
