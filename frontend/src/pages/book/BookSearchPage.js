@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Navigation from '../../components/Navigation';
-import { DayPicker } from 'react-day-picker';
 import defaultBookCover from '../../assets/images/book1.png';
 import { fetchAllParties , getPartyDetailByPin } from '../../api/party'
 import BookDetail from '../../components/book/BookDetail';
 import Alert from "../../components/common/AlertModal"; 
+import Loading from '../../components/Loading';
 
 const BookSearchPage = () => {
   const [parties, setParties] = useState([]);
@@ -17,6 +17,47 @@ const BookSearchPage = () => {
   const [alertMessage, setAlertMessage] = useState('');
   const [pin, setPin] = useState(''); 
 
+
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  function getDateForIndex(index, currentDate) {
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const startingDay = firstDayOfMonth.getDay();
+    
+    if (index < startingDay) return null;
+    
+    const date = new Date(firstDayOfMonth);
+    date.setDate(index - startingDay + 1);
+    
+    if (date.getMonth() !== currentDate.getMonth()) return null;
+    
+    return date;
+  }
+
+  const handleDateSelect = (date) => {
+    if (!searchParams.startDate || (searchParams.startDate && searchParams.endDate)) {
+      setSearchParams(prev => ({
+        ...prev,
+        startDate: date,
+        endDate: null
+      }));
+    } else {
+      if (date < searchParams.startDate) {
+        setSearchParams(prev => ({
+          ...prev,
+          startDate: date,
+          endDate: prev.startDate
+        }));
+      } else {
+        setSearchParams(prev => ({
+          ...prev,
+          endDate: date
+        }));
+      }
+      setShowCalendar(false);
+    }
+  };
+
   const [searchParams, setSearchParams] = useState({
     startDate: null,
     endDate: null,
@@ -27,10 +68,22 @@ const BookSearchPage = () => {
     canJoin: false
   });
 
+  const isFiltering = () => {
+    return (
+      searchParams.startDate !== null ||
+      searchParams.endDate !== null ||
+      searchParams.time !== '' ||
+      searchParams.dayWeek.length > 0 ||
+      searchParams.episodeLength !== '' ||
+      searchParams.level !== '' ||
+      searchParams.canJoin === true
+    );
+  };
+
   const timeOptions = generateTimeOptions();
   const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
   const weekDayValues = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
-  const levels = [1, 2, 3, 4, 5];
+  const levels = [1, 2, 3, 4, 5, 6];
   const [filter, setFilter] = useState({canJoin:false});
  
 
@@ -86,37 +139,6 @@ const BookSearchPage = () => {
     // filter 상태도 초기화
     setFilter({ canJoin: false });
   };
-
-  const handleDaySelect = (range) => {
-    const { from, to } = range;
-  
-    // 시작일 선택 로직
-    if (from) {
-      // 기존 시작일보다 이전 날짜 선택 시 새로운 시작일로 변경
-      setSearchParams(prev => ({
-        ...prev, 
-        startDate: from
-      }));
-    }
-  
-    // 종료일 선택 로직
-    if (from && to) {
-      // 종료일이 시작일 이전인 경우 시작일과 종료일 교환
-      const newStartDate = from <= to ? from : to;
-      const newEndDate = from <= to ? to : from;
-  
-      setSearchParams(prev => ({
-        ...prev,
-        startDate: newStartDate,
-        endDate: newEndDate
-      }));
-  
-      // 캘린더 닫기
-      setShowCalendar(false);
-    }
-  };
-  
-
 
   const handleWeekDayToggle = (dayIndex) => {
     const dayValue = weekDayValues[dayIndex];
@@ -189,6 +211,15 @@ const BookSearchPage = () => {
     return sortedLevels;
   };
 
+  const levelAgeMap = {
+    1: '4~6세',
+    2: '7세',
+    3: '8세',
+    4: '9세',
+    5: '10세',
+    6: '11세'
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -197,59 +228,98 @@ const BookSearchPage = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="flex justify-center flex-wrap gap-4">
 
+      {/* Date Selection */}
+        <div className="relative">
+          <button
+            className="btn btn-sm"
+            onClick={() => setShowCalendar(!showCalendar)}
+          >
+          {searchParams.startDate ? formatDate(searchParams.startDate) : '시작일'} - 
+          {searchParams.endDate ? formatDate(searchParams.endDate) : '종료일'}
+        </button>
+        
+        {showCalendar && (
+          <div className="absolute z-50 mt-2">
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200">
+              <div className="w-72">
+                {/* Calendar Header */}
+                <div className="px-4 py-3 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <button 
+                      className="p-1 hover:bg-gray-100 rounded-full"
+                      onClick={() => {
+                        const newDate = new Date(currentDate);
+                        newDate.setMonth(newDate.getMonth() - 1);
+                        setCurrentDate(newDate);
+                      }}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                    <span className="text-sm font-medium">
+                      {currentDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+                    </span>
+                          <button 
+                            className="p-1 hover:bg-gray-100 rounded-full"
+                            onClick={() => {
+                              const newDate = new Date(currentDate);
+                              newDate.setMonth(newDate.getMonth() + 1);
+                              setCurrentDate(newDate);
+                            }}
+                          >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
 
+                      {/* Calendar Grid */}
+                      <div className="p-4">
+                        <div className="grid grid-cols-7 gap-0">
+                          {['일', '월', '화', '수', '목', '금', '토'].map(day => (
+                            <div key={day} className="h-8 flex items-center justify-center text-xs font-medium text-gray-500">
+                              {day}
+                            </div>
+                          ))}
+                          
+                          {Array.from({ length: 42 }).map((_, index) => {
+                            const date = getDateForIndex(index, currentDate);
+                            const isPastDate = date && date < new Date(new Date().setHours(0,0,0,0));
+                            const isSelected = date && (
+                              (searchParams.startDate && date.getTime() === searchParams.startDate.getTime()) ||
+                              (searchParams.endDate && date.getTime() === searchParams.endDate.getTime())
+                            );
+                            const isInRange = date && searchParams.startDate && searchParams.endDate && 
+                              date >= searchParams.startDate && date <= searchParams.endDate;
 
-
-            {/* Date Selection */}
-            {/* Date Selection */}
-{/* Date Selection */}
-<div className="relative">
-  <button
-    className="btn btn-sm normal-case"
-    onClick={() => setShowCalendar(!showCalendar)}
-  >
-    {searchParams.startDate ? formatDate(searchParams.startDate) : '시작일'} - 
-    {searchParams.endDate ? formatDate(searchParams.endDate) : '종료일'}
-  </button>
-  
-  {showCalendar && (
-    <div className="absolute z-50 mt-2">
-      <div className="card bg-base-100 shadow-xl">
-        <div className="card-body p-4">
-        <DayPicker
-  mode="range"
-  selected={{
-    from: searchParams.startDate,
-    to: searchParams.endDate
-  }}
-  onSelect={handleDaySelect}
-  disabled={{ 
-    before: new Date() // 오늘 이전 날짜 선택 제한
-  }}
-  modifiersStyles={{
-    selected: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
-    },
-    range_middle: { 
-      backgroundColor: 'rgb(219 234 254)', 
-      color: 'rgb(37 99 235)' 
-    },
-    range_start: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
-    },
-    range_end: { 
-      backgroundColor: 'rgb(59 130 246)', 
-      color: 'white' 
-    }
-  }}
-/>
-        </div>
-      </div>
-    </div>
-  )}
-</div>
+                            return (
+                              <div key={index} className="h-8 w-8 flex items-center justify-center p-0">
+                                {date && (
+                                  <button
+                                    className={`
+                                      w-7 h-7 flex items-center justify-center text-sm rounded-full
+                                      ${isPastDate ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100'}
+                                      ${isSelected ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}
+                                      ${isInRange && !isSelected ? 'bg-blue-50 text-blue-600' : ''}
+                                    `}
+                                    disabled={isPastDate}
+                                    onClick={() => handleDateSelect(date)}
+                                  >
+                                    {date.getDate()}
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
 
             <select
@@ -360,62 +430,86 @@ const BookSearchPage = () => {
           </div>
         </div>
 
-        {parties.length === 0 && (
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-            <p className="text-gray-500">검색 결과가 없습니다</p>
-          </div>
-        )}
 
-        {loading ? (
-          <div className="text-center py-8">
-            <span className="loading loading-spinner loading-lg"></span>
-          </div>
-        ) : (
-          <div className="space-y-8">
-            {Object.entries(groupPartysByLevel())
-              .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
-              .map(([level, levelParties]) => (
-                <div
-                  key={level}
-                  className={`p-6 rounded-lg ${
-                    Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
-                  }`}
-                >
-                  <h2 className="text-xl font-bold mb-4">
-                    Level {level} ({levelParties.length}개의 파티)
-                  </h2>
-                  {levelParties.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {levelParties.map(party => (
-                        <div
-                          key={party.partyId}
-                          className="cursor-pointer transition-transform hover:scale-105"
-                          onClick={() => handleCardClick(party.partyId)}
-                        >
-                          <img
-                            src={party.bookCover || defaultBookCover}
-                            alt={party.bookTitle}
-                            className="w-full h-48 object-cover rounded-lg shadow-sm"
-                            onError={(e) => {
-                              e.target.src = defaultBookCover;
-                            }}
-                          />
-                          <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
-                          <p className="text-sm text-gray-600">
-                            참여자: {party.participantCount}명
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-center text-gray-500 py-4">
-                      해당 난이도는 아직 책 정보가 없어요
+          {/* 기존의 렌더링 부분 */}
+          {parties.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+              <p className="text-gray-500">검색 결과가 없습니다</p>
+            </div>
+          ) : loading ? (
+            <Loading />
+          ) : isFiltering() ? (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-bold mb-6">검색 결과 ({parties.length}개의 파티)</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {parties.map(party => (
+                  <div
+                    key={party.partyId}
+                    className="cursor-pointer transition-transform hover:scale-105"
+                    onClick={() => handleCardClick(party.partyId)}
+                  >
+                    <img
+                      src={party.bookCover || defaultBookCover}
+                      alt={party.bookTitle}
+                      className="w-full h-48 object-cover rounded-lg shadow-sm"
+                      onError={(e) => {
+                        e.target.src = defaultBookCover;
+                      }}
+                    />
+                    <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
+                    <p className="text-sm text-gray-600">
+                      참여자: {party.participantCount}명
                     </p>
-                  )}
-                </div>
-              ))}
-          </div>
-        )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {Object.entries(groupPartysByLevel())
+                .sort(([, partiesA], [, partiesB]) => partiesB.length - partiesA.length)
+                .map(([level, levelParties]) => (
+                  <div
+                    key={level}
+                    className={`p-6 rounded-lg ${
+                      Number(level) % 2 === 1 ? 'bg-blue-50' : 'bg-white'
+                    }`}
+                  >
+                    <h2 className="text-xl font-bold mb-4">
+                    Level {level} ({levelAgeMap[level]}) - {levelParties.length}개의 도서
+                    </h2>
+                    {levelParties.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {levelParties.map(party => (
+                          <div
+                            key={party.partyId}
+                            className="cursor-pointer transition-transform hover:scale-105"
+                            onClick={() => handleCardClick(party.partyId)}
+                          >
+                            <img
+                              src={party.bookCover || defaultBookCover}
+                              alt={party.bookTitle}
+                              className="w-full h-48 object-cover rounded-lg shadow-sm"
+                              onError={(e) => {
+                                e.target.src = defaultBookCover;
+                              }}
+                            />
+                            <h3 className="mt-2 font-medium text-sm">{party.bookTitle}</h3>
+                            <p className="text-sm text-gray-600">
+                              참여자: {party.participantCount}명
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500 py-4">
+                        해당 난이도는 아직 책 정보가 없어요
+                      </p>
+                    )}
+                  </div>
+                ))}
+            </div>
+          )}
 
         {showBookDetail && currentPartyId && (
                 <div className="fixed inset-0 z-50">
