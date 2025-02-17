@@ -29,6 +29,8 @@ const SessionContainer = () => {
         partyId: null,
     });
 
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession();
+
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
         sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
@@ -70,6 +72,8 @@ const SessionContainer = () => {
                 const bookCoverData = await getEBookCover(sessionData.current.partyId);
                 console.log('SessionContainer: getEBookCover:', bookCoverData);
                 setBookInfo(bookCoverData);
+
+                await joinSession(sessionData.current.scheduleId);
             } catch (error) {
                 console.error('핀넘버로 세션 정보 조회 실패:', error);
                 navigate('/home');
@@ -79,6 +83,8 @@ const SessionContainer = () => {
         if (pinNumber) {
             fetchSessionInfo();
         }
+
+        return () => leaveSession();
     }, [pinNumber, navigate]);
 
     // partyId로 bookTitle, bookCover, cuts 가져옴
@@ -135,15 +141,15 @@ const SessionContainer = () => {
     // ===========[api 호출 끝]==========
 
     // useOpenViduSession 훅 사용
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
-        sessionData.current.scheduleId,
-    );
+    // const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+    //     sessionData.current.scheduleId,
+    // );
 
     // 컴포넌트 마운트될 때 세션 참여
-    useEffect(() => {
-        joinSession();
-        return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
-    }, []);
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    // }, []);
 
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
