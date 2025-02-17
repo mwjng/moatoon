@@ -40,6 +40,10 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
+    useEffect(() => {
+        console.log(sessionData);
+    }, [sessionStageData]);
+
     //창 크기 체크 함수
     const checkWindowSize = () => {
         if (window.innerWidth < 800 || window.innerHeight < 600) {
