@@ -448,7 +448,7 @@ const ManagerMainPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1 bg-light-blue1 flex items-center justify-center">
+      <div className="h-[400px] bg-light-blue1 flex items-center justify-center">
         <ManagerBookParticipationSection
           childrenList={userInfo.childrenList}
         />
