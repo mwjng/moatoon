@@ -34,8 +34,6 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     const handleCloseModal = () => {
         setModalState(false);
     };
-
-    // 🔹 API에서 키워드 가져오기
     useEffect(() => {
         const loadKeywords = async () => {
             try {
@@ -64,7 +62,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         }
     };
 
-    // 🔹 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
+    // 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
     const generateTimeOptions = () => {
         let times = [];
         for (let hour = 9; hour <= 22; hour++) {
@@ -92,7 +90,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         return allTimes;
     })();
 
-    // 🔹 폼 제출
+    // 폼 제출
     const handleSubmit = () => {
         if (
             !startDate ||
@@ -136,6 +134,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     <input
                         id="start"
                         type="date"
+                        min={new Date(new Date().getTime() + 9 * 60 * 60 * 1000).toISOString().split('T')[0]}
                         value={startDate}
                         onChange={e => setStartDate(e.target.value)}
                         className="p-2 outline-none border-[2px] focus:border-[#FFBD73] rounded-xl w-[50%] bg-white"

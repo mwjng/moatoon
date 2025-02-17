@@ -34,6 +34,17 @@ const BookSearchPage = () => {
     }
 
     const handleDateSelect = date => {
+
+        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+        today.setHours(0, 0, 0, 0);
+        
+        // 오늘 이전 날짜는 선택 불가
+        if (date < today) {
+            return;
+        }
+
+
+
         if (!searchParams.startDate || (searchParams.startDate && searchParams.endDate)) {
             setSearchParams(prev => ({
                 ...prev,
@@ -214,6 +225,8 @@ const BookSearchPage = () => {
         6: '11세',
     };
 
+
+    // const isPastDate = date && date < new Date(new Date().setHours(0, 0, 0, 0));
     return (
         <div className="min-h-screen bg-gray-50">
             <style>
@@ -318,14 +331,18 @@ const BookSearchPage = () => {
 
                                                     {Array.from({ length: 42 }).map((_, index) => {
                                                         const date = getDateForIndex(index, currentDate);
-                                                        const isPastDate =
-                                                            date && date < new Date(new Date().setHours(0, 0, 0, 0));
-                                                        const isSelected =
-                                                            date &&
-                                                            ((searchParams.startDate &&
-                                                                date.getTime() === searchParams.startDate.getTime()) ||
-                                                                (searchParams.endDate &&
-                                                                    date.getTime() === searchParams.endDate.getTime()));
+                                                        if (!date) return <div key={index} className="h-8 w-8"></div>; 
+
+
+                                                        const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+                                                        today.setHours(0, 0, 0, 0);
+
+                                                        date.setHours(0, 0, 0, 0);
+                                                        const isPastDate = date < today;
+                                                        
+                                                        const isSelected = date &&
+                                                            ((searchParams.startDate &&date.getTime() === searchParams.startDate.getTime()) ||
+                                                            (searchParams.endDate &&date.getTime() === searchParams.endDate.getTime()));
                                                         const isInRange =
                                                             date &&
                                                             searchParams.startDate &&
@@ -341,11 +358,11 @@ const BookSearchPage = () => {
                                                                 {date && (
                                                                     <button
                                                                         className={`
-                                      w-7 h-7 flex items-center justify-center text-sm rounded-full
-                                      ${isPastDate ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100'}
-                                      ${isSelected ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}
-                                      ${isInRange && !isSelected ? 'bg-blue-50 text-blue-600' : ''}
-                                    `}
+                                                                w-7 h-7 flex items-center justify-center text-sm rounded-full
+                                                                ${isPastDate ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100'}
+                                                                ${isSelected ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}
+                                                                ${isInRange && !isSelected ? 'bg-blue-50 text-blue-600' : ''}
+                                                              `}
                                                                         disabled={isPastDate}
                                                                         onClick={() => handleDateSelect(date)}
                                                                     >
