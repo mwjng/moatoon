@@ -116,15 +116,23 @@ const MyWordPage = () => {
                     <img src={charCado} alt="" className="absolute left-0 top-[-250px] h-[250px]" />
                     <img src={charChick} alt="" className="absolute right-0 bottom-0 h-[250px]" />
                 </div>
-                <div className="flex z-0 items-center">
-                    <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
-                    <div className="relative z-10 p-4 gap-4 flex ">
-                        {words.map((word, index) => (
-                            <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
-                        ))}
+                {words.length === 0 ? (
+                    <div className="flex z-0 items-center bg-white p-8 rounded-[20px] gap-8">
+                        <img src={charCado} alt="" className="h-[100px]" />
+                        <span className="text-[48px]">복습할 단어가 없어요!</span>
+                        <img src={charChick} alt="" className="h-[100px]" />
                     </div>
-                    <img src={bracketRight} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handleNext} />
-                </div>
+                ) : (
+                    <div className="flex z-0 items-center">
+                        <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
+                        <div className="relative z-10 p-4 gap-4 flex ">
+                            {words.map((word, index) => (
+                                <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
+                            ))}
+                        </div>
+                        <img src={bracketRight} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handleNext} />
+                    </div>
+                )}
             </div>
         </div>
     );
