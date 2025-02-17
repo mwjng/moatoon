@@ -37,7 +37,7 @@ export default function CheckPw(props) {
     };
     return (
         <>
-            <AuthModal title="비밀번호 확인">
+            <AuthModal title="비밀번호 확인" checkInfo={true}>
                 <input
                     type="password"
                     placeholder="비밀번호를 입력해주세요."

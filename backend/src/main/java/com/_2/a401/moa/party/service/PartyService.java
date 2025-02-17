@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -70,7 +71,7 @@ public class PartyService {
                 .pinNumber(pinNumber)
                 .level(request.getLevel())
                 .episodeCount(request.getEpisodeLength())
-                .startDate(startDate)
+                .startDate(startDate.minusHours(9L))
                 .endDate(endDate)
                 .status(PartyState.BEFORE)
                 .isPublic(request.isPublicStatus())
