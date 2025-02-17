@@ -331,7 +331,7 @@ export default function ManagerModify(props) {
                     )}
                 </div>
                 <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="변경하기" onClickHandler={modifyHandler} />
-                <p style={{ cursor: 'pointer', fontSize: '14px' }} onClick={removeHandler}>
+                <p style={{ cursor: 'pointer', fontSize: '14px', color: '#aaa' }} onClick={removeHandler}>
                     탈퇴하기
                 </p>
             </AuthModal>
