@@ -114,12 +114,6 @@ const SessionContainer = () => {
         }
     }, [dispatch, sessionData.scheduleId]);
 
-    useEffect(() => {
-        if (sessionData.scheduleId) {
-            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
-        }
-    }, [dispatch, sessionData.scheduleId]);
-
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
         if (sessionData.current.scheduleId) {
