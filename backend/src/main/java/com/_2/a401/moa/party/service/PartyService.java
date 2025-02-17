@@ -6,6 +6,7 @@ import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
+import com._2.a401.moa.member.service.MemberService;
 import com._2.a401.moa.party.domain.*;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 
@@ -18,19 +19,14 @@ import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.service.InitialScheduleService;
 import com.querydsl.core.Tuple;
-import com._2.a401.moa.party.dto.response.ApiResponse;
 
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +45,7 @@ public class PartyService {
     private final InitialScheduleService initialScheduleService;
     private final ScheduleRepository scheduleRepository;
     private final PartyRepositoryCustom partyRepositoryCustom;
-
+    private final MemberService memberService;
 
 
     @Transactional
@@ -132,6 +128,9 @@ public class PartyService {
                 .collect(Collectors.toList());
 
         List<Member> members = memberRepository.findAllById(memberIds);
+        for(Member child:members){
+            memberService.checkCanJoinParty(party, child);
+        }
 
         if (members.size() != memberIds.size()) {
             throw new IllegalArgumentException("일부 Member ID가 존재하지 않습니다.");
@@ -146,6 +145,8 @@ public class PartyService {
 
         partyMemberRepository.saveAll(partyMembers);
     }
+
+
 
     private String generateUniquePin() {
         return UUID.randomUUID().toString().substring(0, 8);
@@ -298,6 +299,8 @@ public class PartyService {
             Member child = memberRepository.findById(childId)
                     .orElseThrow(() -> new MoaException(INVALID_CHILD));
 
+            memberService.checkCanJoinParty(party, child);
+
             boolean isAlreadyMember = partyMemberRepository.existsByPartyAndMember(party, child);
             if (isAlreadyMember) {
                 throw new MoaException(DUPLICATED_CHILD);
@@ -309,6 +312,7 @@ public class PartyService {
             newMembers.add(newPartyMember);
         }
         partyMemberRepository.saveAll(newMembers);
+
     }
 
     @Transactional
