@@ -54,6 +54,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const getRemainingTime = () => {
     if (!partyDetails) return 0;
     const start = new Date(partyDetails.startDate);
+    start.setHours(start.getHours() + 9);
     const now = new Date();
     return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
   };
@@ -196,10 +197,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   if (error) return <div className="text-red-600">오류가 발생했습니다: {error}</div>;
 
   return (
-
-    <div className="min-h-screen bg-gray-100 p-4" >
-      <div className="card max-w-3xl mx-auto bg-blue-50/80 shadow-xl backdrop-blur-sm">
-        <div className="card-body p-6">
+        <div className="card-body p-6 bg-blue-50 shadow-xl">
           {/* 헤더 및 기본 정보 */}
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600">PIN 번호: {partyDetails.pinNumber}</span>
@@ -222,14 +220,13 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                   .join(", ")}
               </span>
               <span className="text-sm">
-                시간: {new Date(partyDetails.startDate).toLocaleTimeString('ko-KR', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false
-                })}
+                시간: {new Date(new Date(partyDetails.startDate).setHours(new Date(partyDetails.startDate).getHours() + 9))
+                  .toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                  })}
               </span>
-              
-              
               <span className="text-sm">난이도: Lv.{partyDetails.level}</span>
               <span className="text-sm">진행률: {partyDetails.progressCount}/{partyDetails.episodeCount}</span>
             </div>
@@ -395,8 +392,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
 
       {/* 알림 모달 */}
       <Alert 

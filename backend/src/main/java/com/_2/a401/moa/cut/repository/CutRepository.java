@@ -15,17 +15,17 @@ import java.util.List;
 public interface CutRepository extends JpaRepository<Cut, Long> {
 
     @Modifying
-    @Query(value = "UPDATE Cut c SET c.image_url=:cutFileUrl WHERE c.id=:cutId"
+    @Query(value = "UPDATE cut c SET c.image_url=:cutFileUrl WHERE c.id=:cutId"
     , nativeQuery = true)
     void savePictureByCutId(String cutFileUrl, Long cutId);
 
-    @Query(value = "SELECT c.* FROM Cut c " +
+    @Query(value = "SELECT c.* FROM cut c " +
             "WHERE c.party_id = :partyId " +
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)
     List<Cut> getCutsByRange(@Param("partyId") Long partyId, @Param("startRange") int startRange, @Param("endRange") int endRange);
 
     @Query(value = "SELECT c.id AS cutId, c.content AS content, c.cut_order AS cutOrder, " +
-            "c.member_id AS memberId, m.nickname AS nickname, c.word_id as wordId, c.party_id as partyId FROM Cut c " +
+            "c.member_id AS memberId, m.nickname AS nickname, c.word_id as wordId, c.party_id as partyId FROM cut c " +
             "JOIN member m ON m.id=c.member_id " +
             "WHERE c.party_id = :partyId " +
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)

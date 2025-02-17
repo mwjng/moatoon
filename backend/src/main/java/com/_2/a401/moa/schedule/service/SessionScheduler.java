@@ -46,7 +46,7 @@ public class SessionScheduler {
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final SessionStageService sessionStageService;
 
-    @Scheduled(cron = "0 0,30 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void createSession() {
         LocalDateTime now = now();
         LocalDateTime thirtyMinutesLater = now.plusMinutes(30);
@@ -62,10 +62,9 @@ public class SessionScheduler {
         }
         for (Schedule schedule : schedules) {
             log.info("schedule: {}", schedule.getId());
-            final String sessionId = videoConferenceManager.createSession();
 
             // Redis에 저장
-            final Session session = new Session(schedule.getId(), sessionId, WAITING, schedule.getSessionTime());
+            final Session session = new Session(schedule.getId(), null, WAITING, schedule.getSessionTime());
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
 

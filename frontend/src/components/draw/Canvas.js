@@ -8,6 +8,7 @@ import { authInstance } from '../../api/axios';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLines, addLine, undoLine, redoLine, clearCanvas } from '../../store/canvasSlice';
+import StoryLine from './StoryLine';
 
 const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
     const [tool, setTool] = useState('pen');
@@ -94,7 +95,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
             });
 
             if (response.status === 200) {
-                console.log('캔버스 임시 저장 성공');
+                //console.log('캔버스 임시 저장 성공');
                 return response;
             } else {
                 console.error('캔버스 임시 저장 실패:', response.status);
@@ -106,12 +107,10 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     useEffect(() => {
         const saveCanvasData = () => {
-            console.log('임시저장 시작');
             if (!connected || !stompClient.current) return;
 
             const canvasData = JSON.stringify(lines);
             sendCanvasData(canvasData);
-            console.log('임시저장 끝');
         };
 
         const intervalId = setInterval(saveCanvasData, 1000); // 캔버스 임시저장 1초마다 실행
@@ -256,16 +255,12 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                         ))}
                     </Layer>
                 </Stage>
-                {userStory && userStory.length > 0 && (
-                    <div className="absolute bottom-0 w-full text-center p-2.5 text-black text-md">
-                        <p
-                            className="text-md text-gray-700 leading-relaxed"
-                            dangerouslySetInnerHTML={{
-                                __html: userStory[0].content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
-                            }}
-                        />
-                    </div>
-                )}
+                <StoryLine
+                    content={userStory[0].content}
+                    textSize="text-xl"
+                    leading="leading-relaxed"
+                    padding="p-2.5"
+                />
                 <div className="flex justify-center gap-4 mt-4">
                     {/* <Link to="/session/overview"> */}
                     <WordButton

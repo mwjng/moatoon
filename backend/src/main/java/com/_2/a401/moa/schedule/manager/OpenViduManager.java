@@ -3,6 +3,7 @@ package com._2.a401.moa.schedule.manager;
 import com._2.a401.moa.common.exception.MoaException;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -12,6 +13,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.*;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OpenViduManager implements VideoConferenceManager {
 
     private final OpenVidu openVidu;
@@ -41,6 +43,7 @@ public class OpenViduManager implements VideoConferenceManager {
 
     @Override
     public String createConnection(String sessionId) {
+        log.info("OpenViduManager.createConnection - sessionId: {}", sessionId);
         try {
             Session session = Optional.ofNullable(openVidu.getActiveSession(sessionId))
                 .orElseThrow(() -> new MoaException(SESSION_NOT_FOUND));
