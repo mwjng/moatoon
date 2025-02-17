@@ -14,6 +14,8 @@ import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
+import { useDispatch } from 'react-redux';
+import { fetchCutsInfo } from '../../store/cutsSlice';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -91,6 +93,14 @@ const SessionContainer = () => {
 
         fetchCover();
     }, [sessionData.partyId]);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (sessionData.scheduleId) {
+            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
+        }
+    }, [dispatch, sessionData.scheduleId]);
 
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
@@ -185,6 +195,34 @@ const SessionContainer = () => {
             navigate('/home');
         }
     }, [sessionStageData.currentStage, navigate]);
+
+    useEffect(() => {
+        const handleBeforeUnload = event => {
+            event.preventDefault();
+            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
+        };
+
+        const blockReload = event => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
+                event.preventDefault();
+                alert('새로고침이 차단되었습니다.');
+            }
+        };
+
+        const blockContextMenu = event => {
+            event.preventDefault();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('keydown', blockReload);
+        window.addEventListener('contextmenu', blockContextMenu);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('keydown', blockReload);
+            window.removeEventListener('contextmenu', blockContextMenu);
+        };
+    }, []);
 
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
