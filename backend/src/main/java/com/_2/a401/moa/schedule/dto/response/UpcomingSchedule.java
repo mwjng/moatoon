@@ -7,13 +7,15 @@ import java.time.LocalDateTime;
 
 @Builder
 public record UpcomingSchedule(
+        Long partyId,
         Long scheduleId,
         String bookTitle,
         String bookCover,
         LocalDateTime sessionTime
 ) {
-    public static UpcomingSchedule from(ScheduleInfo schedule) {
+    public static UpcomingSchedule from(ScheduleInfo schedule, Long partyId) {
         return UpcomingSchedule.builder()
+                .partyId(partyId)
                 .scheduleId(schedule.scheduleId())
                 .bookTitle(schedule.bookTitle())
                 .bookCover(schedule.bookCover())

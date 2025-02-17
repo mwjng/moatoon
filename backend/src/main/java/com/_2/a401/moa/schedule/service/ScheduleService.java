@@ -6,7 +6,6 @@ import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
 import com._2.a401.moa.schedule.dto.response.*;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
-import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -87,10 +88,32 @@ public class ScheduleService {
     }
 
     private List<UpcomingSchedule> createUpcomingSchedules(List<ScheduleInfo> schedules, int skip) {
+        // 필요한 모든 scheduleId들을 한번에 조회
+        List<Long> scheduleIds = schedules.stream()
+                .skip(skip)
+                .limit(MAX_UPCOMING_SCHEDULES)
+                .map(ScheduleInfo::scheduleId)
+                .toList();
+
+
+        log.info(scheduleIds.toString());
+
+        // 한번의 쿼리로 모든 partyId 조회
+        Map<Long, Long> scheduleToPartyMap = scheduleRepository
+                .findPartyIdsByScheduleIds(scheduleIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),  // id를 key로
+                        row -> ((Number) row[1]).longValue()   // party_id를 value로
+                ));
+
         return schedules.stream()
                 .skip(skip)
                 .limit(MAX_UPCOMING_SCHEDULES)
-                .map(UpcomingSchedule::from)
+                .map(schedule -> UpcomingSchedule.from(
+                        schedule,
+                        scheduleToPartyMap.getOrDefault(schedule.scheduleId(), null)
+                ))
                 .toList();
     }
 

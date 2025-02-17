@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TodayScheduleCard from "./TodayScheduleCard";
 import UpcomingScheduleCard from "./UpcomingScheduleCard";
 import CharacterKADO from '../../assets/kado.svg';
+import BookDetail from '../../components/book/BookDetail';
 
 const ScheduleSection = ({ className, scheduleData }) => {
   console.log('scheduleData:', scheduleData); // Add this line
@@ -9,6 +10,30 @@ const ScheduleSection = ({ className, scheduleData }) => {
   const { todaySchedule, upcomingSchedules } = scheduleData || {
     todaySchedule: null,
     upcomingSchedules: []
+  };
+
+  // 방 상세 모달
+  const [currentPartyId, setCurrentPartyId] = useState(0);
+  const [showBookDetail, setShowBookDetail] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  const handleCardClick = async(partyId) => {
+    console.log("카드 클릭 시도:", partyId);
+    if (!partyId || typeof partyId !== "number") {
+      console.log("유효하지 않은 partyId:", partyId);
+      return;
+    }
+    try {
+      await setCurrentPartyId(partyId);
+      setShowBookDetail(true);
+    } catch (error) {
+      console.error("카드 클릭 처리 중 에러:", error);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowBookDetail(false);
+    setCurrentPartyId(null);
   };
 
   // 날짜 포맷팅 함수
@@ -54,6 +79,9 @@ const ScheduleSection = ({ className, scheduleData }) => {
                     bookImg={schedule.bookCover}
                     bookTitle={schedule.bookTitle}
                     sessionTime={formatSessionTime(schedule.sessionTime)}
+                    onClick={() => {
+                      handleCardClick(schedule.partyId);
+                    }} 
                   />
                 ))}
               </div>
@@ -70,6 +98,31 @@ const ScheduleSection = ({ className, scheduleData }) => {
           className="w-full h-[200px] object-contain"
         />
       </div>
+
+      {showBookDetail && currentPartyId && (
+        <div className="fixed inset-0 z-50">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div 
+              className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                <BookDetail
+                  partyIdOrPin={currentPartyId}
+                  onClose={handleCloseModal}
+                  setModalLoading={setModalLoading}
+                />
+              </div>
+            </div>
+          </div>
+          {modalLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="loading loading-spinner loading-lg text-primary"></div>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 };
