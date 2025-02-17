@@ -370,7 +370,7 @@ const ManagerMainPage = () => {
                   <select
                     value={selectedMember}
                     onChange={(e) => setSelectedMember(e.target.value)}
-                    className="border rounded p-1 text-sm"
+                    className="border rounded p-1 text-sm bg-white"
                   >
                     <option value="all">전체 보기</option>
                     {scheduleData.childrenSchedules.map(member => (
