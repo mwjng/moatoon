@@ -319,15 +319,16 @@ useEffect(() => {
             ) : (
               <>
                 {currentStory && (
+
                   <div className="mb-4 p-3 border border-gray-300 rounded bg-white">
-                    <h2 className="text-xl">{currentStory.title}</h2>
-                    <div className="mb-3">
+                    <h2 className="text-xl text-center mb-2">{currentStory.title}</h2>
+                    <div className="mb-3 flex justify-center">
                       <StoryTag label="분위기" value={mood.keyword} />
                       <StoryTag label="테마" value={theme.keyword} />
                       <StoryTag label="장르" value={genre.keyword} />
                       <StoryTag label="레벨" value={level} />
                     </div>
-                    <h3 className="font-bold mb-2 text-base">개요</h3>
+                    {/* <h3 className="font-bold mb-2 text-base">개요</h3> */}
                     <p className="text-sm">{currentStory.overview}</p>
                   </div>
                 )}
@@ -355,12 +356,12 @@ useEffect(() => {
               
               onClick={() => {
                 generateStory(); 
-                setRegenerateCount(prev => prev + 1);
+                // setRegenerateCount(prev => prev + 1);
               }} 
               disabled={isGenerating || regenerateCount >=3} 
               className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
             >
-              재생성하기 ({regenerateCount + 1}/3)
+              재생성하기 ({regenerateCount+1}/3)
             </button>
             <button 
               onClick={handleDecide}
