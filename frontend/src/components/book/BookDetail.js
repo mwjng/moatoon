@@ -54,6 +54,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const getRemainingTime = () => {
     if (!partyDetails) return 0;
     const start = new Date(partyDetails.startDate);
+    start.setHours(start.getHours() + 9);
     const now = new Date();
     return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
   };
