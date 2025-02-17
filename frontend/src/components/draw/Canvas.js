@@ -106,13 +106,15 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     useEffect(() => {
         const saveCanvasData = () => {
+            console.log('임시저장 시작');
             if (!connected || !stompClient.current) return;
 
             const canvasData = JSON.stringify(lines);
             sendCanvasData(canvasData);
+            console.log('임시저장 끝');
         };
 
-        const intervalId = setInterval(saveCanvasData, 30000); // 캔버스 임시저장 30초마다 실행
+        const intervalId = setInterval(saveCanvasData, 1000); // 캔버스 임시저장 1초마다 실행
 
         return () => clearInterval(intervalId);
     }, [lines, connected]);
