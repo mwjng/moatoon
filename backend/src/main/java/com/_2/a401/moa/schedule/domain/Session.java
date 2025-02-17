@@ -33,4 +33,8 @@ public class Session {
         this.startTime = startTime;
         log.info("Updating session stage and start time for scheduleId: {}, sessionId: {}, sessionStage:{}, startTime: {}", scheduleId, sessionId, sessionStage.toString(), startTime);
     }
+
+    public void updateSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 }

@@ -57,9 +57,17 @@ public class ScheduleService {
         }
 
         ScheduleInfo firstSchedule = schedules.get(0);
-        return isToday(firstSchedule.getSessionTimeAsLocalDateTime()) // 다가오는 첫번째 일정이 오늘 일정이라면
+
+        boolean isTodaySchedule = isToday(firstSchedule.getSessionTimeAsLocalDateTime());
+
+        TodayAndUpcomingScheduleResponse response = isTodaySchedule
                 ? createResponseWithTodaySchedule(schedules)
                 : createResponseWithoutTodaySchedule(schedules);
+
+        return response;
+//        return isToday(firstSchedule.getSessionTimeAsLocalDateTime()) // 다가오는 첫번째 일정이 오늘 일정이라면
+//                ? createResponseWithTodaySchedule(schedules)
+//                : createResponseWithoutTodaySchedule(schedules);
     }
 
 

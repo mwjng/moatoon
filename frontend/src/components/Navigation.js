@@ -20,15 +20,7 @@ import duck from '../assets/duckduck.png';
 import AudioPlayer from './audio/AudioPlayer';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({
-    stage,
-    leaveSession,
-    stageDuration = 60,
-    sessionStartTime,
-    serverTime,
-    bookTitle,
-    onTimeOut,
-}) {
+function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime, serverTime, bookTitle, onTimeOut }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
     //     stageDuration,
@@ -49,12 +41,12 @@ function Navigation({
     const [logoutModal, setLogoutModal] = useState(false);
     const [previewUrl, setPreviewUrl] = useState(userInfo.imageUrl);
     const cutsState = useSelector(state => state.cuts);
-    
+
     // tts 관련 10분, 5분, 1분전 체크
     const [timeThresholds, setTimeThresholds] = useState({
         tenMinutes: false,
         fiveMinutes: false,
-        oneMinute: false
+        oneMinute: false,
     });
 
     const dispatch = useDispatch();
@@ -113,7 +105,7 @@ function Navigation({
         setLogoutModal(false);
     };
 
-   // 시간 더하기 함수 (분 단위로 처리)
+    // 시간 더하기 함수 (분 단위로 처리)
     const addMinutes = (timestamp, minutes = 0) => {
         const time = new Date(timestamp);
         return new Date(time.getTime() + minutes * 60000);
@@ -166,7 +158,7 @@ function Navigation({
             const updateRemainTime = () => {
                 const sessionStartTimestamp = new Date(sessionStartTime).getTime();
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
-                const totalDuration = (stageDuration/60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
+                const totalDuration = (stageDuration / 60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
 
                 if (remaining <= 0) {
@@ -183,19 +175,19 @@ function Navigation({
 
                 // tts 설정
                 if (stage === 'drawing') {
-                const remainingMinutes = remaining / MINUTE;
-                
-                if (remainingMinutes <= 10 && remainingMinutes > 9.9 && !timeThresholds.tenMinutes) {
-                    setTimeThresholds(prev => ({ ...prev, tenMinutes: true }));
-                }
-                
-                if (remainingMinutes <= 5 && remainingMinutes > 4.9 && !timeThresholds.fiveMinutes) {
-                    setTimeThresholds(prev => ({ ...prev, fiveMinutes: true }));
-                }
-                
-                if (remainingMinutes <= 1 && remainingMinutes > 0.9 && !timeThresholds.oneMinute) {
-                    setTimeThresholds(prev => ({ ...prev, oneMinute: true }));
-                }
+                    const remainingMinutes = remaining / MINUTE;
+
+                    if (remainingMinutes <= 10 && remainingMinutes > 9.9 && !timeThresholds.tenMinutes) {
+                        setTimeThresholds(prev => ({ ...prev, tenMinutes: true }));
+                    }
+
+                    if (remainingMinutes <= 5 && remainingMinutes > 4.9 && !timeThresholds.fiveMinutes) {
+                        setTimeThresholds(prev => ({ ...prev, fiveMinutes: true }));
+                    }
+
+                    if (remainingMinutes <= 1 && remainingMinutes > 0.9 && !timeThresholds.oneMinute) {
+                        setTimeThresholds(prev => ({ ...prev, oneMinute: true }));
+                    }
                 }
             };
 
@@ -215,7 +207,7 @@ function Navigation({
                 cancelHandler={cancelModal}
                 confirmHandler={logoutHandler}
             />
-             {stage === 'drawing' && (
+            {stage === 'drawing' && (
                 <>
                     {timeThresholds.tenMinutes && <AudioPlayer audioType="TEN_LEFT" />}
                     {timeThresholds.fiveMinutes && <AudioPlayer audioType="FIVE_LEFT" />}
@@ -233,8 +225,8 @@ function Navigation({
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime, 10))} ~{' '}
-                                        {getTimeFormatted(addMinutes(sessionStartTime, 70))}
+                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime))} ~{' '}
+                                        {getTimeFormatted(addMinutes(sessionStartTime, 60))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">
