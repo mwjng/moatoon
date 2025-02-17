@@ -62,10 +62,9 @@ public class SessionScheduler {
         }
         for (Schedule schedule : schedules) {
             log.info("schedule: {}", schedule.getId());
-            final String sessionId = videoConferenceManager.createSession();
 
             // Redis에 저장
-            final Session session = new Session(schedule.getId(), sessionId, WAITING, schedule.getSessionTime());
+            final Session session = new Session(schedule.getId(), null, WAITING, schedule.getSessionTime());
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
 
