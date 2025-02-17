@@ -48,7 +48,6 @@ const QuizPage = ({partyId, onChangeStage}) => {
         // 마지막에 실행되는 함수
         const newFailList = new Set(failList);
 
-        console.log("forEach전  failWords: ", failWordsForMail.current);
         correctList.forEach((isCorrect, index) => {
             if (!isCorrect) {
                 const wordId = quizs[index]?.wordId;
@@ -59,14 +58,17 @@ const QuizPage = ({partyId, onChangeStage}) => {
                 }
             }
         });
-        console.log("forEach후후  failWords: ", failWordsForMail.current);
 
         setFailList(newFailList);
         const failWordIds = Array.from(newFailList);
 
         addToMyWords(failWordIds)
         .then(() => {
-            return sendReportMail(Array.from(failWordsForMail.current));
+            // 리포트 메일 전송과 퀴즈 완료 상태 전송을 순차적으로 실행
+            return Promise.all([
+                sendReportMail(Array.from(failWordsForMail.current)),
+                sendQuizDone(scheduleId)
+            ]);
         })
         .then(() => {
             setTimeout(() => {
@@ -78,6 +80,8 @@ const QuizPage = ({partyId, onChangeStage}) => {
                 console.error('단어장 추가 중 에러 발생:', error);
             } else if (error.config?.url?.includes('/mail')) {
                 console.error('메일 전송 중 에러 발생:', error);
+            } else if (error.config?.url?.includes('/quiz-done')) {
+                console.error('퀴즈 완료 상태 전송 중 에러 발생:', error);
             } else {
                 console.error('알 수 없는 에러 발생:', error);
             }

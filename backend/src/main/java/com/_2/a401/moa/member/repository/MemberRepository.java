@@ -2,12 +2,17 @@ package com._2.a401.moa.member.repository;
 
 import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.domain.MemberState;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
+
+    @Query("SELECT m FROM Member m LEFT JOIN FETCH m.manager WHERE m.id = :id")
+    Optional<Member> findByIdWithManager(@Param("id") Long id);
 
     boolean existsByLoginId(String loginId);
 

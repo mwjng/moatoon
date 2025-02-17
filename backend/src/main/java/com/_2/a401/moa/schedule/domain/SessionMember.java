@@ -19,11 +19,12 @@ public class SessionMember {
 
     private Map<Long, Boolean> sessionMembers;
 
-    //퀴즈 참여여부
+    private Map<Long, Boolean> quizDoneMembers; // 퀴즈 완료했는지 여부
 
     public SessionMember(final Long scheduleId) {
         this.scheduleId = scheduleId;
         this.sessionMembers = new HashMap<>();
+        this.quizDoneMembers = new HashMap<>();
     }
 
     public void addMember(final Long memberId) {
@@ -32,6 +33,10 @@ public class SessionMember {
 
     public void removeMember(final Long memberId) {
         this.sessionMembers.remove(memberId);
+    }
+
+    public void addQuizDoneMember(final Long memberId) {
+        this.quizDoneMembers.put(memberId, true);
     }
 
     public int getMemberCount() {
