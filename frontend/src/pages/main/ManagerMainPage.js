@@ -118,11 +118,10 @@ const DayCell = ({ day, isToday, dayIndex, selectedMember, formatTime }) => {
     <div
       className={`min-h-16 p-1.5 border-b border-r relative
         ${!day.isCurrentMonth ? 'text-gray-300 bg-gray-50' : ''}
-        ${dayIndex === 0 && day.isCurrentMonth ? 'text-red-500' : ''}
         ${isToday ? 'bg-blue-50' : ''}
       `}
     >
-      <div className={`text-xs mb-1 ${isToday ? 'font-bold text-blue-600' : ''}`}>
+      <div className={`text-xs mb-1 ${isToday ? 'font-bold text-blue-600' : ''} ${dayIndex === 0 ? 'text-red-500' : ''}`}>
         {day.date.getDate()}
       </div>
       <div className="space-y-1">
