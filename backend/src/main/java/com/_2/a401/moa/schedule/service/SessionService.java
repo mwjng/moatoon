@@ -121,9 +121,7 @@ public class SessionService {
         }
     }
 
-
     public enterSessionResponse getEnterSession(String pinNumber) {
-
         Long partyId = partyRepository.findPartyIdByPinNumber(pinNumber)
                 .orElseThrow(() -> new MoaException(INVALID_REQUEST));
 
@@ -131,10 +129,8 @@ public class SessionService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-
         long scheduleId = scheduleRepository.findTodayScheduleIdByPartyId(partyId, startOfDay, endOfDay)
                 .orElseThrow(() -> new MoaException(SCHEDULE_NOT_FOUND));
         return new enterSessionResponse(partyId, scheduleId);
-
     }
 }
