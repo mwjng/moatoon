@@ -13,12 +13,11 @@ const BookGeneratorPage = () => {
     const [showBookDetail, setShowBookDetail] = useState(false);
     const [currentPartyId, setCurrentPartyId] = useState(null);
 
-
     useEffect(() => {
-        console.log("State changes:", {
+        console.log('State changes:', {
             showStoryGenerator,
             currentPartyId,
-            showBookDetail
+            showBookDetail,
         });
     }, [showStoryGenerator, currentPartyId, showBookDetail]);
 
@@ -87,8 +86,7 @@ const BookGeneratorPage = () => {
                     </div>
                 </div>
             )}
-            <AlertModal text={modalText} modalState={modalState} 
-            closeHandler={closeModal} />
+            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
         </div>
     );
 };

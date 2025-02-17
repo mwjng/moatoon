@@ -46,7 +46,7 @@ public class SessionScheduler {
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final SessionStageService sessionStageService;
 
-    @Scheduled(cron = "0 0,30 * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void createSession() {
         LocalDateTime now = now();
         LocalDateTime thirtyMinutesLater = now.plusMinutes(30);

@@ -54,6 +54,7 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
   const getRemainingTime = () => {
     if (!partyDetails) return 0;
     const start = new Date(partyDetails.startDate);
+    start.setHours(start.getHours() + 9);
     const now = new Date();
     return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
   };
@@ -222,14 +223,13 @@ const BookDetail = ({partyIdOrPin, onClose}) => {
                   .join(", ")}
               </span>
               <span className="text-sm">
-                시간: {new Date(partyDetails.startDate).toLocaleTimeString('ko-KR', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false
-                })}
+                시간: {new Date(new Date(partyDetails.startDate).setHours(new Date(partyDetails.startDate).getHours() + 9))
+                  .toLocaleTimeString('ko-KR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                  })}
               </span>
-              
-              
               <span className="text-sm">난이도: Lv.{partyDetails.level}</span>
               <span className="text-sm">진행률: {partyDetails.progressCount}/{partyDetails.episodeCount}</span>
             </div>

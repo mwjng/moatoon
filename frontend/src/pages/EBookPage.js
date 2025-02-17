@@ -4,6 +4,7 @@ import PaginationButton from '../components/PaginationButton';
 import backgroundImage from '../assets/ebook1.png';
 import CutCard from '../components/CutSvgCard';
 import { useParams } from 'react-router';
+import Loading from '../components/Loading';
 
 const formatDate = dateString => {
     const date = new Date(dateString);
@@ -14,16 +15,19 @@ const EBookPage = () => {
     const { partyId } = useParams();
     const [currentPage, setCurrentPage] = useState(0);
     const [comicData, setComicData] = useState({ bookTitle: '', cuts: [] });
+    const [isLoading, setIsLoading] = useState(true);
     const cutsPerPage = 4;
 
     useEffect(() => {
+        setIsLoading(true);
         authInstance
             .get(`/books/ebook/${partyId}`)
             .then(response => {
                 console.log('Fetched Data:', response.data);
                 setComicData(response.data);
             })
-            .catch(error => console.error('Error fetching ebook:', error));
+            .catch(error => console.error('Error fetching ebook:', error))
+            .finally(() => setIsLoading(false));
     }, []);
 
     const totalPages = Math.ceil(comicData.cuts.length / cutsPerPage);
@@ -40,58 +44,64 @@ const EBookPage = () => {
 
     return (
         <div className="min-h-screen bg-light-cream  bg-[#FEFBEB]">
-            <div
-                className="ebook-container relative max-w-4xl mx-auto p-6 aspect-[5/3] "
-                style={{
-                    backgroundImage: `url(${backgroundImage})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                }}
-            >
-                {/* Pagination Buttons */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12">
-                    <PaginationButton direction="left" onClick={handlePrev} disabled={currentPage === 0} />
+            {isLoading ? (
+                <div>
+                    <Loading />
                 </div>
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12">
-                    <PaginationButton
-                        direction="right"
-                        onClick={handleNext}
-                        disabled={currentPage === totalPages - 1}
-                    />
-                </div>
-
-                <div className="flex p-20">
-                    {/* Comic Content */}
-                    <div className="comic-grid grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid">
-                        {displayedCuts.map(cut => (
-                            <div
-                                key={cut.cutId}
-                                className="comic-cut  border-solid border-2 border-black p-1 overflow-hidden"
-                            >
-                                <CutCard item={cut} />
-                            </div>
-                        ))}
+            ) : (
+                <div
+                    className="ebook-container relative max-w-4xl mx-auto p-6 aspect-[5/3] "
+                    style={{
+                        backgroundImage: `url(${backgroundImage})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center',
+                    }}
+                >
+                    {/* Pagination Buttons */}
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12">
+                        <PaginationButton direction="left" onClick={handlePrev} disabled={currentPage === 0} />
+                    </div>
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12">
+                        <PaginationButton
+                            direction="right"
+                            onClick={handleNext}
+                            disabled={currentPage === totalPages - 1}
+                        />
                     </div>
 
-                    <div className="ml-5 flex flex-col space-y-2">
-                        <div className="mt-auto flex flex-col space-y-1">
+                    <div className="flex p-20">
+                        {/* Comic Content */}
+                        <div className="comic-grid grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid">
                             {displayedCuts.map(cut => (
-                                <div key={cut.cutId} className="comic-cut border border-gray-200 p-2 rounded">
-                                    <span className="mr-4 whitespace-nowrap">
-                                        Cut {cut.cutOrder}: {cut.name}
-                                    </span>
+                                <div
+                                    key={cut.cutId}
+                                    className="comic-cut  border-solid border-2 border-black p-1 overflow-hidden"
+                                >
+                                    <CutCard item={cut} />
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-auto text-gray-900 text-xl font-bold">
-                            {displayedCuts.length > 0 && (
-                                <p className="mt-2">{formatDate(displayedCuts[0].modifiedAt)}</p>
-                            )}
+
+                        <div className="ml-5 flex flex-col space-y-2">
+                            <div className="mt-auto flex flex-col space-y-1">
+                                {displayedCuts.map(cut => (
+                                    <div key={cut.cutId} className="comic-cut border border-gray-200 p-2 rounded">
+                                        <span className="mr-4 whitespace-nowrap">
+                                            Cut {cut.cutOrder}: {cut.name}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-auto text-gray-900 text-xl font-bold">
+                                {displayedCuts.length > 0 && (
+                                    <p className="mt-2">{formatDate(displayedCuts[0].modifiedAt)}</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

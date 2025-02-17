@@ -85,7 +85,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<ScheduleInfo> findBeforeAndOngoingSchedules(@Param("memberId") Long memberId);
 
     @Query(value = "SELECT s.party_id, s.episode_number " +
-            "FROM Schedule s " +
+            "FROM schedule s " +
             "WHERE s.id = :scheduleId", nativeQuery = true)
     Optional<ScheduleInfoResponse> getScheduleInfo(@Param("scheduleId") Long scheduleId);
 

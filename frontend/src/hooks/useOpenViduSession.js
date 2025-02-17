@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
-const useOpenViduSession = scheduleId => {
+const useOpenViduSession = () => {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
@@ -25,7 +25,7 @@ const useOpenViduSession = scheduleId => {
         }
     }, [token]);
 
-    const joinSession = async () => {
+    const joinSession = async scheduleId => {
         const openVidu = new OpenVidu();
         const newSession = openVidu.initSession();
 
@@ -39,7 +39,7 @@ const useOpenViduSession = scheduleId => {
         });
 
         try {
-            const token = await getSessionToken();
+            const token = await getSessionToken(scheduleId);
             await newSession.connect(token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
@@ -61,7 +61,7 @@ const useOpenViduSession = scheduleId => {
         }
     };
 
-    const leaveSession = async () => {
+    const leaveSession = async scheduleId => {
         if (session) {
             await axios.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {
                 headers: { Authorization: `Bearer ${token}` },
