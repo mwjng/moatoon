@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,7 +57,9 @@ public class PartyService {
         String pinNumber = generateUniquePin();
 
         LocalDateTime startDate = adjustStartDate(
-                LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
+                LocalDateTime.parse(request.getStartDate() + "T" + request.getTime())
+                    .atZone(ZoneId.of("Asia/Seoul"))
+                    .toLocalDateTime(),
                 request.getDayWeek()
         );
         log.info("startDate = {}", startDate);
