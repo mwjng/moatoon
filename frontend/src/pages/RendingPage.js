@@ -12,7 +12,6 @@ function RendingPage() {
                         flexDirection: 'column',
                         margin: 'auto',
                         textAlign: 'center',
-                        gap: '30px',
                         alignItems: 'center',
                         position: 'relative',
                         top: '10px',
@@ -24,12 +23,13 @@ function RendingPage() {
                             fontFamily: 'Ownglyph_StudyHard-Rg',
                             fontWeight: 'normal',
                             color: 'black',
+                            zIndex: 777,
                         }}
                     >
                         모아책방
                     </h2>
-                    <Link to="/login">
-                        <div className="bg-[#FAE34C] text-white rounded-full w-[244px] h-[80px] text-[32px] cursor-pointer flex items-center justify-center">
+                    <Link to="/login" style={{ zIndex: 777 }}>
+                        <div className="bg-[#FAE34C] text-white rounded-full w-[244px] h-[80px] text-[32px] cursor-pointer flex items-center justify-center z-888">
                             시작하기
                         </div>
                     </Link>
