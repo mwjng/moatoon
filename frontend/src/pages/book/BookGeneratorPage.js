@@ -74,15 +74,15 @@ const BookGeneratorPage = () => {
                 <div className="fixed inset-0 z-50">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
                     <div className="flex items-center justify-center min-h-screen p-4">
-                        {/* <div className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl"> */}
-                        <div className="max-h-[90vh] overflow-hidden rounded-xl">
-                            <BookDetail
-                                {...storyConfig}
-                                partyIdOrPin={currentPartyId}
-                                onClose={handleBookDetailClose}
-                            />
+                        <div className="relative w-full max-w-4xl bg-white rounded-xl shadow-2xl">
+                            <div className="max-h-[90vh] overflow-hidden rounded-xl">
+                                <BookDetail
+                                    {...storyConfig}
+                                    partyIdOrPin={currentPartyId}
+                                    onClose={handleBookDetailClose}
+                                />
+                            </div>
                         </div>
-                        {/* </div> */}
                     </div>
                 </div>
             )}
