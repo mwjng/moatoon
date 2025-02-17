@@ -243,7 +243,10 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return <QuizPage partyId={sessionData.partyId} onChangeStage={handleQuizTimeout} />;
+                return <QuizPage 
+                    partyId={sessionData.partyId} 
+                    scheduleId = {sessionData.scheduleId} 
+                    onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
                 return <QuizEndPage />;
             default:
