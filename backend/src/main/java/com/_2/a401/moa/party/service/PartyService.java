@@ -75,11 +75,12 @@ public class PartyService {
 
         savePartyKeywords(party, request.getGenre(), request.getMood(), request.getTheme());
 
+        initialScheduleService.createSchedules(party, request.getDayWeek(), request.getEpisodeLength());
+
         savePartyMembers(party, request.getParticipatingChildren());
 
         cutService.createCuts(party, request);
 
-        initialScheduleService.createSchedules(party, request.getDayWeek(), request.getEpisodeLength());
 
         return party;
     }

@@ -16,7 +16,7 @@ public enum ExceptionCode {
     SESSION_CAPACITY_EXCEEDED(2004, "세션에 인원이 모두 찼습니다"),
     SESSION_MEMBER_NOT_FOUND(2005, "회원이 세션에 참여하고 있지 않습니다."),
     REDIS_SESSION_MEMBER_NOT_FOUND(2006, "회원이 REDIS 세션에 참여하고 있지 않습니다."),
-    MEMBER_CAN_NOT_JOIN(2007, "회원이 모임에 참여할 수 없습니다."),
+    MEMBER_CAN_NOT_JOIN(2007, "모임에 참여할 수 없는 회원입니다."),
 
     DATA_NOT_FOUND(3000, "데이터를 찾을 수 없습니다."),
     WORD_NOT_FOUND(3404, "단어를 찾을 수 없습니다."),

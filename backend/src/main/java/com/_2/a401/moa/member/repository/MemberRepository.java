@@ -44,6 +44,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query(value = "select count(1) from schedule where party_id=:partyId and session_time " +
             "in (select session_time from schedule where party_id " +
-            "in (select party_id from party p inner join party_member pm on pm.party_id = p.party_id where p.status != 'DONE' and pm.member_id=:childId))")
+            "in (select party_id from party p inner join party_member pm on pm.party_id = p.id where p.status != 'DONE' and pm.member_id=:childId))", nativeQuery = true)
     int checkCanJoinParty(Long partyId, Long childId);
 }
