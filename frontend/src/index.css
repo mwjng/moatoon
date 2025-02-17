@@ -21,6 +21,10 @@
 	font-style: normal;
 }
 
+input, select {
+    background-color: white;
+}
+
 
 html, body, #root {
 
@@ -53,6 +57,7 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
+
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 

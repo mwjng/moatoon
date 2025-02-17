@@ -50,16 +50,12 @@ const BookGeneratorPage = () => {
         <div className="bg-[#D9F0FE] h-screen flex flex-col">
             <Navigation />
 
-            <div className="flex flex-col items-center pt-4 w-full">
-                <div className="w-[90%] bg-[#ffffff88] text-black rounded-3xl px-20 py-5 flex gap-3 text-xl items-center flex-col">
-                    <h1 className="text-3xl font-bold text-blue-800 mb-6">📖 AI 동화책 생성</h1>
-                    <BookForm
-                        onSubmit={handleFormSubmit}
-                        selectTimeHandler={selectTimeHandler}
-                        closeModal={closeModal}
-                    />
-                </div>
+            {/* <div className="flex flex-col items-center pt-4 w-full h-screen"> */}
+            <div className="w-[90%] bg-[#ffffff88] text-black rounded-3xl px-20 py-5 flex gap-3 text-xl items-center flex-col max-h-[75%] overflow-y-auto overflow-x-hidden m-auto">
+                <h1 className="text-3xl font-bold text-blue-800 mb-6">📖 AI 동화책 생성</h1>
+                <BookForm onSubmit={handleFormSubmit} selectTimeHandler={selectTimeHandler} closeModal={closeModal} />
             </div>
+            {/* </div> */}
 
             {/* 스토리 생성기 모달 */}
             {showStoryGenerator && storyConfig && (
