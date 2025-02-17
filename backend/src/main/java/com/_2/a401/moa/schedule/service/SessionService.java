@@ -51,12 +51,14 @@ public class SessionService {
 
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.addMember(member.getId());
+        sessionMemberRedisRepository.save(sessionMember);
         return new SessionTokenResponse(token);
     }
 
     public synchronized void leave(final Member member, final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.removeMember(member.getId());
+        sessionMemberRedisRepository.delete(sessionMember);
     }
 
     public synchronized void close(final Long scheduleId) {

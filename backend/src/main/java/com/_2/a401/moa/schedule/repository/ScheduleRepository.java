@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.SCHEDULE_NOT_FOUND;
@@ -101,4 +102,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                                 @Param("endOfDay") LocalDateTime endOfDay);
 
 
+    @Query(value = "SELECT party_id FROM schedule WHERE id = :scheduleId", nativeQuery = true)
+    Optional<Long> findPartyIdById(@Param("scheduleId") Long scheduleId);
+
+    @Query(value = "SELECT s.id, s.party_id FROM schedule s WHERE s.id IN :scheduleIds", nativeQuery = true)
+    List<Object[]> findPartyIdsByScheduleIds(@Param("scheduleIds") List<Long> scheduleIds);
 }

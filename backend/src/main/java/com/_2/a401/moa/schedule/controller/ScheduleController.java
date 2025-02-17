@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
-@Slf4j
 public class ScheduleController {
     private final ScheduleService scheduleService;
     private final JwtUtil jwtUtil;

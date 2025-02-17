@@ -382,7 +382,7 @@ const BookSearchPage = () => {
                                     key={day}
                                     className={`btn btn-sm border-none ${
                                         searchParams.dayWeek.includes(weekDayValues[index])
-                                            ? 'bg-blue-500 border-none text-white hover:bg--200'
+                                            ? 'bg-blue-500 border-none text-white hover:bg-blue-200'
                                             : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-200'
                                     }`}
                                     onClick={() => handleWeekDayToggle(index)}
