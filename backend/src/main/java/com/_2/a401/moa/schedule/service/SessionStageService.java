@@ -77,6 +77,7 @@ public class SessionStageService {
         // Redis에서 sessionMember 불러오기
         SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.setReadyStatus(memberId, isReady); // 준비 상태 변경
+        sessionMemberRedisRepository.save(sessionMember);
 
         if (sessionMember.checkAllMembersReady()) {
             handleSessionTransfer(scheduleId);
