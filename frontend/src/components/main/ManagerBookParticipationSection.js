@@ -103,7 +103,8 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
   }
 
   return (
-    <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6">
+    //
+    <div className="bg-white/[0.47] w-[865px] rounded-xl my-8 py-4 px-6 mr-[110px]">
       <div className="mb-6">
         <div className="relative w-fit min-w-[10rem]" ref={dropdownRef}>
           <button
