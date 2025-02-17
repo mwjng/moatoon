@@ -101,4 +101,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                                 @Param("endOfDay") LocalDateTime endOfDay);
 
 
+    @Query(value = "SELECT party_id FROM schedule WHERE id = :scheduleId", nativeQuery = true)
+    Optional<Long> findPartyIdById(@Param("scheduleId") Long scheduleId);
 }

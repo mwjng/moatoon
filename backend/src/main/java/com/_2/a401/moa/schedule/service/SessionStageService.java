@@ -1,11 +1,15 @@
 package com._2.a401.moa.schedule.service;
 
+import com._2.a401.moa.common.exception.ExceptionCode;
+import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.party.repository.PartyMemberRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.dto.response.CurrentSessionStageResponse;
 import com._2.a401.moa.schedule.dto.response.WsReadyStatusResponse;
 import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
+import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +32,10 @@ import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 public class SessionStageService {
     private final SessionRedisRepository sessionRedisRepository;
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
+    private final PartyMemberRepository partyMemberRepository;
+    private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final SessionMailService sessionMailService;
     @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
@@ -110,7 +117,7 @@ public class SessionStageService {
         log.info("handleSessionTransfer: scheduleId={}, ", scheduleId);
 
         // 다음 타이머 예약
-        if (nextSessionStage != FullSessionStage.DONE) {
+        if (nextSessionStage != FullSessionStage.TIMER_END) {
             setEndTimeTimer(scheduleId, now.plusSeconds(nextSessionStage.getDuration()), nextSessionStage);
         }
 
@@ -134,20 +141,24 @@ public class SessionStageService {
         taskScheduler.schedule(
                 () -> {
                     log.info("타이머 완료!!!");
-                    // 현재 세션 정보 조회
-                    Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
-                    FullSessionStage currentStage = session.getSessionStage();
-                    log.info(String.valueOf(session));
+                    if(expectedStage == FullSessionStage.DONE) {
+                        handleUncompletedQuizMembers(scheduleId);
+                    }else {
+                        // 현재 세션 정보 조회
+                        Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
+                        FullSessionStage currentStage = session.getSessionStage();
+                        log.info(String.valueOf(session));
 
-                    // 예상했던 단계와 현재 단계가 같을 때만 전환
-                    log.info("{} == {}??", currentStage, expectedStage);
-                    if (currentStage == expectedStage) {
-                        log.info("{} 에서 다음 단계로 이동~", expectedStage);
-                        handleSessionTransfer(scheduleId);
+                        // 예상했던 단계와 현재 단계가 같을 때만 전환
+                        log.info("{} == {}??", currentStage, expectedStage);
+                        if (currentStage == expectedStage) {
+                            log.info("{} 에서 다음 단계로 이동~", expectedStage);
+                            handleSessionTransfer(scheduleId);
 
-                        if(currentStage == FullSessionStage.CUT_ASSIGN) { // CUT_ASSIGN 다음 단계인 DRAWING에서는 
-                            // ready를 요청하지 않았어도 현재 다른 사람들의 ready 정보가 필요
-                            getDrawingReadyStatus(scheduleId);
+                            if(currentStage == FullSessionStage.CUT_ASSIGN) { // CUT_ASSIGN 다음 단계인 DRAWING에서는
+                                // ready를 요청하지 않았어도 현재 다른 사람들의 ready 정보가 필요
+                                getDrawingReadyStatus(scheduleId);
+                            }
                         }
                     }
                 },
@@ -167,6 +178,32 @@ public class SessionStageService {
                     startTime.plusSeconds(currentStage.getDuration()),
                     currentStage
             );
+        }
+    }
+
+    public void quizDone(Long scheduleId, Long memberId) { // 퀴즈 완료 api
+        SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
+        sessionMember.addQuizDoneMember(memberId);
+        sessionMemberRedisRepository.save(sessionMember);
+    }
+
+    public void handleUncompletedQuizMembers(Long scheduleId) {
+        Long partyId = scheduleRepository.findPartyIdById(scheduleId)
+                .orElseThrow(() -> new MoaException(ExceptionCode.SCHEDULE_NOT_ACTIVE));
+
+        // 1. 파티에 참여중인 모든 아이들 정보
+        List<Long> allPartyMembers = partyMemberRepository.findMemberIdsByPartyId(partyId);
+        // 2. Redis에서 퀴즈 완료 체크한 아이들 정보
+        Map<Long, Boolean> quizDoneMembers = sessionMemberRedisRepository.fetchByScheduleId(scheduleId)
+                .getQuizDoneMembers();
+
+        // 3. = 1-2 하면 퀴즈에 참여 안한 아이들
+        List<Long> uncompletedMembers = allPartyMembers.stream()
+                .filter(memberId -> !quizDoneMembers.getOrDefault(memberId, false)) // 해당 조건이 true인 애들만 선택됨
+                .toList();
+
+        if (!uncompletedMembers.isEmpty()) {
+            sessionMailService.sendBadChildNotice(uncompletedMembers); // 세션에 끝까지 참여안한 아이들 알림보내기
         }
     }
 }
