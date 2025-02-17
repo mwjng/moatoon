@@ -10,6 +10,7 @@ import { getQuizs, addToMyWords } from '../../api/word';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer'
 import { sendReportMail } from '../../api/mail';
+import { sendQuizDone } from '../../api/schedule';
 
 const QuizPage = ({partyId, onChangeStage}) => {
     const [quizs, setQuizs] = useState([]);
