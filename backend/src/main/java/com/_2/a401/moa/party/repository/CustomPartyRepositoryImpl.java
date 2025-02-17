@@ -11,6 +11,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CustomPartyRepositoryImpl implements CustomPartyRepository {
     private final JPAQueryFactory queryFactory;
 
@@ -75,6 +77,10 @@ public class CustomPartyRepositoryImpl implements CustomPartyRepository {
                 .offset(pageable.getOffset()) //페이지 번호 * 페이지 크기
                 .limit(pageable.getPageSize()) //페이지 크기
                 .fetch();
+
+        for (BookInfoResponse bookInfoResponse : books) {
+            log.info("books: {}", bookInfoResponse);
+        }
 
         //전체 데이터 개수
         long totalBooks = queryFactory

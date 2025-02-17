@@ -4,12 +4,14 @@ import com._2.a401.moa.party.domain.PartyState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class BookInfoResponse {
     private Long id;
     private String bookCover;
