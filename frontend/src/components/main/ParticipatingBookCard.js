@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ParticipatingBookCard = ({ item }) => {
+const ParticipatingBookCard = ({ item, onClick }) => {
   const formatOpeningTime = (dateString) => {
     if (!dateString) return null;
     
@@ -29,16 +29,35 @@ const ParticipatingBookCard = ({ item }) => {
     }
   };
 
+  const handleClick = (e) => {
+    console.log('카드 클릭됨:', item?.id);
+    e.stopPropagation(); // 이벤트 버블링 방지
+    onClick?.();
+  };
+
   const openingTime = formatOpeningTime(item?.startDate);
   const showOverlay = item?.status === 'BEFORE' && openingTime;
 
   return (
-    <div className="flex-shrink-0 w-32">
+    <div 
+      onClick={handleClick} 
+      className="flex-shrink-0 w-32 cursor-pointer hover:scale-105 transition-transform"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleClick(e);
+        }
+      }}
+    >
       <div className={`overflow-hidden rounded-2xl relative ${item?.bgColor || ''}`}>
         <img
           src={item?.bookCover}
           alt={item?.bookTitle || '책 이미지'}
           className="w-full h-40 object-cover"
+          onError={(e) => {
+            console.log('이미지 로드 실패:', item?.bookCover);
+          }}
         />
 
         {showOverlay && (

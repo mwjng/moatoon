@@ -24,7 +24,7 @@ export const getTodayAndUpComingSchedule = async () => {
         });
         return response;
     } catch (error) {
-        console.error('스케줄 조회 중 오류 발생:', error);
+        console.error('오늘의 일정 & 다가오는 일정 스케줄 조회 중 오류 발생:', error);
         return error.response;
     }
 };
