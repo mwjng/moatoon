@@ -66,6 +66,7 @@ const SessionContainer = () => {
         const fetchSessionInfo = async () => {
             try {
                 const data = await getSessionInfoByPinNumber(pinNumber);
+                console.log(data);
                 sessionData.current = {
                     scheduleId: data.scheduleId,
                     partyId: data.partyId,
@@ -83,6 +84,7 @@ const SessionContainer = () => {
         };
 
         if (pinNumber) {
+            console.log(pinNumber);
             fetchSessionInfo();
         }
 
@@ -135,8 +137,10 @@ const SessionContainer = () => {
                 console.log('세션 stage 조회 요청 성공(값): ', response.data);
                 setSessionStageData({
                     currentStage: response.data.currentSessionStage,
-                    sessionStartTime: new Date(response.data.sessionStageStartTime),
-                    serverTime: new Date(response.data.serverTime),
+                    sessionStartTime: new Date(
+                        new Date(response.data.sessionStageStartTime).getTime() + 9 * 60 * 60 * 1000,
+                    ),
+                    serverTime: new Date(new Date(response.data.serverTime).getTime() + 9 * 60 * 60 * 1000),
                     sessionDuration: response.data.sessionDuration,
                 });
             }
@@ -145,6 +149,7 @@ const SessionContainer = () => {
             navigate('/home');
         } finally {
             setIsLoading(false);
+            console.log('sessionStageData', sessionStageData);
         }
     };
 
