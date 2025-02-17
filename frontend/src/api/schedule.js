@@ -39,3 +39,14 @@ export const getSessionInfoByPinNumber = async (pinNumber) => {
         return error.response?.data; 
     }
 };
+
+export const sendQuizDone = async (scheduleId) => {
+    try {
+        const response = await authInstance.get(`${SCHEDULE_API_URL}/${scheduleId}/quiz-done`, {
+        });
+        return response.data;  
+    } catch (error) {
+        console.error('퀴즈 완료 상태 전송 중 오류 발생:', error);
+        return error.response?.data; 
+    }
+}
