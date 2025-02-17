@@ -39,7 +39,7 @@ const useOpenViduSession = scheduleId => {
         });
 
         try {
-            const token = await getSessionToken();
+            const token = await getSessionToken(scheduleId);
             await newSession.connect(token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
