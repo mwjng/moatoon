@@ -57,10 +57,9 @@ public class PartyService {
         String pinNumber = generateUniquePin();
 
         LocalDateTime startDate = adjustStartDate(
-                LocalDateTime.parse(request.getStartDate() + "T" + request.getTime())
-                    .atZone(ZoneId.of("Asia/Seoul"))
-                    .toLocalDateTime(),
-                request.getDayWeek()
+            LocalDateTime.parse(request.getStartDate() + "T" + request.getTime())
+                .minusHours(9L),
+            request.getDayWeek()
         );
         log.info("startDate = {}", startDate);
         LocalDateTime endDate = initialScheduleService.calculateEndDate(startDate, request.getDayWeek(), request.getEpisodeLength());
