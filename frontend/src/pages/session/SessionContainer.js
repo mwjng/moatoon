@@ -23,7 +23,7 @@ const SessionContainer = () => {
     const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
 
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
-    const [sessionData, setSessionData] = useState({
+    const sessionData = useRef({
         // api로 정보 가져옴
         scheduleId: null,
         partyId: null,
@@ -62,10 +62,14 @@ const SessionContainer = () => {
         const fetchSessionInfo = async () => {
             try {
                 const data = await getSessionInfoByPinNumber(pinNumber);
-                setSessionData({
+                sessionData.current = {
                     scheduleId: data.scheduleId,
                     partyId: data.partyId,
-                });
+                };
+
+                const bookCoverData = await getEBookCover(sessionData.current.partyId);
+                console.log('SessionContainer: getEBookCover:', bookCoverData);
+                setBookInfo(bookCoverData);
             } catch (error) {
                 console.error('핀넘버로 세션 정보 조회 실패:', error);
                 navigate('/home');
@@ -78,33 +82,33 @@ const SessionContainer = () => {
     }, [pinNumber, navigate]);
 
     // partyId로 bookTitle, bookCover, cuts 가져옴
-    useEffect(() => {
-        const fetchCover = async () => {
-            try {
-                const data = await getEBookCover(sessionData.partyId);
-                console.log('SessionContainer: getEBookCover:', data);
-                setBookInfo(data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchCover = async () => {
+    //         try {
+    //             const data = await getEBookCover(sessionData.partyId);
+    //             console.log('SessionContainer: getEBookCover:', data);
+    //             setBookInfo(data);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     };
 
-        fetchCover();
-    }, [sessionData.partyId]);
+    //     fetchCover();
+    // }, [sessionData.partyId]);
 
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
-        if (sessionData.scheduleId) {
+        if (sessionData.current.scheduleId) {
             // 여기서 scheduleId 체크
             fetchCurrentStage();
         }
-    }, [sessionData.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
+    }, [sessionData.current.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
 
     // 초기 세션 스테이지 정보를 가져오는 함수
     const fetchCurrentStage = async () => {
         setIsLoading(true);
         try {
-            const response = await getCurrentSessionStage(sessionData.scheduleId);
+            const response = await getCurrentSessionStage(sessionData.current.scheduleId);
             if (response.status === 200) {
                 if (response.data.currentSessionStage === 'DONE') {
                     // 새로고침했을때 DONE이면 접근 금지
@@ -132,7 +136,7 @@ const SessionContainer = () => {
 
     // useOpenViduSession 훅 사용
     const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
-        sessionData.scheduleId,
+        sessionData.current.scheduleId,
     );
 
     // 컴포넌트 마운트될 때 세션 참여
@@ -165,7 +169,7 @@ const SessionContainer = () => {
     // }, [sessionStageData]);
 
     const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
-        sessionData.scheduleId,
+        sessionData.current.scheduleId,
     );
 
     // sessionTransferResponse 변경시 stage 업데이트
@@ -197,7 +201,7 @@ const SessionContainer = () => {
                 return (
                     <WaitingRoom
                         bookInfo={bookInfo}
-                        scheduleId={sessionData.scheduleId}
+                        scheduleId={sessionData.current.scheduleId}
                         sessionTime={sessionStageData.sessionStartTime}
                         serverTime={sessionStageData.serverTime}
                         publisher={publisher}
@@ -209,7 +213,7 @@ const SessionContainer = () => {
             case 'WORD':
                 return (
                     <WordLearning
-                        partyId={sessionData.partyId}
+                        partyId={sessionData.current.partyId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
@@ -222,7 +226,7 @@ const SessionContainer = () => {
             case 'DRAWING':
                 return (
                     <DrawingPage
-                        scheduleId={sessionData.scheduleId}
+                        scheduleId={sessionData.current.scheduleId}
                         sessionStageData={sessionStageData}
                         publisher={publisher}
                         subscribers={subscribers}
@@ -234,7 +238,7 @@ const SessionContainer = () => {
             case 'DONE':
                 return (
                     <DrawingEndPage
-                        scheduleId={sessionData.scheduleId}
+                        scheduleId={sessionData.current.scheduleId}
                         sessionStageData={sessionStageData}
                         onTimeout={handleDrawingTimeout}
                         publisher={publisher}
@@ -243,7 +247,7 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ':
-                return <QuizPage partyId={sessionData.partyId} onChangeStage={handleQuizTimeout} />;
+                return <QuizPage partyId={sessionData.current.partyId} onChangeStage={handleQuizTimeout} />;
             case 'QUIZ_END':
                 return <QuizEndPage />;
             default:
@@ -260,7 +264,7 @@ const SessionContainer = () => {
     }, [isConnected]);
 
     const CurrentStage = () => {
-        if (isLoading || !sessionData) {
+        if (isLoading || !sessionData.current) {
             return (
                 <div className="min-h-screen flex items-center justify-center">
                     <p>로딩 중...</p>
