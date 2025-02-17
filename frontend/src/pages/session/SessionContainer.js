@@ -14,6 +14,8 @@ import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
+import { useDispatch } from 'react-redux';
+import { fetchCutsInfo } from '../../store/cutsSlice';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
@@ -91,6 +93,14 @@ const SessionContainer = () => {
 
         fetchCover();
     }, [sessionData.partyId]);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (sessionData.scheduleId) {
+            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
+        }
+    }, [dispatch, sessionData.scheduleId]);
 
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
