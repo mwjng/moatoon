@@ -3,7 +3,6 @@ package com._2.a401.moa.common.exception;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,8 +40,9 @@ public enum ExceptionCode {
     INVALID_MANAGER(4019, "부모 정보를 찾을 수 없습니다."),
     INVALID_PARTY(4020, "모임 정보를 찾을 수 없습니다."),
     PARTY_FULL(4021, "이미 인원이 찼습니다"),
+    NO_INFO(4022, "필요한 정보가 입력되어있지 않습니다"),
 
-    INVALID_CHILD(4021, "아이 정보를 찾을 수 없습니다."),
+    INVALID_CHILD(4023, "아이 정보를 찾을 수 없습니다."),
     SCHEDULE_NOT_FOUND(5001, "스케줄을 찾을 수 없습니다."),
     SCHEDULE_NOT_ACTIVE(5002, "스케줄이 진행 중인 상태가 아닙니다"),
 
