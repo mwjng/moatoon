@@ -49,26 +49,20 @@ public class ScheduleService {
     }
 
     public TodayAndUpcomingScheduleResponse getTodayAndUpcomingSchedule(long memberId) {
-        log.info("Fetching today and upcoming schedules for memberId: {}", memberId);
         List<ScheduleInfo> schedules = scheduleRepository.findBeforeAndOngoingSchedules(memberId);
-        log.info("Fetched schedules: {}", schedules);
 
         if (schedules.isEmpty()) { // 일정이 아무것도 없으면
-            log.info("No schedules found for memberId: {}", memberId);
             return TodayAndUpcomingScheduleResponse.of(null, List.of());
         }
 
         ScheduleInfo firstSchedule = schedules.get(0);
-        log.info("First upcoming schedule: {}", firstSchedule);
 
         boolean isTodaySchedule = isToday(firstSchedule.getSessionTimeAsLocalDateTime());
-        log.info("Is first schedule today? {}", isTodaySchedule);
 
         TodayAndUpcomingScheduleResponse response = isTodaySchedule
                 ? createResponseWithTodaySchedule(schedules)
                 : createResponseWithoutTodaySchedule(schedules);
 
-        log.info("Generated response: {}", response);
         return response;
 //        return isToday(firstSchedule.getSessionTimeAsLocalDateTime()) // 다가오는 첫번째 일정이 오늘 일정이라면
 //                ? createResponseWithTodaySchedule(schedules)
