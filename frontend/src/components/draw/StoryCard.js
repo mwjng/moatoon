@@ -4,7 +4,7 @@ import Tag from '../../assets/tag.svg';
 
 const StoryCard = ({ story }) => {
     const [index, setIndex] = useState(0);
-
+    console.log(story);
     const handlePrev = () => {
         setIndex(prev => (prev === 0 ? story.length - 1 : prev - 1));
     };
@@ -16,7 +16,9 @@ const StoryCard = ({ story }) => {
     return (
         <div className="relative w-80 h-96 bg-white shadow-lg rounded-lg p-6 flex flex-col items-center">
             <img src={Tag} alt="Tag" className="absolute top-[-30px] left-1/2 -translate-x-1/2 w-64" />
-            <h2 className="text-xl font-bold mt-10">스토리 {story[index].cutId}</h2>
+            <h2 className="text-xl font-bold mt-10">
+                컷 {story[index].cutId} : {story[index].nickname}
+            </h2>
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2">
                 <button onClick={handlePrev} className="p-2 bg-white rounded-full ">
                     <FaChevronLeft size={20} />
