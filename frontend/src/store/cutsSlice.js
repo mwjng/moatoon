@@ -4,7 +4,7 @@ import { authInstance } from '../api/axios';
 export const fetchCutsInfo = createAsyncThunk('cuts/fetchCutsInfo', async (scheduleId, { rejectWithValue }) => {
     try {
         const response = await authInstance.get(`/cuts/info/${scheduleId}`);
-        console.log(response.data);
+        console.log('fetchCutsInfo', response.data);
         return response.data; // 서버에서 받은 데이터 반환
     } catch (error) {
         return rejectWithValue(error.response?.data || error.message);

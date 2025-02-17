@@ -40,10 +40,6 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
-    useEffect(() => {
-        console.log(sessionData);
-    }, [sessionStageData]);
-
     //창 크기 체크 함수
     const checkWindowSize = () => {
         if (window.innerWidth < 800 || window.innerHeight < 600) {
@@ -70,6 +66,7 @@ const SessionContainer = () => {
         const fetchSessionInfo = async () => {
             try {
                 const data = await getSessionInfoByPinNumber(pinNumber);
+                console.log(data);
                 sessionData.current = {
                     scheduleId: data.scheduleId,
                     partyId: data.partyId,
@@ -87,6 +84,7 @@ const SessionContainer = () => {
         };
 
         if (pinNumber) {
+            console.log(pinNumber);
             fetchSessionInfo();
         }
 
@@ -149,7 +147,7 @@ const SessionContainer = () => {
             navigate('/home');
         } finally {
             setIsLoading(false);
-            console.log(sessionStageData);
+            console.log('sessionStageData', sessionStageData);
         }
     };
 
