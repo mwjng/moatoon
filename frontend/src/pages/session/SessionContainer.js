@@ -196,6 +196,34 @@ const SessionContainer = () => {
         }
     }, [sessionStageData.currentStage, navigate]);
 
+    useEffect(() => {
+        const handleBeforeUnload = event => {
+            event.preventDefault();
+            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
+        };
+
+        const blockReload = event => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
+                event.preventDefault();
+                alert('새로고침이 차단되었습니다.');
+            }
+        };
+
+        const blockContextMenu = event => {
+            event.preventDefault();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('keydown', blockReload);
+        window.addEventListener('contextmenu', blockContextMenu);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('keydown', blockReload);
+            window.removeEventListener('contextmenu', blockContextMenu);
+        };
+    }, []);
+
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
