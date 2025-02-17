@@ -57,9 +57,7 @@ public class PartyService {
         String pinNumber = generateUniquePin();
 
         LocalDateTime startDate = adjustStartDate(
-                LocalDateTime.parse(request.getStartDate() + "T" + request.getTime())
-                    .atZone(ZoneId.of("Asia/Seoul"))
-                    .toLocalDateTime(),
+                LocalDateTime.parse(request.getStartDate() + "T" + request.getTime()),
                 request.getDayWeek()
         );
         log.info("startDate = {}", startDate);
@@ -73,7 +71,7 @@ public class PartyService {
                 .pinNumber(pinNumber)
                 .level(request.getLevel())
                 .episodeCount(request.getEpisodeLength())
-                .startDate(startDate.minusHours(9L))
+                .startDate(startDate.atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
                 .endDate(endDate)
                 .status(PartyState.BEFORE)
                 .isPublic(request.isPublicStatus())
