@@ -56,13 +56,15 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
     if (child.id !== selectedChild?.id) {
       setSelectedChild(child);
       setCurrentPage(0);
-      setFormattedBooks([]);
       setIsOpen(false);
     }
   }, [selectedChild?.id]);
 
   // bookList 변경 시 데이터 포맷팅
   useEffect(() => {
+    // 데이터 로딩 시작할 때는 기존 데이터 유지
+    if (loading) return;
+    
     if (bookList) {
       const chunkedBooks = bookList.reduce((acc, book, i) => {
         const chunkIndex = Math.floor(i / 5);
@@ -84,7 +86,7 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
     } else {
       setFormattedBooks([]);
     }
-  }, [bookList]);
+  }, [bookList, loading]);
 
   const handlePrevPage = useCallback(() => {
     setCurrentPage(prev => Math.max(0, prev - 1));
@@ -94,12 +96,8 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
     setCurrentPage(prev => Math.min(formattedBooks.length - 1, prev + 1));
   }, [formattedBooks.length]);
 
-  if (loading && formattedBooks.length === 0) {
-    return <div className="bg-white/[0.47] rounded-xl my-8 py-4 px-6 flex items-center justify-center">Loading...</div>;
-  }
-
   return (
-    <div className="bg-white/[0.47] w-[865px] rounded-xl my-8 py-4 px-6 mr-[110px]">
+    <div className="bg-white/[0.47] w-[837px] rounded-xl my-8 py-4 px-6 mr-[140px]">
       <div className="mb-6">
         <div className="relative w-fit min-w-[10rem]" ref={dropdownRef}>
           <button
@@ -149,23 +147,31 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
         </div>
 
         <div className="flex-1">
-          {formattedBooks.length > 0 ? (
-            <div className="w-[750px] flex gap-8">
-              {formattedBooks[currentPage]?.map((item) => (
-                <ParticipatingBookCard 
-                  key={item.id} 
-                  item={item}
-                  onClick={() => handleCardClick(item.id)}
-                />
-              ))}
+          <div className="relative h-[200px]">
+            <div className={`absolute inset-0 transition-all duration-300 ease-in-out ${
+              loading ? 'opacity-0 invisible' : 'opacity-100 visible'
+            }`}>
+            {!loading && (
+              formattedBooks.length > 0 ? (
+                <div className="w-[750px] flex gap-8">
+                  {formattedBooks[currentPage]?.map((item) => (
+                    <ParticipatingBookCard 
+                      key={item.id} 
+                      item={item}
+                      onClick={() => handleCardClick(item.id)}
+                    />
+                  ))}
+                </div>
+              ) : bookList?.length === 0 ? (
+                <div className="relative h-[200px] flex items-center justify-center pb-8">
+                  <div className="bg-white/60 px-8 py-4 rounded-xl shadow-sm backdrop-blur-sm">
+                    <p className="text-gray-600 text-lg">진행 중인 그림책이 없어요!</p>
+                  </div>
+                </div>
+              ) : null
+            )}
             </div>
-          ) : (
-            <div className="w-[750px] h-[200px] flex items-center justify-center -mt-6">
-              <div className="bg-white/60 px-8 py-4 rounded-xl shadow-sm backdrop-blur-sm">
-                <p className="text-gray-600 text-lg">진행 중인 그림책이 없어요!</p>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
         <div className="w-12 flex-shrink-0 flex justify-end">
