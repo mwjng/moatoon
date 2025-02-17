@@ -8,7 +8,7 @@ import org.springframework.data.redis.core.RedisHash;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com._2.a401.moa.common.exception.ExceptionCode.SESSION_MEMBER_NOT_FOUND;
+import static com._2.a401.moa.common.exception.ExceptionCode.REDIS_SESSION_MEMBER_NOT_FOUND;
 
 @Getter
 @RedisHash(value = "sessionMember", timeToLive = 3600)
@@ -45,7 +45,7 @@ public class SessionMember {
 
     public void setReadyStatus(final Long memberId, final boolean isReady) {
         if (!sessionMembers.containsKey(memberId)) {
-            throw new MoaException(SESSION_MEMBER_NOT_FOUND);
+            throw new MoaException(REDIS_SESSION_MEMBER_NOT_FOUND);
         }
         sessionMembers.put(memberId, isReady);
     }
