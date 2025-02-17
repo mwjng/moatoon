@@ -42,8 +42,6 @@ public class SessionService {
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final PartyRepository partyRepository;
 
-
-
     public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
         validateSessionJoin(member, scheduleId);
         final String sessionId = sessionRedisRepository.fetchByScheduleId(scheduleId).getSessionId();
