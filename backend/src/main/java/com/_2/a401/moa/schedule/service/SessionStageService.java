@@ -144,6 +144,7 @@ public class SessionStageService {
                     log.info("타이머 완료!!!");
                     if(expectedStage == FullSessionStage.DONE) {
                         handleUncompletedQuizMembers(scheduleId);
+                        scheduleRepository.completeScheduleById(scheduleId);
                     }else {
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
