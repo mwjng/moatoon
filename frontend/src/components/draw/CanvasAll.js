@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Line } from 'react-konva';
 import { BiPencil, BiCheck } from 'react-icons/bi';
+import StoryLine from './StoryLine';
 
 const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isReady }) => {
     const [lines, setLines] = useState([]); // 상태를 lines로 관리
@@ -35,7 +36,7 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
 
     return (
         <div className="relative w-[300px] h-[300px] border-2 border-black border-solid bg-white">
-            <button className="absolute left-2 px-3 py-1 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md">
+            <button className="absolute left-2 px-3 py-1 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-50">
                 {nickname}
             </button>
 
@@ -55,14 +56,7 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
                 </Layer>
             </Stage>
 
-            <div className="absolute bottom-0 w-full text-center p-2.5 text-black text-xs">
-                <p
-                    className="text-md text-gray-700"
-                    dangerouslySetInnerHTML={{
-                        __html: content.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'),
-                    }}
-                />
-            </div>
+            <StoryLine content={content} textSize="text-sm" leading="leading-tight" padding="p-1.5" />
 
             {edit && (
                 <button
