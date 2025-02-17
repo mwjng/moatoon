@@ -560,7 +560,7 @@ function generateTimeOptions() {
 
 function formatDate(date) {
   if (!date) return '';
-  return date.toISOString().split('T')[0];
+  return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
 export default BookSearchPage;
