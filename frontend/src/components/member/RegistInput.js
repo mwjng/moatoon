@@ -64,7 +64,10 @@ export default function RegistInput(props) {
                             확인
                         </button>
                     )}
-                    <p className="absolute text-xs left-[15px]" style={{ color: input.cmtColor }}>
+                    <p
+                        className="absolute text-xs left-[15px]"
+                        style={{ color: input.cmtColor, whiteSpace: 'nowrap', overflow: 'visible' }}
+                    >
                         {input.comment}
                     </p>
                 </div>
