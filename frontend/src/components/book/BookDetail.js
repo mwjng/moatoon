@@ -252,7 +252,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
                     />
                     {showPreviousStory && (
                         <button
-                            onClick={handlePreviousStory}
+                            onClick={() => window.open(`/ebook/${partyDetails.id}`, '_blank')}
                             className="btn btn-warning btn-md absolute bottom-4 left-0 right-0 mx-auto w-4/5
                             normal-case font-medium
                             hover:brightness-95"
