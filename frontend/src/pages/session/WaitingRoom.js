@@ -80,7 +80,7 @@ function WaitingRoom({
                             <MyCamera streamManager={publisher} nickname={nickname} />
                             <CameraMicControls publisher={publisher} />
                         </div>
-                        <div className="flex flex-row mt-4 grid grid-rows-3 gap-8 content-evenly mx-auto">
+                        <div className="flex flex-row mt-4 gap-8 content-evenly mx-auto">
                             {subscribers.map((subscriber, index) => (
                                 <SubscriberVideo key={index} streamManager={subscriber} />
                             ))}
