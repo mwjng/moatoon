@@ -7,10 +7,7 @@ import com._2.a401.moa.party.domain.PartyMember;
 import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
-import com._2.a401.moa.schedule.domain.Schedule;
-import com._2.a401.moa.schedule.domain.ScheduleState;
-import com._2.a401.moa.schedule.domain.Session;
-import com._2.a401.moa.schedule.domain.SessionMember;
+import com._2.a401.moa.schedule.domain.*;
 import com._2.a401.moa.schedule.manager.VideoConferenceManager;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
@@ -64,7 +61,12 @@ public class SessionScheduler {
             log.info("schedule: {}", schedule.getId());
 
             // Redis에 저장
-            final Session session = new Session(schedule.getId(), null, WAITING, schedule.getSessionTime().plusHours(9));
+            final Session session = new Session(
+                    schedule.getId(),
+                    null,
+                    WAITING,
+                    schedule.getSessionTime().plusHours(9).minusMinutes(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
+            );
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
 
