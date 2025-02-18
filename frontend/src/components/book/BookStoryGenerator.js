@@ -39,6 +39,8 @@ const BookStoryGenerator = ({
 
     const fetchWords = async () => {
         try {
+            
+
             const data = await fetchRandomWords(difficulty, episodeLength);
             if (!data || !data.words || data.words.length === 0) {
                 throw new Error('단어를 가져오는 데 실패했습니다.');
@@ -56,10 +58,13 @@ const BookStoryGenerator = ({
         console.log('테마   in BookStoryGenerator:', theme.keyword);
         console.log('난이도   in BookStoryGenerator:', level);
         console.log('챕터 수  in BookStoryGenerator:', episodeLength);
+        
     }, [mood, genre, theme]);
 
     useEffect(() => {
         fetchWords();
+        console.log('단어셋 가져오는데 들어가는 난이도:', difficulty);
+        console.log('단어셋 가져오는데 들어가는 챕터수:', episodeLength);
     }, [difficulty, episodeLength]);
 
     useEffect(() => {

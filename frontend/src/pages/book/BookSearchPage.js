@@ -117,6 +117,18 @@ const BookSearchPage = () => {
         setAlertModalState(false);
     };
 
+    const handlePartyUpdate = async (partyId) => {
+        try {
+            setLoading(true);
+            const data = await fetchAllParties(filter);
+            setParties(data);
+        } catch (error) {
+            console.error('방 목록 업데이트 실패', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSearch = async () => {
         const updatedFilter = {
             ...filter,
@@ -380,7 +392,7 @@ const BookSearchPage = () => {
                             )}
                         </div>
 
-                        <select
+                        {/* <select
                             className="select select-sm select-bordered bg-white border-none shadow-sm"
                             value={searchParams.time}
                             onChange={e => setSearchParams(prev => ({ ...prev, time: e.target.value }))}
@@ -391,7 +403,7 @@ const BookSearchPage = () => {
                                     {time}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
 
                         <div className="flex gap-1">
                             {weekDays.map((day, index) => (
@@ -615,6 +627,7 @@ const BookSearchPage = () => {
                                         partyIdOrPin={currentPartyId}
                                         onClose={handleCloseModal}
                                         setModalLoading={setModalLoading}
+                                        onPartyUpdate={handlePartyUpdate} 
                                     />
                                 </div>
                             </div>
