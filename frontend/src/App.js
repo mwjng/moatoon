@@ -29,6 +29,7 @@ import EBookPage from './pages/EBookPage';
 import LibraryPage from './pages/library/LibraryPage';
 import RandomPage from './pages/RandomPage';
 import SessionErrorPage from './pages/session/SessionErrorPage';
+import DeviceResponsiveLayout from './components/DeviceResponsiveLayout';
 
 function App() {
     const location = useLocation();
@@ -108,47 +109,49 @@ function App() {
     }, [loading, userInfo, location.pathname, navigate]);
 
     return (
-        <div className="App">
-            {loading ? (
-                <></>
-            ) : (
-                <Routes>
-                    <Route index element={<RendingPage />} />
-                    <Route path="login" element={<LoginPage />} />
-                    <Route path="regist">
-                        <Route index element={<RegistPage />} />
-                        <Route path="manager" element={<ManagerRegistPage />} />
-                        <Route path="child" element={<ChildRegistPage />} />
-                    </Route>
-                    <Route path="find">
-                        <Route index element={<FindInfo />} />
-                        <Route path="id" element={<FindIdPage />} />
-                        <Route path="pw" element={<FindPWPage />} />
-                    </Route>
-                    <Route path="/session/:pinNumber" element={<SessionContainer />} />
-                    <Route path="/session">
-                        <Route path="draw" element={<DrawingPage />} />
-                        <Route path="draw-end" element={<DrawingEndPage />} />
-                        <Route path="random" element={<RandomPage />} />
-                        <Route path="create" element={<BookGeneratorPage />} />
-                        <Route path="search" element={<BookSearchPage />} />
-                        <Route path="quiz" element={<QuizPage />} />
-                        <Route path="learning" element={<WordLearning />} />
-                    </Route>
-                    <Route path="/session-error" element={<SessionErrorPage/>}></Route>
-                    <Route path="library" element={<LibraryPage />} />
-                    <Route path="ebook/:partyId" element={<EBookPage />} />
-                    <Route path="word">
-                        <Route index element={<MyWordPage />} />
-                    </Route>
-                    <Route path="user">
-                        <Route index element={<ChangeUserInfoPage />} />
-                    </Route>
-                    <Route path="waiting" element={<WaitingRoom />}></Route>
-                    <Route path="home" element={<MainPage />}></Route>
-                </Routes>
-            )}
-        </div>
+        <DeviceResponsiveLayout>
+            <div className="App">
+                {loading ? (
+                    <></>
+                ) : (
+                    <Routes>
+                        <Route index element={<RendingPage />} />
+                        <Route path="login" element={<LoginPage />} />
+                        <Route path="regist">
+                            <Route index element={<RegistPage />} />
+                            <Route path="manager" element={<ManagerRegistPage />} />
+                            <Route path="child" element={<ChildRegistPage />} />
+                        </Route>
+                        <Route path="find">
+                            <Route index element={<FindInfo />} />
+                            <Route path="id" element={<FindIdPage />} />
+                            <Route path="pw" element={<FindPWPage />} />
+                        </Route>
+                        <Route path="/session/:pinNumber" element={<SessionContainer />} />
+                        <Route path="/session">
+                            <Route path="draw" element={<DrawingPage />} />
+                            <Route path="draw-end" element={<DrawingEndPage />} />
+                            <Route path="random" element={<RandomPage />} />
+                            <Route path="create" element={<BookGeneratorPage />} />
+                            <Route path="search" element={<BookSearchPage />} />
+                            <Route path="quiz" element={<QuizPage />} />
+                            <Route path="learning" element={<WordLearning />} />
+                        </Route>
+                        <Route path="/session-error" element={<SessionErrorPage/>}></Route>
+                        <Route path="library" element={<LibraryPage />} />
+                        <Route path="ebook/:partyId" element={<EBookPage />} />
+                        <Route path="word">
+                            <Route index element={<MyWordPage />} />
+                        </Route>
+                        <Route path="user">
+                            <Route index element={<ChangeUserInfoPage />} />
+                        </Route>
+                        <Route path="waiting" element={<WaitingRoom />}></Route>
+                        <Route path="home" element={<MainPage />}></Route>
+                    </Routes>
+                )}
+            </div>
+        </DeviceResponsiveLayout>
     );
 }
 
