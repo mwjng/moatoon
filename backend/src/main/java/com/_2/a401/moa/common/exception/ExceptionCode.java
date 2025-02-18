@@ -17,6 +17,9 @@ public enum ExceptionCode {
     SESSION_MEMBER_NOT_FOUND(2005, "회원이 세션에 참여하고 있지 않습니다."),
     REDIS_SESSION_MEMBER_NOT_FOUND(2006, "회원이 REDIS 세션에 참여하고 있지 않습니다."),
     MEMBER_CAN_NOT_JOIN(2007, "모임에 참여할 수 없는 회원입니다."),
+    SESSION_ALREADY_JOINED(2008, "이미 세션에 참여중입니다."),
+    SESSION_JOIN_TIMEOUT(2009, "참여 가능한 시간이 지났습니다"),
+    NO_PERMISSION_TO_JOIN(2010, "해당 세션에 접근 권한이 없습니다."),
 
     DATA_NOT_FOUND(3000, "데이터를 찾을 수 없습니다."),
     WORD_NOT_FOUND(3404, "단어를 찾을 수 없습니다."),

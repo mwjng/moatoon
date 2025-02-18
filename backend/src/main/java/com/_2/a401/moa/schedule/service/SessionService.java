@@ -61,7 +61,7 @@ public class SessionService {
     public synchronized void leave(final Member member, final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.removeMember(member.getId());
-        sessionMemberRedisRepository.delete(sessionMember);
+        sessionMemberRedisRepository.save(sessionMember);
     }
 
     public synchronized void close(final Long scheduleId) {
@@ -93,7 +93,7 @@ public class SessionService {
     private void validateNotAlreadyJoined(final Member member, final Long scheduleId) {
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         if (sessionMember.isMemberExists(member.getId())) {
-            throw new MoaException(INVALID_REQUEST);
+            throw new MoaException(SESSION_ALREADY_JOINED);
         }
     }
 
@@ -109,7 +109,7 @@ public class SessionService {
         final Schedule schedule = scheduleRepository.fetchById(scheduleId);
         final LocalDateTime sessionTime = schedule.getSessionTime();
         if (ChronoUnit.MINUTES.between(now(), sessionTime) > 10) {
-            throw new MoaException(INVALID_REQUEST);
+            throw new MoaException(SESSION_JOIN_TIMEOUT);
         }
     }
 
@@ -117,7 +117,7 @@ public class SessionService {
         final Schedule schedule = scheduleRepository.fetchById(scheduleId);
         final List<Long> memberIds = partyMemberRepository.findMemberIdsByPartyId(schedule.getParty().getId());
         if (!memberIds.contains(member.getId())) {
-            throw new MoaException(INVALID_REQUEST);
+            throw new MoaException(NO_PERMISSION_TO_JOIN);
         }
     }
 
