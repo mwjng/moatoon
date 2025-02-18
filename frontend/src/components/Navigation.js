@@ -20,7 +20,7 @@ import duck from '../assets/duckduck.png';
 import AudioPlayer from './audio/AudioPlayer';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime, serverTime, bookTitle, onTimeOut }) {
+function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime, serverTime, bookTitle, onTimeOut, onTimeNotification }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
     //     stageDuration,
@@ -179,14 +179,17 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
 
                     if (remainingMinutes <= 10 && remainingMinutes > 9.9 && !timeThresholds.tenMinutes) {
                         setTimeThresholds(prev => ({ ...prev, tenMinutes: true }));
+                        onTimeNotification && onTimeNotification('TEN_LEFT');
                     }
 
                     if (remainingMinutes <= 5 && remainingMinutes > 4.9 && !timeThresholds.fiveMinutes) {
                         setTimeThresholds(prev => ({ ...prev, fiveMinutes: true }));
+                        onTimeNotification && onTimeNotification('FIVE_LEFT');
                     }
 
                     if (remainingMinutes <= 1 && remainingMinutes > 0.9 && !timeThresholds.oneMinute) {
                         setTimeThresholds(prev => ({ ...prev, oneMinute: true }));
+                        onTimeNotification && onTimeNotification('ONE_LEFT');
                     }
                 }
             };
@@ -197,7 +200,7 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut, onTimeNotification]);
 
     return (
         <>
