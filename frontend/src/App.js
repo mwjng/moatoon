@@ -29,7 +29,7 @@ import EBookPage from './pages/EBookPage';
 import LibraryPage from './pages/library/LibraryPage';
 import RandomPage from './pages/RandomPage';
 import SessionErrorPage from './pages/session/SessionErrorPage';
-import LandscapeDetector from './components/LandscapeDetector';
+import DeviceResponsiveLayout from './components/DeviceResponsiveLayout';
 
 function App() {
     const location = useLocation();
@@ -109,7 +109,7 @@ function App() {
     }, [loading, userInfo, location.pathname, navigate]);
 
     return (
-        <LandscapeDetector>
+        <DeviceResponsiveLayout>
             <div className="App">
                 {loading ? (
                     <></>
@@ -151,7 +151,7 @@ function App() {
                     </Routes>
                 )}
             </div>
-        </LandscapeDetector>
+        </DeviceResponsiveLayout>
     );
 }
 

@@ -10,7 +10,6 @@ import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate, useParams } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
-import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -22,7 +21,6 @@ const SessionContainer = () => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
     const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
-    const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
     const sessionData = useRef({
         // api로 정보 가져옴
@@ -76,13 +74,6 @@ const SessionContainer = () => {
             event.preventDefault();
         };
 
-        const checkWindowSize = () => {
-            if (window.innerWidth < 800 || window.innerHeight < 600) {
-                setIsFullScreen(false);
-            } else {
-                setIsFullScreen(true);
-            }
-        };
 
         checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
         window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
@@ -268,7 +259,6 @@ const SessionContainer = () => {
     return (
         <div className="min-h-screen relative">
             {renderStage()}
-            {!isFullScreen && <FullPage />}
         </div>
     );
 };
