@@ -184,9 +184,7 @@ const SessionContainer = () => {
     };
 
     const handleLeaveSession = async () => {
-        await leaveSession();
-
-        navigate('/home');
+        await leaveSession().then(navigate('/home'));
     };
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
