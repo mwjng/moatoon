@@ -39,7 +39,7 @@ const useOpenViduSession = () => {
         });
 
         try {
-            const token = await getSessionToken(scheduleId);
+            const token = await getSessionToken(scheduleId).token;
             console.log(token);
             await newSession.connect(token, { clientData: nickname });
 
