@@ -65,10 +65,19 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     // 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
     const generateTimeOptions = () => {
         let times = [];
-        for (let hour = 9; hour <= 22; hour++) {
+
+        // [원래 코드]
+        // for (let hour = 9; hour <= 22; hour++) {
+        //     times.push(`${String(hour).padStart(2, '0')}:00`);
+        //     if (hour < 22) times.push(`${String(hour).padStart(2, '0')}:30`);
+        // }
+
+        // [개발용 임시] 0:00~23:30까지지
+        for (let hour = 0; hour < 24; hour++) {
             times.push(`${String(hour).padStart(2, '0')}:00`);
-            if (hour < 22) times.push(`${String(hour).padStart(2, '0')}:30`);
+            if (hour < 24) times.push(`${String(hour).padStart(2, '0')}:30`);
         }
+
         return times;
     };
 
