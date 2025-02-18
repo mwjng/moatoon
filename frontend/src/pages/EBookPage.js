@@ -51,15 +51,17 @@ const EBookPage = () => {
             ) : (
                 <div className="flex justify-center items-center">
                     {/* Pagination Buttons */}
-                    <div>
-                        <PaginationButton direction="left" onClick={handlePrev} disabled={currentPage === 0} />
-                    </div>
+                    {currentPage !== 0 && (
+                        <div className="absolute top-1/2 left-5 transform -translate-y-1/2 z-10">
+                            <PaginationButton direction="left" onClick={handlePrev} />
+                        </div>
+                    )}
                     <div className="flex pt-5 justify-center">
                         {/* 이미지 삽입 */}
                         <img src={backgroundImage} alt="background" className="absolute max-w-5xl object-cover" />
 
                         {/* Comic Content */}
-                        <div className="mt-20 w-[600px] comic-grid max-w-xl grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid relative z-10">
+                        <div className="mt-24 w-[600px] comic-grid max-w-xl grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid relative z-10">
                             {displayedCuts.map(cut => (
                                 <div
                                     key={cut.cutId}
@@ -70,66 +72,28 @@ const EBookPage = () => {
                             ))}
                         </div>
 
-                        <div className="ml-5 flex flex-col space-y-2 relative z-10">
+                        <div className="ml-10 flex flex-col space-y-2 relative z-10">
                             <div className="mt-auto flex flex-col space-y-1">
                                 {displayedCuts.map(cut => (
                                     <div key={cut.cutId} className="comic-cut border border-gray-200 p-2 rounded">
-                                        <span className="mr-4 whitespace-nowrap">
+                                        <span className="mr-4 whitespace-nowrap text-xl">
                                             Cut {cut.cutOrder}: {cut.name}
                                         </span>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-auto text-gray-900 text-xl font-bold">
+                            <div className="mt-auto text-gray-900 text-2xl font-bold">
                                 {displayedCuts.length > 0 && (
                                     <p className="mt-2">{formatDate(displayedCuts[0].modifiedAt)}</p>
                                 )}
                             </div>
                         </div>
                     </div>
-
-                    <PaginationButton
-                        direction="right"
-                        onClick={handleNext}
-                        disabled={currentPage === totalPages - 1}
-                    />
-
-                    {/* <div
-                        className="max-w-4xl ebook-container relative mx-auto p-6 aspect-[5/3] "
-                        style={{
-                            backgroundImage: `url(${backgroundImage})`,
-                            backgroundSize: 'cover',
-                        }}
-                    >
-                        
-                        <div className="comic-grid grid grid-cols-2 gap-4 border-2 border-black p-4 bg-white border-solid">
-                            {displayedCuts.map(cut => (
-                                <div
-                                    key={cut.cutId}
-                                    className="comic-cut  border-solid border-2 border-black p-1 overflow-hidden"
-                                >
-                                    <CutCard item={cut} />
-                                </div>
-                            ))}
+                    {currentPage !== totalPages - 1 && (
+                        <div className="absolute top-1/2 right-5 transform -translate-y-1/2 z-10">
+                            <PaginationButton direction="right" onClick={handleNext} />
                         </div>
-
-                        <div className="ml-5 flex flex-col space-y-2">
-                            <div className="mt-auto flex flex-col space-y-1">
-                                {displayedCuts.map(cut => (
-                                    <div key={cut.cutId} className="comic-cut border border-gray-200 p-2 rounded">
-                                        <span className="mr-4 whitespace-nowrap">
-                                            Cut {cut.cutOrder}: {cut.name}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="mt-auto text-gray-900 text-xl font-bold">
-                                {displayedCuts.length > 0 && (
-                                    <p className="mt-2">{formatDate(displayedCuts[0].modifiedAt)}</p>
-                                )}
-                            </div>
-                        </div>
-                    </div> */}
+                    )}
                 </div>
             )}
         </div>
