@@ -25,7 +25,6 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
     //완성된 네컷 이미지 불러오기
     useEffect(() => {
         const uploadAndFetch = async () => {
-            await exportToSVGAndUpload(); // SVG 변환 및 업로드
             await fetchPictures(); // 업로드 후 이미지 가져오기
         };
 
@@ -56,48 +55,6 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
             console.error('그림 데이터를 불러오는 중 오류 발생:', error);
         }
     };
-
-    const exportToSVGAndUpload = async () => {
-        const svgString = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600">
-                ${lines
-                    .map(line => {
-                        const points = line.points.join(' ');
-                        const stroke = line.color || 'black'; // 선 색은 line 객체에서 가져옴
-                        const strokeWidth = line.width || 2; // 선 굵기는 line 객체에서 가져옴
-                        return `<polyline points="${points}" fill="none" stroke="${stroke}" stroke-width="${strokeWidth}" />`;
-                    })
-                    .join('\n')}
-            </svg>
-            `;
-
-        // SVG 데이터를 Blob으로 변환
-        const blob = new Blob([svgString], { type: 'image/svg+xml' });
-        const file = new File([blob], 'drawing.svg', { type: 'image/svg+xml' });
-
-        // FormData 생성 후 파일 추가
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            const response = await authInstance.patch(`/cuts/save-final/${cutId}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-            });
-            console.log('서버 응답:', response.data);
-            // alert('SVG 파일이 성공적으로 업로드되었습니다!');
-        } catch (error) {
-            console.error('업로드 실패:', error);
-            // alert('업로드에 실패했습니다.');
-        }
-    };
-
-    //Openvidu 세션 훅 사용
-    // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
-
-    // useEffect(() => {
-    //     joinSession();
-    //     return () => leaveSession();
-    // }, []);
 
     return (
         <div className="min-h-screen bg-light-cream-yellow">
