@@ -64,7 +64,7 @@ public class SessionScheduler {
             log.info("schedule: {}", schedule.getId());
 
             // Redis에 저장
-            final Session session = new Session(schedule.getId(), null, WAITING, schedule.getSessionTime());
+            final Session session = new Session(schedule.getId(), null, WAITING, schedule.getSessionTime().plusHours(9));
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
 
