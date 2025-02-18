@@ -64,6 +64,7 @@ function WaitingRoom({
                 bookTitle={bookInfo?.bookTitle}
                 onTimeOut={handleTimeOut}
                 onTenSecondLeft={handleTenSecondLeft}
+                leaveSession={handleLeaveSession}
             />
             <div className="flex-1 flex justify-center items-center">
                 <div
@@ -72,14 +73,14 @@ function WaitingRoom({
                 >
                     {/* 카메라 영역 */}
                     <div
-                        className="flex flex-col bg-white rounded-3xl p-3 shadow-md justify-center items-center"
+                        className="flex flex-col bg-white rounded-3xl p-3 shadow-md justify-between items-center"
                         style={{ width: '900px', height: '580px' }}
                     >
                         <div className="flex flex-row gap-4 items-center justify-center" style={{ height: '300px' }}>
                             <MyCamera streamManager={publisher} nickname={nickname} />
                             <CameraMicControls publisher={publisher} />
                         </div>
-                        <div className="flex flex-row mt-4 grid grid-rows-3 gap-8 content-evenly mx-auto">
+                        <div className="flex flex-row mt-4 gap-8 content-evenly mx-auto">
                             {subscribers.map((subscriber, index) => (
                                 <SubscriberVideo key={index} streamManager={subscriber} />
                             ))}

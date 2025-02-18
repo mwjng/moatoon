@@ -28,7 +28,7 @@ function Navigation({
     serverTime,
     bookTitle,
     onTimeOut,
-    onTenSecondLeft  // 새로 추가된 prop
+    onTenSecondLeft, // 새로 추가된 prop
 }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
@@ -82,7 +82,7 @@ function Navigation({
     const handleBackClick = () => {
         if (stage === 'waiting') {
             leaveSession(); // 세션에서 나가기
-            navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+            // navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
         }
     };
 
@@ -162,7 +162,7 @@ function Navigation({
     useEffect(() => {
         if (stage && sessionStartTime) {
             let timeoutNotEvented = true;
-            let tenSecondNotified = false;  // 새로 추가
+            let tenSecondNotified = false; // 새로 추가
 
             // 타이머 초기화
             const updateRemainTime = () => {
@@ -172,7 +172,12 @@ function Navigation({
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
 
                 // 새로 추가된 1분 알림 로직
-                if (stage === 'waiting' && remaining <= 10* SECOND && remaining > 10*SECOND - 1000 && !tenSecondNotified) {
+                if (
+                    stage === 'waiting' &&
+                    remaining <= 10 * SECOND &&
+                    remaining > 10 * SECOND - 1000 &&
+                    !tenSecondNotified
+                ) {
                     onTenSecondLeft && onTenSecondLeft();
                     tenSecondNotified = true;
                 }

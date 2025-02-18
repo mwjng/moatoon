@@ -56,7 +56,6 @@ const BookStoryGenerator = ({
         console.log('테마   in BookStoryGenerator:', theme.keyword);
         console.log('난이도   in BookStoryGenerator:', level);
         console.log('챕터 수  in BookStoryGenerator:', episodeLength);
-        // console.log('시간대  in BookStoryGenerator:', episod);
     }, [mood, genre, theme]);
 
     useEffect(() => {
