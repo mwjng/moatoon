@@ -7,7 +7,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import defaultProfileImage from '../../assets/duckduck.png';
 import { useNavigate } from 'react-router-dom';
 
-const BookDetail = ({ partyIdOrPin, onClose }) => {
+const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate}) => {
     const navigate = useNavigate();
     const [partyDetails, setPartyDetails] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -259,7 +259,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
                     />
                     {showPreviousStory && (
                         <button
-                            onClick={() => window.open(`/ebook/${partyDetails.id}`, '_blank')}
+                            onClick={handlePreviousStory}
                             className="btn btn-warning btn-md absolute bottom-4 left-0 right-0 mx-auto w-4/5
                             normal-case font-medium
                             hover:brightness-95"
