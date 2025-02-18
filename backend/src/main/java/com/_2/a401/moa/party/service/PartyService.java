@@ -8,6 +8,7 @@ import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.member.service.MemberService;
 import com._2.a401.moa.party.domain.*;
+import com._2.a401.moa.party.dto.request.CheckCanJoinRequest;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 
 import com._2.a401.moa.party.dto.request.PartySearchRequest;
@@ -337,4 +338,12 @@ public class PartyService {
 
     }
 
+    public void checkCanJoin(CheckCanJoinRequest req) {
+        LocalDateTime startDate = adjustStartDate(
+                LocalDateTime.parse(req.getStartDate() + "T" + req.getTime()),
+                req.getDayWeek()
+        );
+
+        initialScheduleService.checkSessionTimeCanJoin(startDate, req);
+    }
 }

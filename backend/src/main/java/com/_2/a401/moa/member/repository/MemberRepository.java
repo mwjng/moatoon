@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +47,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "in (select session_time from schedule where party_id " +
             "in (select party_id from party p inner join party_member pm on pm.party_id = p.id where p.status != 'DONE' and pm.member_id=:childId))", nativeQuery = true)
     int checkCanJoinParty(Long partyId, Long childId);
+
+    @Query(value = "select count(1) from schedule where session_time = :sessionTime and party_id " +
+            "in (select party_id from party p inner join party_member pm on pm.party_id = p.id where p.status != 'DONE' and pm.member_id=:id)", nativeQuery = true)
+    int checkCanJoin(LocalDateTime sessionTime, Long id);
 }
