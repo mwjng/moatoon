@@ -130,6 +130,9 @@ public class PartyService {
                 .collect(Collectors.toList());
 
         List<Member> members = memberRepository.findAllById(memberIds);
+        for(Member child:members){
+            memberService.checkCanJoinParty(party, child);
+        }
 
         if (members.size() != memberIds.size()) {
             throw new IllegalArgumentException("일부 Member ID가 존재하지 않습니다.");

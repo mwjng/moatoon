@@ -370,7 +370,7 @@ const ManagerMainPage = () => {
                   <select
                     value={selectedMember}
                     onChange={(e) => setSelectedMember(e.target.value)}
-                    className="border rounded p-1 text-sm"
+                    className="border rounded p-1 text-sm bg-white"
                   >
                     <option value="all">전체 보기</option>
                     {scheduleData.childrenSchedules.map(member => (
@@ -448,7 +448,7 @@ const ManagerMainPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1 bg-light-blue1 flex items-center justify-center">
+      <div className="h-[400px] bg-light-blue1 flex items-center justify-center">
         <ManagerBookParticipationSection
           childrenList={userInfo.childrenList}
         />
