@@ -75,8 +75,6 @@ const SessionContainer = () => {
         };
 
 
-        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
-        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
         window.addEventListener('beforeunload', handleBeforeUnload);
         window.addEventListener('keydown', blockReload);
         window.addEventListener('contextmenu', blockContextMenu);
@@ -85,7 +83,6 @@ const SessionContainer = () => {
             window.removeEventListener('beforeunload', handleBeforeUnload);
             window.removeEventListener('keydown', blockReload);
             window.removeEventListener('contextmenu', blockContextMenu);
-            window.removeEventListener('resize', checkWindowSize);
         };
     }, []);
 
