@@ -109,10 +109,11 @@ const SessionContainer = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (sessionData.scheduleId) {
-            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
+        if (sessionData.current.scheduleId) {
+            console.log(fetchCutsInfo(sessionData.current.scheduleId));
+            dispatch(fetchCutsInfo(sessionData.current.scheduleId)); // API 호출
         }
-    }, [dispatch, sessionData.scheduleId]);
+    }, [dispatch, sessionData.current.scheduleId]);
 
     // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
