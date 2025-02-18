@@ -8,6 +8,7 @@ import com._2.a401.moa.member.domain.Member;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.member.service.MemberService;
 import com._2.a401.moa.party.domain.*;
+import com._2.a401.moa.party.dto.request.CheckCanJoinRequest;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 
 import com._2.a401.moa.party.dto.request.PartySearchRequest;
@@ -129,9 +130,6 @@ public class PartyService {
                 .collect(Collectors.toList());
 
         List<Member> members = memberRepository.findAllById(memberIds);
-        for(Member child:members){
-            memberService.checkCanJoinParty(party, child);
-        }
 
         if (members.size() != memberIds.size()) {
             throw new IllegalArgumentException("일부 Member ID가 존재하지 않습니다.");
@@ -337,4 +335,12 @@ public class PartyService {
 
     }
 
+    public void checkCanJoin(CheckCanJoinRequest req) {
+        LocalDateTime startDate = adjustStartDate(
+                LocalDateTime.parse(req.getStartDate() + "T" + req.getTime()),
+                req.getDayWeek()
+        );
+
+        initialScheduleService.checkSessionTimeCanJoin(startDate, req);
+    }
 }

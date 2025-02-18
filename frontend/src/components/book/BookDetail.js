@@ -136,7 +136,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
             setConfirmModalState(false);
         } catch (err) {
             if (err.response.data.code == 2007) {
-                setAlertMessage('동일한 시간에 참여중인 방이 존재합니다.');
+                setAlertMessage('해당 시간에 참여 중인 그림책이 존재합니다.');
             } else {
                 setAlertMessage('멤버 등록 중 오류가 발생했습니다.');
             }
