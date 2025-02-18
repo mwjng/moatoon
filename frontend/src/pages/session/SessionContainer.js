@@ -195,6 +195,7 @@ const SessionContainer = () => {
 
     // sessionTransferResponse 변경시 stage 업데이트
     useEffect(() => {
+        console.log('세션 변경 감지');
         if (sessionTransferResponse?.nextSessionStage) {
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
