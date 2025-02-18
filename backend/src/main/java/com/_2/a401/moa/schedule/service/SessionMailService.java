@@ -35,7 +35,7 @@ public class SessionMailService {
 
     public void sendBadChildNotice(List<Long> uncompletedMembers) {
         uncompletedMembers.forEach(memberId -> {
-            Member member = memberRepository.findByIdWithManager(memberId)
+            Member member = memberRepository.findByIdWithManager(memberId) // 매니저 정보와 함께 아동 조회
                     .orElseThrow(() -> new MoaException(INVALID_CHILD));
             String childName = member.getName();
             Member manager = Optional.ofNullable(member.getManager())

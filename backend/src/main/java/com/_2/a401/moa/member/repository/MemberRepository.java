@@ -15,19 +15,19 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT m FROM Member m LEFT JOIN FETCH m.manager WHERE m.id = :id")
-    Optional<Member> findByIdWithManager(@Param("id") Long id);
+    Optional<Member> findByIdWithManager(@Param("id") Long id); // 매니저 정보와 함께 멤버 정보 조회
+
+    @Query("SELECT m FROM Member m WHERE m.manager.id = :managerId AND m.status = 'ACTIVE'")
+    List<Member> findAllByManagerId(Long managerId);  // 매니저의 아동 목록 조회
 
     boolean existsByLoginId(String loginId);
 
-    List<Member> findByManagerId(Long managerId);
-
     Optional<Member> findByLoginId(String loginId);
-
-    List<Member> findByManager(Member manager);
 
     Optional<Member> findByEmail(String email);
 
     Optional<Member> findByLoginIdAndEmail(String loginId, String email);
+
     // memberId가 managerId의 자녀인지 확인하는 메서드
     boolean existsByIdAndManagerId(Long memberId, Long managerId);
 
