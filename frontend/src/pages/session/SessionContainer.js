@@ -183,6 +183,12 @@ const SessionContainer = () => {
         }));
     };
 
+    const handleLeaveSession = async () => {
+        await leaveSession();
+
+        navigate('/home');
+    };
+
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
     // useEffect(() => {
     //     console.log("세션 stage 업데이트됨: ", sessionStageData);
@@ -258,6 +264,7 @@ const SessionContainer = () => {
                         subscribers={subscribers}
                         nickname={nickname}
                         sessionDuration={sessionStageData.sessionDuration}
+                        leaveSession={handleLeaveSession}
                     />
                 );
             case 'WORD':

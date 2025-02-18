@@ -23,11 +23,16 @@ function WaitingRoom({
     publisher,
     subscribers,
     nickname,
+    leaveSession,
 }) {
     console.log(bookInfo);
 
     const handleTimeOut = () => {
         // TODO: api로 다음으로 넘어가도 되는지 체크, 불가능하다면 serverTime 받아와서 타이머 갱신..
+    };
+
+    const handleLeaveSession = () => {
+        leaveSession();
     };
 
     // const { session, publisher, subscribers, joinSession, leaveSession, nickname } = useSession();
@@ -42,6 +47,7 @@ function WaitingRoom({
                 serverTime={serverTime}
                 bookTitle={bookInfo?.bookTitle}
                 onTimeOut={handleTimeOut}
+                leaveSession={handleLeaveSession}
             />
             <div className="justify-center items-center gap-4">
                 <div
