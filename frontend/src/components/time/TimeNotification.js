@@ -32,7 +32,7 @@ const TimeNotification = ({ message }) => {
                 {bubbleWaveKeyframes}
             </style>
             
-            <div className="fixed right-12 bottom-20 flex flex-col items-end z-50">
+            <div className="fixed right-12 bottom-12 flex flex-col items-end z-50">
                 {/* 말풍선 - 부드러운 움직임 효과 추가 */}
                 <div className="relative mb-2">
                     <div 
