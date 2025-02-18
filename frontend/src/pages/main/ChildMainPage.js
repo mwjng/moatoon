@@ -32,7 +32,7 @@ function ChildMainPage() {
    return (
        <div className="h-screen bg-light-cream flex flex-col">
             <Navigation />
-            <div className="flex-1">
+            <div className="flex-1 mt-[80px]">
                 <ScheduleSection 
                   className="h-full" 
                   scheduleData={scheduleData}

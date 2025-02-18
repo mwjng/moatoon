@@ -9,7 +9,7 @@ import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate, useParams } from 'react-router';
-import { SessionProvider } from '../../hooks/SessionProvider';
+import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -18,6 +18,7 @@ import { fetchCutsInfo } from '../../store/cutsSlice';
 
 const SessionContainer = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
     const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
@@ -36,53 +37,13 @@ const SessionContainer = () => {
         sessionDuration: 60,
     });
 
-    //창 크기 체크 함수
-    const checkWindowSize = () => {
-        if (window.innerWidth < 800 || window.innerHeight < 600) {
-            setIsFullScreen(false);
-        } else {
-            setIsFullScreen(true);
-        }
-    };
-
     useEffect(() => {
-        console.log('세션 변경 감지');
-        if (sessionTransferResponse?.nextSessionStage) {
-            setSessionStageData(prev => ({
-                currentStage: sessionTransferResponse.nextSessionStage,
-                sessionStartTime: sessionTransferResponse.sessionStartTime,
-                serverTime: sessionTransferResponse.severTime,
-                sessionDuration: sessionTransferResponse.sessionDuration,
-            }));
-        }
-    }, [sessionTransferResponse]);
-
-    useEffect(() => {
-        const handleBeforeUnload = event => {
-            event.preventDefault();
-            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
-        };
-
-        const blockReload = event => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
-                event.preventDefault();
-                alert('새로고침이 차단되었습니다.');
-            }
-        };
-
-        const blockContextMenu = event => {
-            event.preventDefault();
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('keydown', blockReload);
-        window.addEventListener('contextmenu', blockContextMenu);
+        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
+        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
 
         // 컴포넌트 언마운트 시 이벤트 리스너 제거
         return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('keydown', blockReload);
-            window.removeEventListener('contextmenu', blockContextMenu);
+            window.removeEventListener('resize', checkWindowSize);
         };
     }, []);
 
@@ -117,23 +78,6 @@ const SessionContainer = () => {
 
         return () => leaveSession();
     }, [pinNumber, navigate]);
-
-    // partyId로 bookTitle, bookCover, cuts 가져옴
-    // useEffect(() => {
-    //     const fetchCover = async () => {
-    //         try {
-    //             const data = await getEBookCover(sessionData.partyId);
-    //             console.log('SessionContainer: getEBookCover:', data);
-    //             setBookInfo(data);
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     };
-
-    //     fetchCover();
-    // }, [sessionData.partyId]);
-
-    const dispatch = useDispatch();
 
     useEffect(() => {
         if (sessionData.scheduleId) {
@@ -228,7 +172,7 @@ const SessionContainer = () => {
         if (sessionTransferResponse?.nextSessionStage) {
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
-                sessionStartTime: sessionTransferResponse.sessionStartTime,
+                sessionStartTime: new Date(sessionTransferResponse.sessionStageStartTime),
                 serverTime: new Date(new Date(sessionTransferResponse.serverTime).getTime() + 9 * 60 * 60 * 1000),
                 sessionDuration: sessionTransferResponse.sessionDuration,
             }));
@@ -360,7 +304,12 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return <div className="min-h-screen relative">{renderStage()}</div>;
+    return (
+        <div className="min-h-screen relative">
+            {renderStage()}
+            {!isFullScreen && <FullPage />}
+        </div>
+    );
 };
 
 export default SessionContainer;
