@@ -9,7 +9,7 @@ export default function RegistInput(props) {
                     <input
                         type={input.type}
                         id={input.id}
-                        placeholder={input.value}
+                        placeholder={input.placeholder}
                         className="rounded-3xl shadow-md p-1 pr-3 pl-3 outline-none border-[2px] "
                         required={input.required}
                         disabled={input.id === 'emailCode' ? props.codeState : false}
@@ -24,7 +24,10 @@ export default function RegistInput(props) {
                             backgroundColor: input.id === 'emailCode' && props.codeState ? '#E0E0E0' : 'white',
                             borderColor: input.id === 'emailCode' && props.codeState ? '#BDBDBD' : '',
                         }}
-                        onChange={e => props.changeFunction(input.id, e.target.value)}
+                        onChange={e => {
+                            props.changeFunction(input.id, e.target.value);
+                            input.id === 'emailCode' && (e.target.value = e.target.value.replace(/[^0-9]/g, ''));
+                        }}
                         onFocus={e => (e.target.style.borderColor = '#FFBD73')}
                         onBlur={e => (e.target.style.borderColor = '')}
                     />
@@ -64,7 +67,10 @@ export default function RegistInput(props) {
                             확인
                         </button>
                     )}
-                    <p className="absolute text-xs left-[15px]" style={{ color: input.cmtColor }}>
+                    <p
+                        className="absolute text-xs left-[15px]"
+                        style={{ color: input.cmtColor, whiteSpace: 'nowrap', overflow: 'visible' }}
+                    >
                         {input.comment}
                     </p>
                 </div>
