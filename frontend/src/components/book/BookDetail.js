@@ -100,6 +100,13 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
     // 멤버 관리 함수들
     const handleAddChild = childId => {
         if (!childId) return;
+
+        const totalMembers = partyDetails.members.length + selectedNewChildren.length;
+        if (totalMembers >= 4) {
+            setAlertMessage('4명까지 참여할 수 있습니다.');
+            setAlertModalState(true);
+            return;
+        }
         const selectedChild = userChildren.find(child => child.id === childId);
         if (selectedChild) {
             setSelectedNewChildren(prev => [...prev, selectedChild]);
@@ -136,7 +143,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
             setConfirmModalState(false);
         } catch (err) {
             if (err.response.data.code == 2007) {
-                setAlertMessage('동일한 시간에 참여중인 방이 존재합니다.');
+                setAlertMessage('해당 시간에 참여 중인 그림책이 존재합니다.');
             } else {
                 setAlertMessage('멤버 등록 중 오류가 발생했습니다.');
             }
