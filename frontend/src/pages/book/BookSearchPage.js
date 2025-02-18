@@ -237,8 +237,6 @@ const BookSearchPage = () => {
         6: '11세',
     };
 
-
-    // const isPastDate = date && date < new Date(new Date().setHours(0, 0, 0, 0));
     return (
         <div className="min-h-screen bg-gray-50">
             <style>
@@ -253,7 +251,6 @@ const BookSearchPage = () => {
                 }
             `}
             </style>
-
             <Navigation />
 
             <div className="container mx-auto px-4 py-8">
@@ -268,7 +265,6 @@ const BookSearchPage = () => {
                                 {searchParams.startDate ? formatDate(searchParams.startDate) : 'From'} -{' '}
                                 {searchParams.endDate ? formatDate(searchParams.endDate) : 'To'}
                             </button>
-
                             {showCalendar && (
                                 <div className="absolute z-50 mt-2">
                                     <div className="bg-white rounded-lg shadow-xl border border-gray-200">
