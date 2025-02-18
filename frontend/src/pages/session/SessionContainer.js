@@ -138,7 +138,7 @@ const SessionContainer = () => {
                 setSessionStageData({
                     currentStage: response.data.currentSessionStage,
                     sessionStartTime: new Date(response.data.sessionStageStartTime),
-                    serverTime: new Date(response.data.serverTime),
+                    serverTime: new Date(new Date(response.data.serverTime).getTime() + 9 * 60 * 60 * 1000),
                     sessionDuration: response.data.sessionDuration,
                 });
             }
@@ -202,7 +202,7 @@ const SessionContainer = () => {
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
                 sessionStartTime: sessionTransferResponse.sessionStartTime,
-                serverTime: sessionTransferResponse.severTime,
+                serverTime: new Date(new Date(sessionTransferResponse.serverTime).getTime() + 9 * 60 * 60 * 1000),
                 sessionDuration: sessionTransferResponse.sessionDuration,
             }));
         }
