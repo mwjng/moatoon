@@ -4,6 +4,7 @@ import Navigation from '../../components/Navigation';
 import BookForm from '../../components/book/BookForm';
 import AlertModal from '../../components/common/AlertModal';
 import BookDetail from '../../components/book/BookDetail';
+import { checkCanJoin } from '../../api/party';
 
 const BookGeneratorPage = () => {
     const [storyConfig, setStoryConfig] = useState(null);
@@ -12,6 +13,18 @@ const BookGeneratorPage = () => {
     const [modalState, setModalState] = useState(false);
     const [showBookDetail, setShowBookDetail] = useState(false);
     const [currentPartyId, setCurrentPartyId] = useState(null);
+    const convertDayOfWeekToEnum = dayList => {
+        const dayMap = {
+            월: 'MONDAY',
+            화: 'TUESDAY',
+            수: 'WEDNESDAY',
+            목: 'THURSDAY',
+            금: 'FRIDAY',
+            토: 'SATURDAY',
+            일: 'SUNDAY',
+        };
+        return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
+    };
 
     useEffect(() => {
         console.log('State changes:', {
@@ -21,7 +34,24 @@ const BookGeneratorPage = () => {
         });
     }, [showStoryGenerator, currentPartyId, showBookDetail]);
 
-    const handleFormSubmit = formData => {
+    const handleFormSubmit = async formData => {
+        const payload = {
+            startDate: formData.startDate,
+            episodeLength: formData.episodeLength,
+            time: formData.time,
+            dayWeek: convertDayOfWeekToEnum(formData.dayOfWeek),
+            participatingChildren: formData.participatingChildren,
+        };
+        try {
+            await checkCanJoin(payload);
+        } catch (err) {
+            console.log(err);
+            if (err.response.data.code == 2007) {
+                setModalText('해당 시간 그림책에 참여중인 아동이 있습니다.');
+                setModalState(true);
+                return;
+            }
+        }
         setStoryConfig(formData);
         setShowStoryGenerator(true);
     };

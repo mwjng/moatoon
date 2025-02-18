@@ -10,6 +10,7 @@ import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.ScheduleState;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.MEMBER_CAN_NOT_JOIN
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InitialScheduleService {
 
     private final ScheduleRepository scheduleRepository;
@@ -94,13 +96,18 @@ public class InitialScheduleService {
 
     public void checkSessionTimeCanJoin(LocalDateTime startDate, CheckCanJoinRequest req) {
         LocalDateTime sessionTime = adjustStartDateToNearestDay(startDate, req.getDayWeek());
+        log.info("sessionTime: {}", sessionTime);
 
         for (int i = 1; i <= req.getEpisodeLength(); i++) {
             for(CheckCanJoinRequest.ParticipatingChild child:req.getParticipatingChildren()){
+                log.info("checking childId: {}, session time: {}", child.getId(), sessionTime);
+                log.info("query result: {}", memberRepository.checkCanJoin(sessionTime, child.getId()));
                 if(memberRepository.checkCanJoin(sessionTime, child.getId())>0){
+                    log.info("already joined");
                     throw new MoaException(MEMBER_CAN_NOT_JOIN);
                 }
         }
+            log.info("no error found");
             sessionTime = getNextSessionDate(sessionTime, req.getDayWeek());
         }
     }
