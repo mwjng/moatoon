@@ -78,7 +78,7 @@ export const removePartyMember = async (partyId, childId) => {
 };
 
 export const fetchAllParties = async (query) => {
-  try {console.log(query , "여기!!!")
+  try {
     const response = await authInstance.get('/parties', {params:query});
     return response.data;
   } catch (error) {
