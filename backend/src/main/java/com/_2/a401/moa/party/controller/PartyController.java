@@ -3,6 +3,7 @@ package com._2.a401.moa.party.controller;
 import com._2.a401.moa.common.s3.S3Service;
 import com._2.a401.moa.party.domain.Keyword;
 import com._2.a401.moa.party.domain.Party;
+import com._2.a401.moa.party.dto.request.CheckCanJoinRequest;
 import com._2.a401.moa.party.dto.request.CreatePartyRequest;
 
 import com._2.a401.moa.party.dto.request.PartyMemberRequest;
@@ -84,6 +85,12 @@ public class PartyController {
             @PathVariable Long partyId,
             @RequestParam Long childId) {
             partyService.removeChildFromParty(partyId, childId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/check")
+    public ResponseEntity<Void> checkCanJoin(@RequestBody CheckCanJoinRequest req){
+        partyService.checkCanJoin(req);
         return ResponseEntity.ok().build();
     }
 

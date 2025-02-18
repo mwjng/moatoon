@@ -100,6 +100,13 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
     // 멤버 관리 함수들
     const handleAddChild = childId => {
         if (!childId) return;
+
+        const totalMembers = partyDetails.members.length + selectedNewChildren.length;
+        if (totalMembers >= 4) {
+            setAlertMessage('4명까지 참여할 수 있습니다.');
+            setAlertModalState(true);
+            return;
+        }
         const selectedChild = userChildren.find(child => child.id === childId);
         if (selectedChild) {
             setSelectedNewChildren(prev => [...prev, selectedChild]);
@@ -136,7 +143,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
             setConfirmModalState(false);
         } catch (err) {
             if (err.response.data.code == 2007) {
-                setAlertMessage('동일한 시간에 참여중인 방이 존재합니다.');
+                setAlertMessage('해당 시간에 참여 중인 그림책이 존재합니다.');
             } else {
                 setAlertMessage('멤버 등록 중 오류가 발생했습니다.');
             }
@@ -244,7 +251,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
 
             <div className="flex gap-6 mt-4">
                 {/* 책 커버 및 이전 스토리 섹션 */}
-                <div className="relative">
+                <div className="relative w-[280px]">
                     <img
                         src={partyDetails.bookCover}
                         alt={partyDetails.title}
@@ -253,9 +260,9 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
                     {showPreviousStory && (
                         <button
                             onClick={handlePreviousStory}
-                            className="btn btn-warning btn-md absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5
-                    normal-case font-medium
-                    hover:brightness-95"
+                            className="btn btn-warning btn-md absolute bottom-4 left-0 right-0 mx-auto w-4/5
+                            normal-case font-medium
+                            hover:brightness-95"
                         >
                             이전 이야기 보기
                         </button>
