@@ -244,7 +244,7 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
 
             <div className="flex gap-6 mt-4">
                 {/* 책 커버 및 이전 스토리 섹션 */}
-                <div className="relative">
+                <div className="relative w-[280px]">
                     <img
                         src={partyDetails.bookCover}
                         alt={partyDetails.title}
@@ -253,9 +253,9 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
                     {showPreviousStory && (
                         <button
                             onClick={handlePreviousStory}
-                            className="btn btn-warning btn-md absolute bottom-4 left-1/2 -translate-x-1/2 w-4/5
-                    normal-case font-medium
-                    hover:brightness-95"
+                            className="btn btn-warning btn-md absolute bottom-4 left-0 right-0 mx-auto w-4/5
+                            normal-case font-medium
+                            hover:brightness-95"
                         >
                             이전 이야기 보기
                         </button>
