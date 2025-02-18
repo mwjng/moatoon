@@ -100,6 +100,13 @@ const BookDetail = ({ partyIdOrPin, onClose }) => {
     // 멤버 관리 함수들
     const handleAddChild = childId => {
         if (!childId) return;
+
+        const totalMembers = partyDetails.members.length + selectedNewChildren.length;
+        if (totalMembers >= 4) {
+            setAlertMessage('4명까지 참여할 수 있습니다.');
+            setAlertModalState(true);
+            return;
+        }
         const selectedChild = userChildren.find(child => child.id === childId);
         if (selectedChild) {
             setSelectedNewChildren(prev => [...prev, selectedChild]);
