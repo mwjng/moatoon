@@ -2,7 +2,7 @@ package com._2.a401.moa.schedule.domain;
 
 public enum FullSessionStage {
     // TODO: 시간 바꿔줘야함. (이거 기준으로 프론트 네비게이션 타이머 설정됨 + serverTime)
-    WAITING(30L),    // TODO: 10분
+    WAITING(60L),    // TODO: 10분
     WORD(60L),      // TODO:7분
     CUT_ASSIGN(7L), //
     DRAWING(60L),   // TODO:15분

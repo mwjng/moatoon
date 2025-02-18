@@ -65,7 +65,7 @@ public class SessionScheduler {
                     schedule.getId(),
                     null,
                     WAITING,
-                    schedule.getSessionTime().plusHours(9).minusMinutes(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
+                    schedule.getSessionTime().plusHours(9).minusSeconds(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
             );
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
