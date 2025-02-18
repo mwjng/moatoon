@@ -304,12 +304,7 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return (
-        <div className="min-h-screen relative">
-            {renderStage()}
-            {!isFullScreen && <FullPage />}
-        </div>
-    );
+    return <div className="min-h-screen relative">{renderStage()}</div>;
 };
 
 export default SessionContainer;
