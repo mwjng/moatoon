@@ -9,7 +9,6 @@ import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate, useParams } from 'react-router';
-import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -36,16 +35,6 @@ const SessionContainer = () => {
         serverTime: new Date(),
         sessionDuration: 60,
     });
-
-    useEffect(() => {
-        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
-        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
-
-        // 컴포넌트 언마운트 시 이벤트 리스너 제거
-        return () => {
-            window.removeEventListener('resize', checkWindowSize);
-        };
-    }, []);
 
     // 컴포넌트 마운트될 때 세션 참여
     // ===========[api 호출]==========
