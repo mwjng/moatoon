@@ -117,6 +117,18 @@ const BookSearchPage = () => {
         setAlertModalState(false);
     };
 
+    const handlePartyUpdate = async (partyId) => {
+        try {
+            setLoading(true);
+            const data = await fetchAllParties(filter);
+            setParties(data);
+        } catch (error) {
+            console.error('방 목록 업데이트 실패', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleSearch = async () => {
         const updatedFilter = {
             ...filter,
@@ -615,6 +627,7 @@ const BookSearchPage = () => {
                                         partyIdOrPin={currentPartyId}
                                         onClose={handleCloseModal}
                                         setModalLoading={setModalLoading}
+                                        onPartyUpdate={handlePartyUpdate} 
                                     />
                                 </div>
                             </div>
