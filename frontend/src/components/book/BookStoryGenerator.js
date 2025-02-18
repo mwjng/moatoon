@@ -1,98 +1,93 @@
-import React, { useEffect, useState } from "react";
-import OpenAI from "openai";
-import { fetchRandomWords, sendStoryToBackend } from "../../api/party";
-import Loading from "../Loading";
-import StoryTag from "../StoryTag";
+import React, { useEffect, useState } from 'react';
+import OpenAI from 'openai';
+import { fetchRandomWords, sendStoryToBackend } from '../../api/party';
+import Loading from '../Loading';
+import StoryTag from '../StoryTag';
+import AlertModal from '../common/AlertModal';
 
 const openai = new OpenAI({
-  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true,
+    apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
 });
 
-
 const BookStoryGenerator = ({
-  startDate,
-  level,
-  episodeLength,
-  time,
-  dayOfWeek,
-  publicStatus,
-  participatingChildren,
-  mood,
-  theme,
-  genre,
-  difficulty,
-  onClose,
-  onComplete
+    startDate,
+    level,
+    episodeLength,
+    time,
+    dayOfWeek,
+    publicStatus,
+    participatingChildren,
+    mood,
+    theme,
+    genre,
+    difficulty,
+    onClose,
+    onComplete,
 }) => {
-  const [currentStory, setCurrentStory] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [coverImage, setCoverImage] = useState(null);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [words, setWords] = useState([]);
-  const [partyId, setPartyId] = useState(null);
-  const [isCreatingParty, setIsCreatingParty] = useState(false);
-  const [showBookDetail, setShowBookDetail] = useState(false);
-  const [regenerateCount, setRegenerateCount] = useState(0);
+    const [currentStory, setCurrentStory] = useState(null);
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [coverImage, setCoverImage] = useState(null);
+    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+    const [words, setWords] = useState([]);
+    const [partyId, setPartyId] = useState(null);
+    const [isCreatingParty, setIsCreatingParty] = useState(false);
+    const [showBookDetail, setShowBookDetail] = useState(false);
+    const [regenerateCount, setRegenerateCount] = useState(0);
+    const [modalState, setModalState] = useState(false);
+    const [modalText, setModalText] = useState('');
 
+    const fetchWords = async () => {
+        try {
+            const data = await fetchRandomWords(difficulty, episodeLength);
+            if (!data || !data.words || data.words.length === 0) {
+                throw new Error('단어를 가져오는 데 실패했습니다.');
+            }
+            setWords(data.words); // ✅ 상태 업데이트
+            console.log('초기단어 가지고 온 꼴 : ', data.word);
+        } catch (error) {
+            console.error('단어 가져오기 실패:', error.message);
+        }
+    };
 
-  const fetchWords = async () => {
-    try {
-      const data = await fetchRandomWords(difficulty, episodeLength);
-      if (!data || !data.words || data.words.length === 0) {
-        throw new Error("단어를 가져오는 데 실패했습니다.");
-      }
-      setWords(data.words); // ✅ 상태 업데이트
-      console.log("초기단어 가지고 온 꼴 : ", data.word);
-    } catch (error) {
-      console.error("단어 가져오기 실패:", error.message);
-    }
-  };
+    useEffect(() => {
+        console.log('무드 in BookStoryGenerator:', mood.keyword);
+        console.log('장르 in BookStoryGenerator:', genre.keyword);
+        console.log('테마   in BookStoryGenerator:', theme.keyword);
+        console.log('난이도   in BookStoryGenerator:', level);
+        console.log('챕터 수  in BookStoryGenerator:', episodeLength);
+    }, [mood, genre, theme]);
 
-useEffect(() => {
-  console.log("무드 in BookStoryGenerator:", mood.keyword);
-  console.log("장르 in BookStoryGenerator:", genre.keyword);
-  console.log("테마   in BookStoryGenerator:", theme.keyword);
-  console.log("난이도   in BookStoryGenerator:", level);
-  console.log("챕터 수  in BookStoryGenerator:", episodeLength);
-}, [mood, genre, theme]);
+    useEffect(() => {
+        fetchWords();
+    }, [difficulty, episodeLength]);
 
+    useEffect(() => {
+        if (words.length > 0) {
+            generateStory();
+        }
+    }, [words]);
 
-  useEffect(() => {
+    const wordListWithId = words.map((w, idx) => `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`).join('\n');
 
-    fetchWords();
-  }, [difficulty, episodeLength]);
+    const generateStory = async () => {
+        if (currentStory) {
+            setRegenerateCount(prev => prev + 1);
+        }
 
+        setIsGenerating(true);
+        try {
+            if (!words || words.length === 0) {
+                throw new Error('단어 리스트가 없습니다. 먼저 단어를 가져와야 합니다.');
+            }
 
-  useEffect(() => {
-    if (words.length > 0) {
-      generateStory();
-    }
-  }, [words]);
+            const wordListWithId = words
+                .map((w, idx) => `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`)
+                .join('\n');
 
-  const wordListWithId = words.map((w, idx) => 
-    `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`).join("\n");  
+            console.log('가져온 단어 셋 : ', words);
 
-  
-  const generateStory = async () => {
-
-    if(currentStory) {
-      setRegenerateCount(prev => prev+1);
-    }
-
-    setIsGenerating(true);
-    try {
-
-      if (!words || words.length === 0) {
-        throw new Error("단어 리스트가 없습니다. 먼저 단어를 가져와야 합니다.");
-    }
-
-    const wordListWithId = words.map((w, idx) => 
-      `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`).join("\n");  
-  
-    console.log("가져온 단어 셋 : ",words)
-
-    const prompt = `
+            const prompt = `
     동화책 제목: 생성된 이야기와 어울리는 동화책 제목을 지어줘. 
     
     역할: ${mood.keyword} 분위기의 ${theme.keyword} 테마 ${genre.keyword} 동화를 작성하는 동화 작가.
@@ -173,208 +168,206 @@ useEffect(() => {
     }
       *부가설명 말고, json으로 형식만 응답해.*
     `;
-    
 
-      console.log("최종프롬프트 : ", prompt);
+            console.log('최종프롬프트 : ', prompt);
 
+            // 🔹 OpenAI 요청
+            const response = await openai.chat.completions.create({
+                // model: "gpt-3.5-turbo",
+                model: 'gpt-4o',
+                messages: [{ role: 'user', content: prompt }],
+            });
 
+            let responseText = response.choices[0]?.message?.content;
 
-      
-      // 🔹 OpenAI 요청
-      const response = await openai.chat.completions.create({
-        // model: "gpt-3.5-turbo",
-        model : "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-      });
+            if (!responseText) {
+                throw new Error('OpenAI 응답이 비어 있습니다.');
+            }
+            console.log('AI 응답 원본:', responseText);
+            responseText = responseText.replace(/```json\n?|\n?```/g, '').trim();
 
-      let responseText = response.choices[0]?.message?.content;
-      
+            let generatedStory;
+            try {
+                generatedStory = JSON.parse(responseText);
+                console.log('JSON 변환 성공:', generatedStory);
+            } catch (jsonError) {
+                console.error('JSON 파싱 오류:', jsonError);
+                throw new Error('OpenAI에서 올바른 JSON 응답을 받지 못했습니다.');
+            }
 
-      if (!responseText) {
-        throw new Error("OpenAI 응답이 비어 있습니다.");
-      }
-      console.log("AI 응답 원본:", responseText);
-      responseText = responseText.replace(/```json\n?|\n?```/g, "").trim();
+            // overview를 하나의 문자열로 변환
+            if (Array.isArray(generatedStory.overview)) {
+                generatedStory.overview = generatedStory.overview.join(' ');
+            }
 
-      let generatedStory;
-      try {
-        generatedStory = JSON.parse(responseText);
-        console.log("JSON 변환 성공:", generatedStory);
-      } catch (jsonError) {
-        console.error("JSON 파싱 오류:", jsonError);
-        throw new Error("OpenAI에서 올바른 JSON 응답을 받지 못했습니다.");
-      }
-
-      // overview를 하나의 문자열로 변환
-      if (Array.isArray(generatedStory.overview)) {
-        generatedStory.overview = generatedStory.overview.join(" ");
-      }
-
-      setCurrentStory(generatedStory);
-    } catch (error) {
-      console.error("스토리 생성 오류:", error.message);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const convertDayOfWeekToEnum = (dayList) => {
-    const dayMap = {
-      "월": "MONDAY",
-      "화": "TUESDAY",
-      "수": "WEDNESDAY",
-      "목": "THURSDAY",
-      "금": "FRIDAY",
-      "토": "SATURDAY",
-      "일": "SUNDAY"
+            setCurrentStory(generatedStory);
+        } catch (error) {
+            console.error('스토리 생성 오류:', error.message);
+        } finally {
+            setIsGenerating(false);
+        }
     };
-    return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
-  };
 
+    const convertDayOfWeekToEnum = dayList => {
+        const dayMap = {
+            월: 'MONDAY',
+            화: 'TUESDAY',
+            수: 'WEDNESDAY',
+            목: 'THURSDAY',
+            금: 'FRIDAY',
+            토: 'SATURDAY',
+            일: 'SUNDAY',
+        };
+        return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
+    };
 
-  // 🔹 표지 이미지 생성 및 최종 데이터 전송
-  const handleDecide = async () => {
-    setIsGeneratingImage(true);
-    setIsCreatingParty(true);
+    // 🔹 표지 이미지 생성 및 최종 데이터 전송
+    const handleDecide = async () => {
+        setIsGeneratingImage(true);
+        setIsCreatingParty(true);
 
-    try {
-      const coverPrompt = `${currentStory.overview} : 참고 내용을 바탕으로 텍스트 없이, 동화 스타일의 일러스트 이미지를 생성해줘.`;
-      const response = await openai.images.generate({
-        model: "dall-e-3",
-        prompt: coverPrompt,
-        n: 1,
-        size: "1024x1024",
-      });
+        try {
+            const coverPrompt = `${currentStory.overview} : 참고 내용을 바탕으로 텍스트 없이, 동화 스타일의 일러스트 이미지를 생성해줘.`;
+            const response = await openai.images.generate({
+                model: 'dall-e-3',
+                prompt: coverPrompt,
+                n: 1,
+                size: '1024x1024',
+            });
 
-      const generatedCover = response.data[0]?.url || "";
-      if (!generatedCover) throw new Error("이미지 생성 실패");
+            const generatedCover = response.data[0]?.url || '';
+            if (!generatedCover) throw new Error('이미지 생성 실패');
 
-      const formattedDayOfWeek = convertDayOfWeekToEnum(dayOfWeek);
-      const isPublic = publicStatus === "공개"
+            const formattedDayOfWeek = convertDayOfWeekToEnum(dayOfWeek);
+            const isPublic = publicStatus === '공개';
 
-      
-      const payload = {
-        startDate,
-        level: parseInt(level.replace("Lv", "").trim()),
-        episodeLength,
-        time,
-        dayWeek: formattedDayOfWeek,
-        genre: genre.id, 
-        mood: mood.id, 
-        theme: theme.id,
-        publicStatus:isPublic,
-        participatingChildren,
-        story: currentStory,
-      };
+            const payload = {
+                startDate,
+                level: parseInt(level.replace('Lv', '').trim()),
+                episodeLength,
+                time,
+                dayWeek: formattedDayOfWeek,
+                genre: genre.id,
+                mood: mood.id,
+                theme: theme.id,
+                publicStatus: isPublic,
+                participatingChildren,
+                story: currentStory,
+            };
 
-      const result = await sendStoryToBackend(payload, generatedCover);
-      console.log("스토리 전송 성공", result);//result = partyId
-      setPartyId(result);
+            const result = await sendStoryToBackend(payload, generatedCover);
+            console.log('스토리 전송 성공', result); //result = partyId
+            setPartyId(result);
 
-      if (result) {
-        onComplete(result); // 파티 생성 성공 시 handleStoryComplete 호출
-        setTimeout(() => onClose(), 0);
-    }
+            if (result) {
+                onComplete(result); // 파티 생성 성공 시 handleStoryComplete 호출
+                setTimeout(() => onClose(), 0);
+            }
+        } catch (error) {
+            console.error('최종 전송 오류:', error.message);
+            if (error.response.data.code == 2007) {
+                setModalText('방 시간이 중복되는 아동이 있습니다.');
+                setModalState(true);
+            }
+        } finally {
+            setIsGeneratingImage(false);
+            setIsCreatingParty(false);
+        }
+    };
 
-    } catch (error) {
-      console.error("최종 전송 오류:", error.message);
-    } finally {
-      setIsGeneratingImage(false);
-      setIsCreatingParty(false);
-    }
-  };
+    useEffect(() => {
+        if (partyId) {
+            setIsCreatingParty(false);
+            setShowBookDetail(true);
+        }
+    }, [partyId]);
 
-  useEffect(() => {
-    if (partyId) {
-      setIsCreatingParty(false);
-      setShowBookDetail(true);
-    }
-  }, [partyId]);
+    const closeModal = () => {
+        setModalState(false);
+    };
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-      {isGenerating && <Loading />}
-      {(isGeneratingImage || isCreatingParty) && <Loading />}
-      <div className="w-[90%] md:w-[80%] lg:w-[70%] bg-blue-100 rounded-lg shadow-lg h-[90vh] flex flex-col">
-        {/* 헤더 영역 - 고정 높이 */}
-        <div className="p-4 border-b bg-blue-100">
-          <div className="flex justify-between items-center">
-            <h2 className="text-lg font-bold text-center flex-grow">📖 스토리라인</h2>
-            <button 
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-
-        {/* 컨텐츠 영역 - 남은 공간 모두 차지하고 스크롤 가능 */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4">
-            {isGenerating ?  (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-lg">스토리를 생성하고 있습니다...</p>
-              </div>
-            ) : (
-              <>
-                {currentStory && (
-
-                  <div className="mb-4 p-3 border border-gray-300 rounded bg-white">
-                    <h2 className="text-xl text-center mb-2">{currentStory.title}</h2>
-                    <div className="mb-3 flex justify-center">
-                      <StoryTag label="분위기" value={mood.keyword} />
-                      <StoryTag label="테마" value={theme.keyword} />
-                      <StoryTag label="장르" value={genre.keyword} />
-                      <StoryTag label="레벨" value={level} />
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+            {isGenerating && <Loading />}
+            {(isGeneratingImage || isCreatingParty) && <Loading />}
+            <div className="w-[90%] md:w-[80%] lg:w-[70%] bg-blue-100 rounded-lg shadow-lg h-[90vh] flex flex-col">
+                {/* 헤더 영역 - 고정 높이 */}
+                <div className="p-4 border-b bg-blue-100">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-lg font-bold text-center flex-grow">📖 스토리라인</h2>
+                        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                            ✕
+                        </button>
                     </div>
-                    {/* <h3 className="font-bold mb-2 text-base">개요</h3> */}
-                    <p className="text-sm">{currentStory.overview}</p>
-                  </div>
-                )}
+                </div>
 
-                {currentStory?.chapters?.map((chapter, index) => (
-                  <div key={index} className="mb-4 p-3 border border-gray-300 rounded bg-white">
-                    <h3 className="font-bold mb-2 text-base">에피소드 {index + 1}</h3>
-                    <p className="text-sm mb-2">
-                      <strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(", ")}
-                    </p>
-                    {chapter.sentences.map((sentence, idx) => (
-                      <p key={idx} className="text-sm mb-1">{sentence}</p>
-                    ))}
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
+                {/* 컨텐츠 영역 - 남은 공간 모두 차지하고 스크롤 가능 */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="p-4">
+                        {isGenerating ? (
+                            <div className="flex items-center justify-center h-full">
+                                <p className="text-lg">스토리를 생성하고 있습니다...</p>
+                            </div>
+                        ) : (
+                            <>
+                                {currentStory && (
+                                    <div className="mb-4 p-3 border border-gray-300 rounded bg-white">
+                                        <h2 className="text-xl text-center mb-2">{currentStory.title}</h2>
+                                        <div className="mb-3 flex justify-center">
+                                            <StoryTag label="분위기" value={mood.keyword} />
+                                            <StoryTag label="테마" value={theme.keyword} />
+                                            <StoryTag label="장르" value={genre.keyword} />
+                                            <StoryTag label="레벨" value={level} />
+                                        </div>
+                                        {/* <h3 className="font-bold mb-2 text-base">개요</h3> */}
+                                        <p className="text-sm">{currentStory.overview}</p>
+                                    </div>
+                                )}
 
-        {/* 하단 버튼 영역 - 고정 높이 */}
-        <div className="p-4 border-t bg-blue-100">
-          <div className="flex justify-center gap-3">
-            <button 
-              
-              onClick={() => {
-                generateStory(); 
-                // setRegenerateCount(prev => prev + 1);
-              }} 
-              disabled={isGenerating || regenerateCount >=3} 
-              className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
-            >
-              재생성하기 ({regenerateCount+1}/3)
-            </button>
-            <button 
-              onClick={handleDecide}
-              disabled={isGeneratingImage} 
-              className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
-            >
-              결정하기
-            </button>
-          </div>
+                                {currentStory?.chapters?.map((chapter, index) => (
+                                    <div key={index} className="mb-4 p-3 border border-gray-300 rounded bg-white">
+                                        <h3 className="font-bold mb-2 text-base">에피소드 {index + 1}</h3>
+                                        <p className="text-sm mb-2">
+                                            <strong>사용 단어:</strong> {chapter.words.map(w => w.word).join(', ')}
+                                        </p>
+                                        {chapter.sentences.map((sentence, idx) => (
+                                            <p key={idx} className="text-sm mb-1">
+                                                {sentence}
+                                            </p>
+                                        ))}
+                                    </div>
+                                ))}
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* 하단 버튼 영역 - 고정 높이 */}
+                <div className="p-4 border-t bg-blue-100">
+                    <div className="flex justify-center gap-3">
+                        <button
+                            onClick={() => {
+                                generateStory();
+                                // setRegenerateCount(prev => prev + 1);
+                            }}
+                            disabled={isGenerating || regenerateCount >= 3}
+                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+                        >
+                            재생성하기 ({regenerateCount + 1}/3)
+                        </button>
+                        <button
+                            onClick={handleDecide}
+                            disabled={isGeneratingImage}
+                            className="bg-[#FFE156] hover:bg-[#FFD156] px-4 py-2 rounded-lg text-black text-sm disabled:opacity-50"
+                        >
+                            결정하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <AlertModal modalState={modalState} text={modalText} closeHandler={closeModal} />
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default BookStoryGenerator;
