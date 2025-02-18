@@ -135,10 +135,8 @@ const SessionContainer = () => {
                 console.log('세션 stage 조회 요청 성공(값): ', response.data);
                 setSessionStageData({
                     currentStage: response.data.currentSessionStage,
-                    sessionStartTime: new Date(
-                        new Date(response.data.sessionStageStartTime).getTime() + 9 * 60 * 60 * 1000,
-                    ),
-                    serverTime: new Date(new Date(response.data.serverTime).getTime() + 9 * 60 * 60 * 1000),
+                    sessionStartTime: new Date(response.data.sessionStageStartTime),
+                    serverTime: new Date(response.data.serverTime),
                     sessionDuration: response.data.sessionDuration,
                 });
             }
