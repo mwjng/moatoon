@@ -20,7 +20,16 @@ import duck from '../assets/duckduck.png';
 import AudioPlayer from './audio/AudioPlayer';
 
 // stage: waiting, learning, picking, drawing, endDrawing, quiz
-function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime, serverTime, bookTitle, onTimeOut }) {
+function Navigation({
+    stage,
+    leaveSession,
+    stageDuration = 60,
+    sessionStartTime,
+    serverTime,
+    bookTitle,
+    onTimeOut,
+    onTenSecondLeft  // 새로 추가된 prop
+}) {
     // console.log('Navigation 렌더링:', {
     //     stage,
     //     stageDuration,
@@ -153,6 +162,7 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
     useEffect(() => {
         if (stage && sessionStartTime) {
             let timeoutNotEvented = true;
+            let tenSecondNotified = false;  // 새로 추가
 
             // 타이머 초기화
             const updateRemainTime = () => {
@@ -160,6 +170,12 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
                 const totalDuration = (stageDuration / 60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
+
+                // 새로 추가된 1분 알림 로직
+                if (stage === 'waiting' && remaining <= 10* SECOND && remaining > 10*SECOND - 1000 && !tenSecondNotified) {
+                    onTenSecondLeft && onTenSecondLeft();
+                    tenSecondNotified = true;
+                }
 
                 if (remaining <= 0) {
                     remaining = 0;
@@ -197,7 +213,7 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut, onTenSecondLeft]);
 
     return (
         <>
@@ -224,9 +240,10 @@ function Navigation({ stage, leaveSession, stageDuration = 60, sessionStartTime,
                                 </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
+                                    {/*이거 sessionStartTime이 대기방 시작시간이라 10분, 70분 더하는게 맞습니다!*/}
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime))} ~{' '}
-                                        {getTimeFormatted(addMinutes(sessionStartTime, 60))}
+                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime, 10))} ~{' '}
+                                        {getTimeFormatted(addMinutes(sessionStartTime, 70))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">
