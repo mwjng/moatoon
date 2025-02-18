@@ -28,6 +28,7 @@ function Navigation({
     serverTime,
     bookTitle,
     onTimeOut,
+    onTenSecondLeft  // 새로 추가된 prop
 }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
@@ -161,6 +162,7 @@ function Navigation({
     useEffect(() => {
         if (stage && sessionStartTime) {
             let timeoutNotEvented = true;
+            let tenSecondNotified = false;  // 새로 추가
 
             // 타이머 초기화
             const updateRemainTime = () => {
@@ -168,6 +170,12 @@ function Navigation({
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
                 const totalDuration = (stageDuration/60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
+                
+                // 새로 추가된 1분 알림 로직
+                if (stage === 'waiting' && remaining <= 10* SECOND && remaining > 10*SECOND - 1000 && !tenSecondNotified) {
+                    onTenSecondLeft && onTenSecondLeft();
+                    tenSecondNotified = true;
+                }
 
                 if (remaining <= 0) {
                     remaining = 0;
@@ -205,7 +213,7 @@ function Navigation({
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, [stage, sessionStartTime, stageDuration, onTimeOut]);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut, onTenSecondLeft]);
 
     return (
         <>
