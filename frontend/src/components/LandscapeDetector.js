@@ -64,7 +64,7 @@ const LandscapeDetector = ({ children }) => {
               
               <div className="message-container">
                 <div className="message-bubble">
-                  <p className="main-message">휴대폰을 옆으로 돌려주세요</p>
+                  <p className="main-message">태블릿을 옆으로 돌려주세요</p>
                   <p className="sub-message">가로 모드로 볼 수 있어요</p>
                 </div>
               </div>
