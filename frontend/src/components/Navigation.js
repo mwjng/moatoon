@@ -235,7 +235,7 @@ function Navigation({
                     {timeThresholds.oneMinute && <AudioPlayer audioType="ONE_LEFT" />}
                 </>
             )}
-            <header className="shadow-lg rounded-b-3xl bg-white w-full">
+            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[777]">
                 {stage ? (
                     <div className="flex flew-row justify-between py-4 px-10 items-center">
                         {stage === 'waiting' ? (
@@ -420,6 +420,7 @@ function Navigation({
                     </div>
                 )}
             </header>
+            <div className="h-[110px] w-full "></div>
         </>
     );
 }
