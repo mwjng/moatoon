@@ -67,6 +67,10 @@ const Drawing = forwardRef(
             exportToSVGAndUpload,
         }));
 
+        const viewEbook = () => {
+            window.open(`/ebook/${partyId}`, '_blank');
+        };
+
         return (
             <div className="h-screen bg-light-cream-yellow">
                 <AudioPlayer audioType="MYCUT" isOn={isFirstDrawingVisit} />
@@ -75,7 +79,7 @@ const Drawing = forwardRef(
                         <div className="rounded-lg overflow-hidden mb-4">
                             {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
                             <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" />
-                            <WordButton color="bg-dark-yellow w-full mt-5" size="md">
+                            <WordButton onClick={viewEbook} color="bg-dark-yellow w-full mt-5" size="md">
                                 지난 이야기 전체 보기
                             </WordButton>
 
