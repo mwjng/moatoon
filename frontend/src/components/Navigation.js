@@ -28,8 +28,8 @@ function Navigation({
     serverTime,
     bookTitle,
     onTimeOut,
-    onTenSecondLeft,  // 새로 추가된 prop
-    onTimeNotification
+    onTenSecondLeft, // 새로 추가된 prop
+    onTimeNotification,
 }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
@@ -238,7 +238,7 @@ function Navigation({
                     {timeThresholds.oneMinute && <AudioPlayer audioType="ONE_LEFT" />}
                 </>
             )}
-            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[777]">
+            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[3]">
                 {stage ? (
                     <div className="flex flew-row justify-between py-4 px-10 items-center">
                         {stage === 'waiting' ? (
