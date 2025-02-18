@@ -162,21 +162,24 @@ public class SessionStageService {
         log.info("[SessionStageService] setEndTimeTimer 설정됨: scheduleId={}, endTime={}, 현재단계 expectedStage={}", scheduleId, endTime, expectedStage);
         taskScheduler.schedule(
                 () -> {
-                    log.info("타이머 완료!!!");
+                    log.info("타이머 완료!!!: scheduleId: {}", scheduleId);
                     if(expectedStage == FullSessionStage.DONE) {
+                        log.info("next session: done");
                         handleUncompletedQuizMembers(scheduleId);
                         scheduleRepository.completeScheduleById(scheduleId);
                     }else {
                         if(expectedStage == FullSessionStage.DRAWING) {
+                            log.info("next session: drawing");
                             drawingService.exportSVG(scheduleId);
                         }
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
+                        log.info("session: {}", session.getSessionId());
                         FullSessionStage currentStage = session.getSessionStage();
-                        log.info(String.valueOf(session));
+                        log.info("session value: {}", String.valueOf(session));
 
                         // 예상했던 단계와 현재 단계가 같을 때만 전환
-                        log.info("{} == {}??", currentStage, expectedStage);
+                        log.info("stage {} == {}??", currentStage, expectedStage);
                         if (currentStage == expectedStage) {
                             log.info("{} 에서 다음 단계로 이동~", expectedStage);
                             handleSessionTransfer(scheduleId);
@@ -187,6 +190,7 @@ public class SessionStageService {
                             }
                         }
                     }
+                    log.info("next scheduler time: {}", endTime.atZone(ZoneId.systemDefault()).toInstant().toString());
                 },
                 endTime.atZone(ZoneId.systemDefault()).toInstant()
         );

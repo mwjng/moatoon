@@ -1,6 +1,7 @@
 package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.member.domain.Member;
+import com._2.a401.moa.member.domain.MemberState;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
@@ -30,7 +31,7 @@ public class ScheduleService {
 
     public MonthlyChildrenSchedulesResponse getMonthlyChildrenSchedules(Long memberId, int year, int month) {
         // 요청을 보낸 부모의 memberId로 해당하는 아동 memberId 리스트를 들고온다.
-        List<Member> children = memberRepository.findByManagerId(memberId);
+        List<Member> children = memberRepository.findAllByManagerId(memberId);
 
         // 각 아동의 스케줄을 조회하여 MemberSchedulesResponse를 만들고, 리스트로 만든다.
         List<MemberCalendarSchedules> childrenSchedules = children.stream()
@@ -50,15 +51,24 @@ public class ScheduleService {
     }
 
     public TodayAndUpcomingScheduleResponse getTodayAndUpcomingSchedule(long memberId) {
+        log.info("ScheduleService.getTodayAndUpcomingSchedule");
         List<ScheduleInfo> schedules = scheduleRepository.findBeforeAndOngoingSchedules(memberId);
 
         if (schedules.isEmpty()) { // 일정이 아무것도 없으면
+            log.info("오늘 일정 없음");
             return TodayAndUpcomingScheduleResponse.of(null, List.of());
         }
 
+        log.info("일정 개수: {}", schedules.size());
+        for (ScheduleInfo scheduleInfo : schedules) {
+            log.info("일정: {}", scheduleInfo.toString());
+        }
         ScheduleInfo firstSchedule = schedules.get(0);
 
+        log.info("첫 일정의 날짜: {}", firstSchedule.getSessionTimeAsLocalDateTime());
+        log.info("오늘의 날짜: {}", LocalDate.now());
         boolean isTodaySchedule = isToday(firstSchedule.getSessionTimeAsLocalDateTime());
+        log.info("처음 일정이 오늘인가?: {}", isTodaySchedule);
 
         TodayAndUpcomingScheduleResponse response = isTodaySchedule
                 ? createResponseWithTodaySchedule(schedules)
