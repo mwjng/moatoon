@@ -646,7 +646,15 @@ function generateTimeOptions() {
 
 function formatDate(date) {
     if (!date) return '';
-    return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    
+    // 한국 시간으로 변환
+    const kstDate = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
+    
+    const year = kstDate.getFullYear();
+    const month = String(kstDate.getMonth() + 1).padStart(2, '0');
+    const day = String(kstDate.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
 }
 
 export default BookSearchPage;

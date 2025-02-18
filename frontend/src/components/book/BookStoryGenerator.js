@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import OpenAI from 'openai';
-import { fetchRandomWords, sendStoryToBackend } from '../../api/party';
+import { checkCanJoin, fetchRandomWords, sendStoryToBackend } from '../../api/party';
 import Loading from '../Loading';
 import StoryTag from '../StoryTag';
 import AlertModal from '../common/AlertModal';
@@ -56,6 +56,7 @@ const BookStoryGenerator = ({
         console.log('테마   in BookStoryGenerator:', theme.keyword);
         console.log('난이도   in BookStoryGenerator:', level);
         console.log('챕터 수  in BookStoryGenerator:', episodeLength);
+        console.log('시간대  in BookStoryGenerator:', episod);
     }, [mood, genre, theme]);
 
     useEffect(() => {
@@ -71,6 +72,22 @@ const BookStoryGenerator = ({
     const wordListWithId = words.map((w, idx) => `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`).join('\n');
 
     const generateStory = async () => {
+        const payload = {
+            startDate,
+            episodeLength,
+            time,
+            dayWeek: convertDayOfWeekToEnum(dayOfWeek),
+            participatingChildren,
+        };
+        try {
+            await checkCanJoin(payload);
+        } catch (err) {
+            if (err.response.data.code == 2007) {
+                setModalText('해당 시간 그림책에 참여중인 아동이 있습니다.');
+                setModalState(true);
+                return;
+            }
+        }
         if (currentStory) {
             setRegenerateCount(prev => prev + 1);
         }
@@ -265,10 +282,6 @@ const BookStoryGenerator = ({
             }
         } catch (error) {
             console.error('최종 전송 오류:', error.message);
-            if (error.response.data.code == 2007) {
-                setModalText('방 시간이 중복되는 아동이 있습니다.');
-                setModalState(true);
-            }
         } finally {
             setIsGeneratingImage(false);
             setIsCreatingParty(false);

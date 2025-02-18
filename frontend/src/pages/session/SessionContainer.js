@@ -41,10 +41,11 @@ const SessionContainer = () => {
     );
 
     useEffect(() => {
-        if (sessionData.scheduleId) {
-            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
+        if (sessionData.current.scheduleId) {
+            console.log(fetchCutsInfo(sessionData.current.scheduleId));
+            dispatch(fetchCutsInfo(sessionData.current.scheduleId)); // API 호출
         }
-    }, [dispatch, sessionData.scheduleId]);
+    }, [dispatch, sessionData.current.scheduleId]);
 
     useEffect(() => {
         console.log('세션 변경 감지');
