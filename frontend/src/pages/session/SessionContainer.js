@@ -9,8 +9,6 @@ import QuizEndPage from './QuizEndPage';
 import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate, useParams } from 'react-router';
-import { SessionProvider } from '../../hooks/SessionProvider';
-import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -22,111 +20,75 @@ const SessionContainer = () => {
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
     const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
-    const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
     const sessionData = useRef({
         // api로 정보 가져옴
         scheduleId: null,
         partyId: null,
     });
+
+    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession();
+
     const [sessionStageData, setSessionStageData] = useState({
         currentStage: 'NONE',
-        sessionStartTime: new Date(Date.now() - 9 * 60 * 1000),
+        sessionStartTime: new Date(Date.now() - 60 * 1000),
         serverTime: new Date(),
         sessionDuration: 60,
     });
-    const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession();
-    const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
-        sessionData.current.scheduleId,
-    );
 
+    // 컴포넌트 마운트될 때 세션 참여
+    // ===========[api 호출]==========
+    // pinNumber로 초기 데이터 가져오기
+    useEffect(() => {
+        const fetchSessionInfo = async () => {
+            try {
+                const data = await getSessionInfoByPinNumber(pinNumber);
+                console.log(data);
+                sessionData.current = {
+                    scheduleId: data.scheduleId,
+                    partyId: data.partyId,
+                };
+
+                const bookCoverData = await getEBookCover(sessionData.current.partyId);
+                console.log('SessionContainer: getEBookCover:', bookCoverData);
+                setBookInfo(bookCoverData);
+
+                await joinSession(sessionData.current.scheduleId);
+            } catch (error) {
+                console.error('핀넘버로 세션 정보 조회 실패:', error);
+                navigate('/home');
+            }
+        };
+
+        if (pinNumber) {
+            console.log(pinNumber);
+            fetchSessionInfo();
+        }
+
+        return () => leaveSession();
+    }, [pinNumber, navigate]);
+
+    useEffect(() => {
+        if (sessionData.scheduleId) {
+            dispatch(fetchCutsInfo(sessionData.scheduleId)); // API 호출
+        }
+    }, [dispatch, sessionData.scheduleId]);
+
+    // 초기 로딩 시 스테이지 정보 가져오기
     useEffect(() => {
         if (sessionData.current.scheduleId) {
-            console.log(fetchCutsInfo(sessionData.current.scheduleId));
-            dispatch(fetchCutsInfo(sessionData.current.scheduleId)); // API 호출
+            // 여기서 scheduleId 체크
+            fetchCurrentStage();
         }
-    }, [dispatch, sessionData.current.scheduleId]);
+    }, [sessionData.current.scheduleId]); // sessionData.scheduleId가 변경될 때만 실행
 
-    useEffect(() => {
-        console.log('세션 변경 감지');
-        if (sessionTransferResponse?.nextSessionStage) {
-            setSessionStageData(prev => ({
-                currentStage: sessionTransferResponse.nextSessionStage,
-                sessionStartTime: sessionTransferResponse.sessionStartTime,
-                serverTime: sessionTransferResponse.severTime,
-                sessionDuration: sessionTransferResponse.sessionDuration,
-            }));
-        }
-    }, [sessionTransferResponse]);
-
-    useEffect(() => {
-        const handleBeforeUnload = event => {
-            event.preventDefault();
-            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
-        };
-
-        const blockReload = event => {
-            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
-                event.preventDefault();
-                alert('새로고침이 차단되었습니다.');
-            }
-        };
-
-        const blockContextMenu = event => {
-            event.preventDefault();
-        };
-
-        const checkWindowSize = () => {
-            if (window.innerWidth < 800 || window.innerHeight < 600) {
-                setIsFullScreen(false);
-            } else {
-                setIsFullScreen(true);
-            }
-        };
-
-        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
-        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('keydown', blockReload);
-        window.addEventListener('contextmenu', blockContextMenu);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('keydown', blockReload);
-            window.removeEventListener('contextmenu', blockContextMenu);
-            window.removeEventListener('resize', checkWindowSize);
-        };
-    }, []);
-
-    useEffect(async () => {
+    // 초기 세션 스테이지 정보를 가져오는 함수
+    const fetchCurrentStage = async () => {
         setIsLoading(true);
-
-        try {
-            const data = await getSessionInfoByPinNumber(pinNumber);
-            console.log(data);
-            sessionData.current = {
-                scheduleId: data.scheduleId,
-                partyId: data.partyId,
-            };
-
-            const bookCoverData = await getEBookCover(sessionData.current.partyId);
-            console.log('SessionContainer: getEBookCover:', bookCoverData);
-            setBookInfo(bookCoverData);
-
-            await joinSession(sessionData.current.scheduleId);
-        } catch (error) {
-            console.error('핀넘버로 세션 정보 조회 실패:', error);
-            navigate('/home');
-        }
-
         try {
             const response = await getCurrentSessionStage(sessionData.current.scheduleId);
             if (response.status === 200) {
-                if (
-                    response.data.currentSessionStage === 'DONE' ||
-                    response.data.currentSessionStage === 'NONE' ||
-                    response.data.currentSessionStage === 'INVALID_STAGE'
-                ) {
+                if (response.data.currentSessionStage === 'DONE') {
                     // 새로고침했을때 DONE이면 접근 금지
                     navigate('/home');
                     return;
@@ -136,7 +98,7 @@ const SessionContainer = () => {
                 setSessionStageData({
                     currentStage: response.data.currentSessionStage,
                     sessionStartTime: new Date(response.data.sessionStageStartTime),
-                    serverTime: new Date(response.data.serverTime),
+                    serverTime: new Date(new Date(response.data.serverTime).getTime() + 9 * 60 * 60 * 1000),
                     sessionDuration: response.data.sessionDuration,
                 });
             }
@@ -147,9 +109,20 @@ const SessionContainer = () => {
             setIsLoading(false);
             console.log('sessionStageData', sessionStageData);
         }
+    };
 
-        return () => leaveSession().then(navigate('/home'));
-    }, []);
+    // ===========[api 호출 끝]==========
+
+    // useOpenViduSession 훅 사용
+    // const { session, publisher, subscribers, nickname, joinSession, leaveSession } = useOpenViduSession(
+    //     sessionData.current.scheduleId,
+    // );
+
+    // 컴포넌트 마운트될 때 세션 참여
+    // useEffect(() => {
+    //     joinSession();
+    //     return () => leaveSession(); // 컴포넌트 언마운트 시 세션 나가기
+    // }, []);
 
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
@@ -171,6 +144,63 @@ const SessionContainer = () => {
     const handleLeaveSession = async () => {
         await leaveSession().then(navigate('/home'));
     };
+
+    // 상태 업데이트를 확인하기 위한 별도의 useEffect
+    // useEffect(() => {
+    //     console.log("세션 stage 업데이트됨: ", sessionStageData);
+    //     renderStage();
+    // }, [sessionStageData]);
+
+    const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
+        sessionData.current.scheduleId,
+    );
+
+    // sessionTransferResponse 변경시 stage 업데이트
+    useEffect(() => {
+        console.log('세션 변경 감지');
+        if (sessionTransferResponse?.nextSessionStage) {
+            setSessionStageData(prev => ({
+                currentStage: sessionTransferResponse.nextSessionStage,
+                sessionStartTime: new Date(sessionTransferResponse.sessionStageStartTime),
+                serverTime: new Date(new Date(sessionTransferResponse.serverTime).getTime() + 9 * 60 * 60 * 1000),
+                sessionDuration: sessionTransferResponse.sessionDuration,
+            }));
+        }
+    }, [sessionTransferResponse]);
+
+    useEffect(() => {
+        if (sessionStageData.currentStage === 'NONE' || sessionStageData.currentStage === 'INVALID_STAGE') {
+            navigate('/home');
+        }
+    }, [sessionStageData.currentStage, navigate]);
+
+    useEffect(() => {
+        const handleBeforeUnload = event => {
+            event.preventDefault();
+            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
+        };
+
+        const blockReload = event => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
+                event.preventDefault();
+                alert('새로고침이 차단되었습니다.');
+            }
+        };
+
+        const blockContextMenu = event => {
+            event.preventDefault();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('keydown', blockReload);
+        window.addEventListener('contextmenu', blockContextMenu);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('keydown', blockReload);
+            window.removeEventListener('contextmenu', blockContextMenu);
+        };
+    }, []);
 
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
@@ -263,12 +293,7 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return (
-        <div className="min-h-screen relative">
-            {renderStage()}
-            {!isFullScreen && <FullPage />}
-        </div>
-    );
+    return <div className="min-h-screen relative">{renderStage()}</div>;
 };
 
 export default SessionContainer;

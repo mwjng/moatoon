@@ -48,9 +48,15 @@ public class PartyRepositoryCustom implements PartyRepositoryCustomImpl {
         }
 
         // 특정 시간 필터링
+//        if (request.getTime() != null) {
+//            builder.and(schedule.sessionTime.hour().stringValue().concat(":")
+//                    .concat(schedule.sessionTime.minute().stringValue()).eq(request.getTime()));
+//        }
         if (request.getTime() != null) {
-            builder.and(schedule.sessionTime.hour().stringValue().concat(":")
-                    .concat(schedule.sessionTime.minute().stringValue()).eq(request.getTime()));
+            LocalTime targetTime = LocalTime.parse(request.getTime()); // "09:00" → LocalTime(9, 0)
+
+            builder.and(party.startDate.hour().eq(targetTime.getHour())
+                    .and(party.startDate.minute().eq(targetTime.getMinute())));
         }
 
         // 요일 필터링

@@ -126,7 +126,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                 keyword: genres.find(g => g.id === parseInt(genre))?.keyword || '',
             },
 
-            difficulty,
+            difficulty: parseInt(level.match(/Lv(\d+)/)[1])
         });
     };
 
