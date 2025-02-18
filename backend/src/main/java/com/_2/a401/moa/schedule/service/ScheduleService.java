@@ -1,6 +1,7 @@
 package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.member.domain.Member;
+import com._2.a401.moa.member.domain.MemberState;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.dto.ScheduleInfo;
@@ -30,7 +31,7 @@ public class ScheduleService {
 
     public MonthlyChildrenSchedulesResponse getMonthlyChildrenSchedules(Long memberId, int year, int month) {
         // 요청을 보낸 부모의 memberId로 해당하는 아동 memberId 리스트를 들고온다.
-        List<Member> children = memberRepository.findByManagerId(memberId);
+        List<Member> children = memberRepository.findAllByManagerId(memberId);
 
         // 각 아동의 스케줄을 조회하여 MemberSchedulesResponse를 만들고, 리스트로 만든다.
         List<MemberCalendarSchedules> childrenSchedules = children.stream()

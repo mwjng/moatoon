@@ -78,7 +78,7 @@ public class MemberService {
                 .orElseThrow(() -> new MoaException(INVALID_MEMBER));
 
         if (member.getRole() == MemberRole.MANAGER) {
-            List<Member> children = memberRepository.findByManager(member);
+            List<Member> children = memberRepository.findAllByManagerId(member.getId());
             return MemberInfoResponse.ofManager(member, children);
         }else if(member.getManager()==null){
             throw new MoaException(UNCONNECTED_CHILD);
@@ -147,7 +147,7 @@ public class MemberService {
             member.setPassword(passwordEncoder.encode(memberModify.getPassword()));
         }
         if(member.getRole().equals(MemberRole.MANAGER) ){
-            List<Member> members = memberRepository.findByManagerIdAndStatus(memberId, MemberState.ACTIVE);
+            List<Member> members = memberRepository.findAllByManagerId(memberId);
             members.forEach(child -> child.setManager(null));
 
             connectChildren(memberModify.getChildren(), member);
@@ -170,7 +170,7 @@ public class MemberService {
         Member member = memberRepository.findById(jwtUtil.getMemberId(jwtUtil.getTokenFromRequest(req))).orElseThrow(()->new MoaException(INVALID_MEMBER));
         member.setStatus(MemberState.DELETED);
         if(member.getRole().equals(MemberRole.MANAGER)){
-            memberRepository.findByManagerId(member.getId())
+            memberRepository.findAllByManagerId(member.getId())
                     .forEach(m -> {
                         m.setManager(null);
                         partyMemberRepository.findByMember(m)

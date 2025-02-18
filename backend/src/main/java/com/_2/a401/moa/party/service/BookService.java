@@ -2,6 +2,7 @@ package com._2.a401.moa.party.service;
 
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.member.domain.MemberState;
 import com._2.a401.moa.member.repository.MemberRepository;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.dto.response.BookListResponse;
@@ -30,7 +31,7 @@ public class BookService {
         // 내 아이디가 보려는 아이디랑 다른 경우, memberId가 내 자녀인지 검증 필요
         if (!myId.equals(memberId)) {
             // 자녀 검증 로직
-            boolean isMyChild = memberRepository.existsByIdAndManagerId(memberId, myId);
+            boolean isMyChild = memberRepository.existsByIdAndManagerIdAndStatus(memberId, myId, MemberState.ACTIVE);
             if (!isMyChild) {
                 throw new MoaException(ExceptionCode.INVALID_AUTHORITY);
             }
