@@ -7,7 +7,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import defaultProfileImage from '../../assets/duckduck.png';
 import { useNavigate } from 'react-router-dom';
 
-const BookDetail = ({ partyIdOrPin, onClose }) => {
+const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate}) => {
     const navigate = useNavigate();
     const [partyDetails, setPartyDetails] = useState(null);
     const [loading, setLoading] = useState(true);

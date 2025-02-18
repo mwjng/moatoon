@@ -392,7 +392,7 @@ const BookSearchPage = () => {
                             )}
                         </div>
 
-                        <select
+                        {/* <select
                             className="select select-sm select-bordered bg-white border-none shadow-sm"
                             value={searchParams.time}
                             onChange={e => setSearchParams(prev => ({ ...prev, time: e.target.value }))}
@@ -403,7 +403,7 @@ const BookSearchPage = () => {
                                     {time}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
 
                         <div className="flex gap-1">
                             {weekDays.map((day, index) => (
