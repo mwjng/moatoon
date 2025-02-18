@@ -64,6 +64,7 @@ function WaitingRoom({
                 bookTitle={bookInfo?.bookTitle}
                 onTimeOut={handleTimeOut}
                 onTenSecondLeft={handleTenSecondLeft}
+                leaveSession={handleLeaveSession}
             />
             <div className="flex-1 flex justify-center items-center">
                 <div
