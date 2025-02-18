@@ -54,12 +54,18 @@ public class ScheduleService {
         List<ScheduleInfo> schedules = scheduleRepository.findBeforeAndOngoingSchedules(memberId);
 
         if (schedules.isEmpty()) { // 일정이 아무것도 없으면
+            log.info("ScheduleService.getTodayAndUpcomingSchedule - 오늘 일정 없음");
             return TodayAndUpcomingScheduleResponse.of(null, List.of());
         }
 
+        log.info("ScheduleService.getTodayAndUpcomingSchedule - 일정 개수: {}", schedules.size());
+        for (ScheduleInfo scheduleInfo : schedules) {
+            log.info("ScheduleService.getTodayAndUpcomingSchedule - 일정: {}", scheduleInfo.toString());
+        }
         ScheduleInfo firstSchedule = schedules.get(0);
 
         boolean isTodaySchedule = isToday(firstSchedule.getSessionTimeAsLocalDateTime());
+        log.info("ScheduleService.getTodayAndUpcomingSchedule - 처음 일정이 오늘인가?: {}", isTodaySchedule);
 
         TodayAndUpcomingScheduleResponse response = isTodaySchedule
                 ? createResponseWithTodaySchedule(schedules)
