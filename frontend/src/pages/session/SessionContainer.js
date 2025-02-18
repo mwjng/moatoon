@@ -10,7 +10,6 @@ import { useSessionStageWebSocket } from '../../hooks/useSessionStageWebSocket';
 import { getCurrentSessionStage } from '../../api/sessionStage';
 import { useNavigate, useParams } from 'react-router';
 import { SessionProvider } from '../../hooks/SessionProvider';
-import FullPage from './FullPage';
 import useOpenViduSession from '../../hooks/useOpenViduSession';
 import { getEBookCover } from '../../api/book';
 import { getSessionInfoByPinNumber } from '../../api/schedule';
@@ -21,9 +20,6 @@ const SessionContainer = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const { pinNumber } = useParams(); // 프론트 url에 담겨서 옴
-
-    const [isFullScreen, setIsFullScreen] = useState(true); // 화면이 전체화면인지 여부
-
     const [bookInfo, setBookInfo] = useState(null); // api로 정보 가져옴 {partyId, bookTitle, bookCover, cuts: Array(4)}
     const sessionData = useRef({
         // api로 정보 가져옴
@@ -50,12 +46,43 @@ const SessionContainer = () => {
     };
 
     useEffect(() => {
-        checkWindowSize(); // 컴포넌트 마운트 시 크기 확인
-        window.addEventListener('resize', checkWindowSize); // 크기 변경 시 체크
+        console.log('세션 변경 감지');
+        if (sessionTransferResponse?.nextSessionStage) {
+            setSessionStageData(prev => ({
+                currentStage: sessionTransferResponse.nextSessionStage,
+                sessionStartTime: sessionTransferResponse.sessionStartTime,
+                serverTime: sessionTransferResponse.severTime,
+                sessionDuration: sessionTransferResponse.sessionDuration,
+            }));
+        }
+    }, [sessionTransferResponse]);
+
+    useEffect(() => {
+        const handleBeforeUnload = event => {
+            event.preventDefault();
+            event.returnValue = '정말 페이지를 나가시겠습니까?? 변경사항이 저장되지 않을 수 있습니다.';
+        };
+
+        const blockReload = event => {
+            if (event.key === 'F5' || (event.ctrlKey && event.key === 'r') || (event.metaKey && event.key === 'r')) {
+                event.preventDefault();
+                alert('새로고침이 차단되었습니다.');
+            }
+        };
+
+        const blockContextMenu = event => {
+            event.preventDefault();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        window.addEventListener('keydown', blockReload);
+        window.addEventListener('contextmenu', blockContextMenu);
 
         // 컴포넌트 언마운트 시 이벤트 리스너 제거
         return () => {
-            window.removeEventListener('resize', checkWindowSize);
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('keydown', blockReload);
+            window.removeEventListener('contextmenu', blockContextMenu);
         };
     }, []);
 
@@ -333,12 +360,7 @@ const SessionContainer = () => {
         return renderStage();
     };
 
-    return (
-        <div className="min-h-screen relative">
-            {renderStage()}
-            {!isFullScreen && <FullPage />}
-        </div>
-    );
+    return <div className="min-h-screen relative">{renderStage()}</div>;
 };
 
 export default SessionContainer;
