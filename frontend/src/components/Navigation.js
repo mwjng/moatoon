@@ -28,7 +28,8 @@ function Navigation({
     serverTime,
     bookTitle,
     onTimeOut,
-    onTenSecondLeft  // 새로 추가된 prop
+    onTenSecondLeft,  // 새로 추가된 prop
+    onTimeNotification
 }) {
     // console.log('Navigation 렌더링:', {
     //     stage,
@@ -81,8 +82,7 @@ function Navigation({
 
     const handleBackClick = () => {
         if (stage === 'waiting') {
-            leaveSession(); // 세션에서 나가기
-            navigate('/home'); // 메인 페이지로 이동 (필요에 따라 경로 수정 가능)
+            leaveSession(); // 세션에서 나가기 - 여기서 /home으로 이동
         }
     };
 
@@ -162,7 +162,7 @@ function Navigation({
     useEffect(() => {
         if (stage && sessionStartTime) {
             let timeoutNotEvented = true;
-            let tenSecondNotified = false;  // 새로 추가
+            let tenSecondNotified = false; // 새로 추가
 
             // 타이머 초기화
             const updateRemainTime = () => {
@@ -172,7 +172,12 @@ function Navigation({
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산
 
                 // 새로 추가된 1분 알림 로직
-                if (stage === 'waiting' && remaining <= 10* SECOND && remaining > 10*SECOND - 1000 && !tenSecondNotified) {
+                if (
+                    stage === 'waiting' &&
+                    remaining <= 10 * SECOND &&
+                    remaining > 10 * SECOND - 1000 &&
+                    !tenSecondNotified
+                ) {
                     onTenSecondLeft && onTenSecondLeft();
                     tenSecondNotified = true;
                 }
@@ -195,14 +200,17 @@ function Navigation({
 
                     if (remainingMinutes <= 10 && remainingMinutes > 9.9 && !timeThresholds.tenMinutes) {
                         setTimeThresholds(prev => ({ ...prev, tenMinutes: true }));
+                        onTimeNotification && onTimeNotification('TEN_LEFT');
                     }
 
                     if (remainingMinutes <= 5 && remainingMinutes > 4.9 && !timeThresholds.fiveMinutes) {
                         setTimeThresholds(prev => ({ ...prev, fiveMinutes: true }));
+                        onTimeNotification && onTimeNotification('FIVE_LEFT');
                     }
 
                     if (remainingMinutes <= 1 && remainingMinutes > 0.9 && !timeThresholds.oneMinute) {
                         setTimeThresholds(prev => ({ ...prev, oneMinute: true }));
+                        onTimeNotification && onTimeNotification('ONE_LEFT');
                     }
                 }
             };
@@ -213,7 +221,7 @@ function Navigation({
             // 컴포넌트 언마운트 시 타이머 클리어
             return () => clearInterval(interval);
         }
-    }, [stage, sessionStartTime, stageDuration, onTimeOut, onTenSecondLeft]);
+    }, [stage, sessionStartTime, stageDuration, onTimeOut, onTenSecondLeft, onTimeNotification]);
 
     return (
         <>

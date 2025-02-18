@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Background from '../../components/member/Backround';
 import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
@@ -29,7 +29,8 @@ export default function ManagerRegistPage() {
     const [registState, setRegistState] = useState([
         {
             id: 'loginId',
-            value: '아이디',
+            placeholder: '아이디',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -37,7 +38,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'email',
-            value: '이메일',
+            placeholder: '이메일',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -45,7 +47,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'emailCode',
-            value: '인증번호',
+            placeholder: '인증번호',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -53,7 +56,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'password',
-            value: '비밀번호',
+            placeholder: '비밀번호',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -61,7 +65,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'confirmPassword',
-            value: '비밀번호 확인',
+            placeholder: '비밀번호 확인',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -69,7 +74,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'name',
-            value: '이름',
+            placeholder: '이름',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -77,7 +83,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'nickname',
-            value: '닉네임',
+            placeholder: '닉네임',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -85,12 +92,42 @@ export default function ManagerRegistPage() {
         },
     ]);
 
+    useEffect(() => {
+        setRegistState(prevState =>
+            prevState.map(input =>
+                input.id === 'emailCode' ? { ...input, value: input.value.replace(/\D/g, '') } : input,
+            ),
+        );
+    }, [registState.find(input => input.id === 'emailCode')?.value]);
+    useEffect(() => {
+        const password = registState.find(input => input.id === 'password')?.value || '';
+        const confirmPassword = registState.find(input => input.id === 'confirmPassword')?.value || '';
+
+        let comment = '';
+        let cmtColor = '#FF0000';
+
+        if (!confirmPassword) {
+            comment = '비밀번호 확인 값을 입력해주세요.';
+        } else if (password === confirmPassword) {
+            comment = '비밀번호가 일치합니다.';
+            cmtColor = '#009951';
+        } else {
+            comment = '비밀번호가 일치하지 않습니다.';
+        }
+
+        setRegistState(prevState =>
+            prevState.map(input => (input.id === 'confirmPassword' ? { ...input, comment, cmtColor } : input)),
+        );
+    }, [
+        registState.find(input => input.id === 'password')?.value,
+        registState.find(input => input.id === 'confirmPassword')?.value,
+    ]);
+
     const changeValue = (key, value) => {
         setRegistState(prevState =>
             prevState.map(input => {
                 if (input.id === key) {
                     let comment = '';
-                    let cmtColor = '#FF0000';
                     if (key === 'loginId' || key === 'nickname') {
                         if (value.length > 20) {
                             comment = '20자 이내로 입력해주세요.';
@@ -103,11 +140,17 @@ export default function ManagerRegistPage() {
                             comment = '이름은 2자 이상 10자 이내로 입력해주세요.';
                         }
                     } else if (key === 'email') {
+                        if (value.length > 40) {
+                            comment = '40자 이내로 입력해주세요.';
+                        }
                         setCodeCheck(false);
+                        setIsTimer(false);
                     } else if (key === 'password') {
                         validatePassword(value);
-                    } else if (key === 'confirmPassword') {
-                        checkPasswordMatch(value);
+                    } else if (key === 'emailCode') {
+                        if (value.length > 8) {
+                            comment = '인증번호를 확인해주세요.';
+                        }
                     }
                     return { ...input, value, comment, cmtColor: comment ? '#FF0000' : '#009951' };
                 }
@@ -117,7 +160,11 @@ export default function ManagerRegistPage() {
     };
 
     const checkDuplicate = async loginId => {
-        if (!loginId) return;
+        if (loginId.length > 20 || !loginId) {
+            setModalText('아이디 값을 확인해주세요.');
+            setModalState(true);
+            return;
+        }
 
         try {
             const res = await loginIdCheck(loginId);
@@ -170,23 +217,6 @@ export default function ManagerRegistPage() {
                               ? '사용 가능한 비밀번호입니다.'
                               : '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
                           cmtColor: isValid ? '#009951' : '#FF0000',
-                      }
-                    : input,
-            ),
-        );
-    };
-
-    const checkPasswordMatch = confirmPassword => {
-        const password = registState.find(input => input.id === 'password').value;
-        const isMatch = password === confirmPassword;
-
-        setRegistState(prevState =>
-            prevState.map(input =>
-                input.id === 'confirmPassword'
-                    ? {
-                          ...input,
-                          comment: isMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.',
-                          cmtColor: isMatch ? '#009951' : '#FF0000',
                       }
                     : input,
             ),
@@ -249,7 +279,20 @@ export default function ManagerRegistPage() {
         navigate('/login');
     };
     const checkEmail = async () => {
-        setCodeCheck(false);
+        const emailInput = registState.find(input => input.id === 'email').value;
+        if (emailInput.length > 40) {
+            setModalText('이메일 값을 확인해주세요.');
+            setModalState(true);
+            setCodeCheck(false);
+            return;
+        }
+        const emailRegex = /^[A-Za-z0-9+_.-]+@(.+)$/;
+        if (!emailInput || !emailRegex.test(emailInput)) {
+            setModalText('이메일 형식을 확인해주세요.');
+            setModalState(true);
+            setCodeCheck(false);
+            return;
+        }
         try {
             const res = await sendEmailCode(registState.find(input => input.id === 'email').value);
             if (res.status == 204) {
@@ -271,11 +314,19 @@ export default function ManagerRegistPage() {
         }
     };
     const checkCode = async () => {
+        if (!isTimer) {
+            setModalText('이메일 인증을 진행해주세요.');
+            setModalState(true);
+            return;
+        }
+        const code = registState.find(input => input.id === 'emailCode').value;
+        if (!code || code == '인증번호') {
+            setModalText('인증번호를 입력해주세요.');
+            setModalState(true);
+            return;
+        }
         try {
-            const res = await checkEmailCode(
-                registState.find(input => input.id === 'email').value,
-                registState.find(input => input.id === 'emailCode').value,
-            );
+            const res = await checkEmailCode(registState.find(input => input.id === 'email').value, code);
             if (res.status == 200) {
                 setCodeCheck(true);
                 setModalText('인증이 완료되었습니다.');
@@ -283,12 +334,14 @@ export default function ManagerRegistPage() {
                 setModalState(true);
             }
         } catch (error) {
-            if (error.status == 400) {
+            if (error.response.data.code == 4016) {
+                setModalText('잘못된 인증번호입니다.');
+                setModalState(true);
+            } else if (error.status == 400 && count == 0) {
                 setModalText('인증시간이 만료되었습니다.');
                 setModalState(true);
-            }
-            if (error.status == 500) {
-                setModalText('잘못된 코드입니다.');
+            } else {
+                setModalText('잠시 후 다시 시도해주세요.');
                 setModalState(true);
             }
             console.error('아이디 중복 확인 오류:', error);
