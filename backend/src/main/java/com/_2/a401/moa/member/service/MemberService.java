@@ -13,6 +13,7 @@ import com._2.a401.moa.member.dto.request.MemberCreate;
 import com._2.a401.moa.member.dto.request.MemberModify;
 import com._2.a401.moa.member.dto.response.*;
 import com._2.a401.moa.member.repository.MemberRepository;
+import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -144,8 +145,6 @@ public class MemberService {
         if(memberModify.getPassword() != null && !memberModify.getPassword().isBlank()){
             validatePassword(memberModify.getPassword());
             member.setPassword(passwordEncoder.encode(memberModify.getPassword()));
-            System.out.println(memberModify.getPassword());
-            System.out.println("??");
         }
         if(member.getRole().equals(MemberRole.MANAGER) ){
             List<Member> members = memberRepository.findByManagerIdAndStatus(memberId, MemberState.ACTIVE);
@@ -205,5 +204,11 @@ public class MemberService {
             str += charSet[idx];
         }
         return str;
+    }
+
+    public void checkCanJoinParty(Party party, Member child) {
+        if(memberRepository.checkCanJoinParty(party.getId(), child.getId())>0){
+            throw new MoaException(MEMBER_CAN_NOT_JOIN);
+        }
     }
 }
