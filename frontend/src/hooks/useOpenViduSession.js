@@ -3,6 +3,7 @@ import { OpenVidu } from 'openvidu-browser';
 import base64 from 'base-64';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
@@ -12,6 +13,7 @@ const useOpenViduSession = () => {
     const [subscribers, setSubscribers] = useState([]);
     const [nickname, setNickname] = useState('게스트');
     const token = localStorage.getItem('accessToken');
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
@@ -58,6 +60,12 @@ const useOpenViduSession = () => {
             setPublisher(newPublisher);
         } catch (error) {
             console.error('세션 연결 에러', error);
+            // 서버 응답의 에러 코드에 따라 다른 에러 상태를 전달
+            let errorCode = 1000; // 기본 에러 코드
+            if (error.response && error.response.data && error.response.data.code) {
+                errorCode = error.response.data.code;
+            }
+            navigate('/session-error', { state: { errorCode } });
         }
     };
 
