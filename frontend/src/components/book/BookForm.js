@@ -91,7 +91,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
     })();
 
     // 폼 제출
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (
             !startDate ||
             !time ||
@@ -104,6 +104,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
             setModalState(true);
             return;
         }
+
         onSubmit({
             startDate,
             level,
@@ -114,20 +115,18 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
             participatingChildren: selectedChildren,
             mood: {
                 id: parseInt(mood),
-                keyword: moods.find(m => m.id === parseInt(mood))?.keyword || "",
+                keyword: moods.find(m => m.id === parseInt(mood))?.keyword || '',
             },
             theme: {
                 id: parseInt(theme),
-                keyword: themes.find(t => t.id === parseInt(theme))?.keyword || "",
+                keyword: themes.find(t => t.id === parseInt(theme))?.keyword || '',
             },
             genre: {
                 id: parseInt(genre),
-                keyword: genres.find(g => g.id === parseInt(genre))?.keyword || "",
+                keyword: genres.find(g => g.id === parseInt(genre))?.keyword || '',
             },
-            
-            
-            
-            difficulty
+
+            difficulty,
         });
     };
 

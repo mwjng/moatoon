@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Background from '../../components/member/Backround';
 import AuthModal from '../../components/member/AuthModal';
 import Btn from '../../components/member/Btn';
@@ -14,12 +14,14 @@ export default function ChildRegistPage() {
     const [previewUrl, setPreviewUrl] = useState(''); // 미리보기 URL 저장
     const [canRegist, setCanRegist] = useState(false);
     const [modalState, setModalState] = useState(false);
+    const [modalText, setModalText] = useState('');
     const [registModalState, setRegistModalState] = useState(false);
     const imgRef = useRef();
     const [registState, setRegistState] = useState([
         {
             id: 'loginId',
-            value: '아이디',
+            placeholder: '아이디',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -27,15 +29,17 @@ export default function ChildRegistPage() {
         },
         {
             id: 'password',
-            value: '비밀번호',
+            placeholder: '비밀번호',
+            value: '',
             type: 'password',
             required: true,
-            comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
+            comment: '',
             cmtColor: '#FF0000',
         },
         {
             id: 'confirmPassword',
-            value: '비밀번호 확인',
+            placeholder: '비밀번호 확인',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -43,7 +47,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'name',
-            value: '이름',
+            placeholder: '이름',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -51,30 +56,59 @@ export default function ChildRegistPage() {
         },
         {
             id: 'nickname',
-            value: '닉네임',
+            placeholder: '닉네임',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
             cmtColor: '#000',
         },
     ]);
+    useEffect(() => {
+        const password = registState.find(input => input.id === 'password')?.value || '';
+        const confirmPassword = registState.find(input => input.id === 'confirmPassword')?.value || '';
 
+        let comment = '';
+        let cmtColor = '#FF0000';
+
+        if (!confirmPassword) {
+            comment = '비밀번호 확인 값을 입력해주세요.';
+        } else if (password === confirmPassword) {
+            comment = '비밀번호가 일치합니다.';
+            cmtColor = '#009951';
+        } else {
+            comment = '비밀번호가 일치하지 않습니다.';
+        }
+
+        setRegistState(prevState =>
+            prevState.map(input => (input.id === 'confirmPassword' ? { ...input, comment, cmtColor } : input)),
+        );
+    }, [
+        registState.find(input => input.id === 'password')?.value,
+        registState.find(input => input.id === 'confirmPassword')?.value,
+    ]);
     const changeValue = (key, value) => {
         setRegistState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
 
         if (key === 'loginId') {
-            setRegistState(prevState =>
-                prevState.map(input => (input.id === 'loginId' ? { ...input, comment: '' } : input)),
-            );
+            if (value.length > 20) {
+                setRegistState(prevState =>
+                    prevState.map(input =>
+                        input.id === 'loginId'
+                            ? { ...input, comment: '20자 이내로 입력해주세요.', cmtColor: '#FF0000' }
+                            : input,
+                    ),
+                );
+            } else {
+                setRegistState(prevState =>
+                    prevState.map(input => (input.id === 'loginId' ? { ...input, comment: '' } : input)),
+                );
+            }
             setCanRegist(false);
         }
 
         if (key === 'password') {
             validatePassword(value);
-        }
-
-        if (key === 'confirmPassword') {
-            checkPasswordMatch(value);
         }
 
         if (key === 'name') {
@@ -112,7 +146,11 @@ export default function ChildRegistPage() {
     };
 
     const checkDuplicate = async loginId => {
-        if (!loginId) return;
+        if (loginId.length > 20 || !loginId) {
+            setModalText('아이디 값을 확인해주세요.');
+            setModalState(true);
+            return;
+        }
 
         try {
             const res = await loginIdCheck(loginId);
@@ -170,23 +208,6 @@ export default function ChildRegistPage() {
         );
     };
 
-    const checkPasswordMatch = confirmPassword => {
-        const password = registState.find(input => input.id === 'password').value;
-        const isMatch = password === confirmPassword;
-
-        setRegistState(prevState =>
-            prevState.map(input =>
-                input.id === 'confirmPassword'
-                    ? {
-                          ...input,
-                          comment: isMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.',
-                          cmtColor: isMatch ? '#009951' : '#FF0000',
-                      }
-                    : input,
-            ),
-        );
-    };
-
     const saveImgFile = () => {
         const file = imgRef.current.files[0];
         if (!file) return;
@@ -220,6 +241,7 @@ export default function ChildRegistPage() {
                 setRegistModalState(true);
             }
         } else {
+            setModalText('입력값을 확인해주세요.');
             setModalState(true);
         }
     };
@@ -274,7 +296,7 @@ export default function ChildRegistPage() {
                 />
                 <Btn bgColor="#FFBD73" bgHoverColor="#FFB25B" text="가입하기" onClickHandler={registHandler} />
             </AuthModal>
-            <AlertModal text="입력값을 확인해주세요." modalState={modalState} closeHandler={closeModal} />
+            <AlertModal text={modalText} modalState={modalState} closeHandler={closeModal} />
             <AlertModal
                 text="회원가입이 완료되었습니다."
                 modalState={registModalState}
