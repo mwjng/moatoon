@@ -115,6 +115,8 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
+        timezone:
+          default_storage: NORMALIZE
         globally_quoted_identifiers: true
         highlight_sql: false
         format_sql: false

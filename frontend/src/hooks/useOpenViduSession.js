@@ -5,27 +5,25 @@ import { getSessionToken } from '../api/room';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 
-const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
-
 const useOpenViduSession = () => {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
     const [nickname, setNickname] = useState('게스트');
-    const token = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (token) {
+        if (accessToken) {
             try {
-                const payloadBase64 = token.split('.')[1];
+                const payloadBase64 = accessToken.split('.')[1];
                 const decodedPayload = JSON.parse(base64.decode(payloadBase64));
                 setNickname(decodedPayload.nickname || '게스트');
             } catch (error) {
                 console.error('JWT 파싱 에러', error);
             }
         }
-    }, [token]);
+    }, [accessToken]);
 
     const joinSession = async scheduleId => {
         const openVidu = new OpenVidu();
@@ -42,7 +40,8 @@ const useOpenViduSession = () => {
 
         try {
             const token = await getSessionToken(scheduleId);
-            await newSession.connect(token, { clientData: nickname });
+            console.log(token.token);
+            await newSession.connect(token.token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
                 audioSource: undefined,
@@ -71,8 +70,8 @@ const useOpenViduSession = () => {
 
     const leaveSession = async scheduleId => {
         if (session) {
-            await axios.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {
-                headers: { Authorization: `Bearer ${token}` },
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${scheduleId}/session/leave`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
             });
             session.disconnect();
         }
