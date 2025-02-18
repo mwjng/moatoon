@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Objects;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.*;
 import static java.time.LocalDateTime.now;
@@ -42,13 +43,15 @@ public class SessionService {
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final PartyRepository partyRepository;
 
-
-
     public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
         validateSessionJoin(member, scheduleId);
-        final String sessionId = sessionRedisRepository.fetchByScheduleId(scheduleId).getSessionId();
-        final String token = videoConferenceManager.createConnection(sessionId);
-
+        final Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
+        if (Objects.isNull(session.getSessionId())) {
+            final String sessionId = videoConferenceManager.createSession();
+            session.updateSessionId(sessionId);
+            sessionRedisRepository.save(session);
+        }
+        final String token = videoConferenceManager.createConnection(session.getSessionId());
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
         sessionMember.addMember(member.getId());
         sessionMemberRedisRepository.save(sessionMember);
@@ -118,9 +121,7 @@ public class SessionService {
         }
     }
 
-
     public enterSessionResponse getEnterSession(String pinNumber) {
-
         Long partyId = partyRepository.findPartyIdByPinNumber(pinNumber)
                 .orElseThrow(() -> new MoaException(INVALID_REQUEST));
 
@@ -128,10 +129,8 @@ public class SessionService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-
         long scheduleId = scheduleRepository.findTodayScheduleIdByPartyId(partyId, startOfDay, endOfDay)
                 .orElseThrow(() -> new MoaException(SCHEDULE_NOT_FOUND));
         return new enterSessionResponse(partyId, scheduleId);
-
     }
 }

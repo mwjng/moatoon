@@ -36,7 +36,7 @@ public class SessionStageService {
     private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final SessionMailService sessionMailService;
-    @Qualifier("messageBrokerTaskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
+    @Qualifier("taskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
@@ -144,6 +144,7 @@ public class SessionStageService {
                     log.info("타이머 완료!!!");
                     if(expectedStage == FullSessionStage.DONE) {
                         handleUncompletedQuizMembers(scheduleId);
+                        scheduleRepository.completeScheduleById(scheduleId);
                     }else {
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);

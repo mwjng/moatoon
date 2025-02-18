@@ -15,14 +15,14 @@ import { fetchCutsInfo } from '../../store/cutsSlice';
 const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
 
 function WaitingRoom({
-   bookInfo,
-   scheduleId,
-   sessionTime,
-   serverTime,
-   sessionDuration,
-   publisher,
-   subscribers,
-   nickname,
+    bookInfo, // {partyId, bookTitle, bookCover, cuts: Array(4)}
+    scheduleId,
+    sessionTime,
+    serverTime,
+    sessionDuration,
+    publisher,
+    subscribers,
+    nickname,
 }) {
    console.log(bookInfo);
    const dispatch = useDispatch();
@@ -49,7 +49,7 @@ function WaitingRoom({
    };
 
    return (
-       <div className="h-screen bg-custom-blue flex flex-col overflow-hidden">
+       <div className="min-h-screen bg-custom-blue flex flex-col overflow-hidden">
            <AudioPlayer audioType="WAITING" />
            <Navigation
                stage={'waiting'}

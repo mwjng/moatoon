@@ -118,11 +118,10 @@ const DayCell = ({ day, isToday, dayIndex, selectedMember, formatTime }) => {
     <div
       className={`min-h-16 p-1.5 border-b border-r relative
         ${!day.isCurrentMonth ? 'text-gray-300 bg-gray-50' : ''}
-        ${dayIndex === 0 && day.isCurrentMonth ? 'text-red-500' : ''}
         ${isToday ? 'bg-blue-50' : ''}
       `}
     >
-      <div className={`text-xs mb-1 ${isToday ? 'font-bold text-blue-600' : ''}`}>
+      <div className={`text-xs mb-1 ${isToday ? 'font-bold text-blue-600' : ''} ${dayIndex === 0 ? 'text-red-500' : ''}`}>
         {day.date.getDate()}
       </div>
       <div className="space-y-1">
@@ -371,7 +370,7 @@ const ManagerMainPage = () => {
                   <select
                     value={selectedMember}
                     onChange={(e) => setSelectedMember(e.target.value)}
-                    className="border rounded p-1 text-sm"
+                    className="border rounded p-1 text-sm bg-white"
                   >
                     <option value="all">전체 보기</option>
                     {scheduleData.childrenSchedules.map(member => (
@@ -449,7 +448,7 @@ const ManagerMainPage = () => {
           </div>
         </div>
       </div>
-      <div className="flex-1 bg-light-blue1 flex items-center justify-center">
+      <div className="h-[400px] bg-light-blue1 flex items-center justify-center">
         <ManagerBookParticipationSection
           childrenList={userInfo.childrenList}
         />

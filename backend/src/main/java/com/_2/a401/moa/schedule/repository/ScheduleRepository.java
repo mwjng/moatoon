@@ -1,6 +1,7 @@
 package com._2.a401.moa.schedule.repository;
 
 import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.schedule.domain.Schedule;
 import com._2.a401.moa.schedule.domain.ScheduleState;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -85,7 +86,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<ScheduleInfo> findBeforeAndOngoingSchedules(@Param("memberId") Long memberId);
 
     @Query(value = "SELECT s.party_id, s.episode_number " +
-            "FROM Schedule s " +
+            "FROM schedule s " +
             "WHERE s.id = :scheduleId", nativeQuery = true)
     Optional<ScheduleInfoResponse> getScheduleInfo(@Param("scheduleId") Long scheduleId);
 
@@ -107,4 +108,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query(value = "SELECT s.id, s.party_id FROM schedule s WHERE s.id IN :scheduleIds", nativeQuery = true)
     List<Object[]> findPartyIdsByScheduleIds(@Param("scheduleIds") List<Long> scheduleIds);
+
+    List<Schedule> findAllByParty(Party party);
 }
