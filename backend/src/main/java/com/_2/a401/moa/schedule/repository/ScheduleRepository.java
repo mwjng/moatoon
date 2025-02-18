@@ -37,6 +37,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                                                      LocalDateTime thirtyMinutesLater,
                                                      ScheduleState scheduleState);
 
+    List<Schedule> findBySessionTimeLessThanEqualAndStatusNot(LocalDateTime thirtyMinutesBefore,
+                                                              ScheduleState scheduleState);
+
     @Modifying
     @Query("UPDATE Schedule schedule " +
             "SET schedule.status = :scheduleState " +

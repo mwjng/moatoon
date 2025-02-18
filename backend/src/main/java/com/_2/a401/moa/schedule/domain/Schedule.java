@@ -40,4 +40,8 @@ public class Schedule {
     public boolean isActive() {
         return ONGOING.equals(status);
     }
+
+    public void endSchedule() {
+        status = ScheduleState.DONE;
+    }
 }
