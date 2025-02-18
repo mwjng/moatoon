@@ -176,9 +176,9 @@ public class SessionStageService {
 
         if (currentStage != FullSessionStage.DONE) {
             setEndTimeTimer(
-                    scheduleId,
-                    startTime.plusSeconds(currentStage.getDuration()),
-                    currentStage
+                    scheduleId, // 스케줄 아이디
+                    startTime.plusSeconds(currentStage.getDuration()), // 타이머가 끝났으면 하는 시간
+                    currentStage // 타이머를 호출하는 현재 시점의 단계
             );
         }
     }
