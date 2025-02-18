@@ -4,8 +4,6 @@ import base64 from 'base-64';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
 
-const APPLICATION_SERVER_URL = 'http://localhost:8080/schedules';
-
 const useOpenViduSession = () => {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
@@ -64,7 +62,7 @@ const useOpenViduSession = () => {
 
     const leaveSession = async scheduleId => {
         if (session) {
-            await axios.delete(`${APPLICATION_SERVER_URL}/${scheduleId}/session/leave`, {
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${scheduleId}/session/leave`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             session.disconnect();
