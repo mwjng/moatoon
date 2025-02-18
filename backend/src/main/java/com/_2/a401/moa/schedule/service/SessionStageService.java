@@ -2,6 +2,8 @@ package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.cut.service.CutService;
+import com._2.a401.moa.cut.service.DrawingService;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
@@ -38,6 +40,7 @@ public class SessionStageService {
     private final SessionMailService sessionMailService;
     @Qualifier("taskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
     private final TaskScheduler taskScheduler;
+    private final DrawingService drawingService;
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
         final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
@@ -146,6 +149,9 @@ public class SessionStageService {
                         handleUncompletedQuizMembers(scheduleId);
                         scheduleRepository.completeScheduleById(scheduleId);
                     }else {
+                        if(expectedStage == FullSessionStage.DRAWING) {
+                            drawingService.exportSVG(scheduleId);
+                        }
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
                         FullSessionStage currentStage = session.getSessionStage();

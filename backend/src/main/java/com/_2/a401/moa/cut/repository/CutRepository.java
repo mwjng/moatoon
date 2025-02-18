@@ -3,6 +3,7 @@ package com._2.a401.moa.cut.repository;
 import com._2.a401.moa.cut.domain.Cut;
 import com._2.a401.moa.cut.dto.response.CutInfoResponse;
 import com._2.a401.moa.party.domain.Party;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,7 @@ import java.util.List;
 public interface CutRepository extends JpaRepository<Cut, Long> {
 
     @Modifying
+    @Transactional
     @Query(value = "UPDATE cut c SET c.image_url=:cutFileUrl WHERE c.id=:cutId"
     , nativeQuery = true)
     void savePictureByCutId(String cutFileUrl, Long cutId);

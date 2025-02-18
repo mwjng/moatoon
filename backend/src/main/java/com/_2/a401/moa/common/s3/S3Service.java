@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,10 +80,38 @@ public class S3Service {
         } catch (IOException e) {
             throw new RuntimeException("DALL-E 이미지 다운로드 및 업로드 실패", e);
         }
+
     }
 
+    public String uploadSvgString(String svgString) {
+        // SVG 문자열을 InputStream으로 변환
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(svgString.getBytes());
 
+        // 파일명 생성
+        String fileName = generateFileNameForSvg();
 
+        // S3에 SVG 파일 업로드
+        try {
+            s3Client.putObject(
+                    PutObjectRequest.builder()
+                            .bucket(bucket)
+                            .key(fileName)
+                            .contentType("image/svg+xml") // SVG 파일임을 지정
+                            .build(),
+                    RequestBody.fromInputStream(inputStream, svgString.length()) // InputStream과 파일 크기 지정
+            );
 
+            // S3 URL 생성
+            return "https://" + bucket + ".s3.amazonaws.com/" + fileName;
+
+        } catch (Exception e) {
+            throw new RuntimeException("SVG 업로드 실패", e);
+        }
+    }
+
+    // 파일명 생성
+    private String generateFileNameForSvg() {
+        return "svg-" + UUID.randomUUID() + ".svg";
+    }
 
 }
