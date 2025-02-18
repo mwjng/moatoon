@@ -28,7 +28,7 @@ import SessionContainer from './pages/session/SessionContainer';
 import EBookPage from './pages/EBookPage';
 import LibraryPage from './pages/library/LibraryPage';
 import RandomPage from './pages/RandomPage';
-import QuizEndPage from './pages/session/QuizEndPage';
+import SessionErrorPage from './pages/session/SessionErrorPage';
 
 function App() {
     const location = useLocation();
@@ -135,6 +135,7 @@ function App() {
                         <Route path="quiz" element={<QuizPage />} />
                         <Route path="learning" element={<WordLearning />} />
                     </Route>
+                    <Route path="/session-error" element={<SessionErrorPage/>}></Route>
                     <Route path="library" element={<LibraryPage />} />
                     <Route path="ebook/:partyId" element={<EBookPage />} />
                     <Route path="word">
