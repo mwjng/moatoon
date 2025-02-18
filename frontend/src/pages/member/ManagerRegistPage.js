@@ -29,7 +29,8 @@ export default function ManagerRegistPage() {
     const [registState, setRegistState] = useState([
         {
             id: 'loginId',
-            value: '아이디',
+            placeholder: '아이디',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -37,7 +38,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'email',
-            value: '이메일',
+            placeholder: '이메일',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -45,7 +47,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'emailCode',
-            value: '인증번호',
+            placeholder: '인증번호',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -53,7 +56,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'password',
-            value: '비밀번호',
+            placeholder: '비밀번호',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -61,7 +65,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'confirmPassword',
-            value: '비밀번호 확인',
+            placeholder: '비밀번호 확인',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -69,7 +74,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'name',
-            value: '이름',
+            placeholder: '이름',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -77,7 +83,8 @@ export default function ManagerRegistPage() {
         },
         {
             id: 'nickname',
-            value: '닉네임',
+            placeholder: '닉네임',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -86,15 +93,20 @@ export default function ManagerRegistPage() {
     ]);
 
     useEffect(() => {
+        setRegistState(prevState =>
+            prevState.map(input =>
+                input.id === 'emailCode' ? { ...input, value: input.value.replace(/\D/g, '') } : input,
+            ),
+        );
+    }, [registState.find(input => input.id === 'emailCode')?.value]);
+    useEffect(() => {
         const password = registState.find(input => input.id === 'password')?.value || '';
         const confirmPassword = registState.find(input => input.id === 'confirmPassword')?.value || '';
 
         let comment = '';
         let cmtColor = '#FF0000';
 
-        if (password == '비밀번호' && confirmPassword == '비밀번호 확인') {
-            comment = '';
-        } else if (!confirmPassword) {
+        if (!confirmPassword) {
             comment = '비밀번호 확인 값을 입력해주세요.';
         } else if (password === confirmPassword) {
             comment = '비밀번호가 일치합니다.';
@@ -136,7 +148,9 @@ export default function ManagerRegistPage() {
                     } else if (key === 'password') {
                         validatePassword(value);
                     } else if (key === 'emailCode') {
-                        value = value.replace(/[^0-9]/g, '');
+                        if (value.length > 8) {
+                            comment = '인증번호를 확인해주세요.';
+                        }
                     }
                     return { ...input, value, comment, cmtColor: comment ? '#FF0000' : '#009951' };
                 }
@@ -146,12 +160,11 @@ export default function ManagerRegistPage() {
     };
 
     const checkDuplicate = async loginId => {
-        if (loginId.length > 20) {
+        if (loginId.length > 20 || !loginId) {
             setModalText('아이디 값을 확인해주세요.');
             setModalState(true);
             return;
         }
-        if (!loginId) return;
 
         try {
             const res = await loginIdCheck(loginId);
@@ -301,11 +314,19 @@ export default function ManagerRegistPage() {
         }
     };
     const checkCode = async () => {
+        if (!isTimer) {
+            setModalText('이메일 인증을 진행해주세요.');
+            setModalState(true);
+            return;
+        }
+        const code = registState.find(input => input.id === 'emailCode').value;
+        if (!code || code == '인증번호') {
+            setModalText('인증번호를 입력해주세요.');
+            setModalState(true);
+            return;
+        }
         try {
-            const res = await checkEmailCode(
-                registState.find(input => input.id === 'email').value,
-                registState.find(input => input.id === 'emailCode').value,
-            );
+            const res = await checkEmailCode(registState.find(input => input.id === 'email').value, code);
             if (res.status == 200) {
                 setCodeCheck(true);
                 setModalText('인증이 완료되었습니다.');
@@ -316,8 +337,11 @@ export default function ManagerRegistPage() {
             if (error.response.data.code == 4016) {
                 setModalText('잘못된 인증번호입니다.');
                 setModalState(true);
-            } else if (error.status == 400) {
+            } else if (error.status == 400 && count == 0) {
                 setModalText('인증시간이 만료되었습니다.');
+                setModalState(true);
+            } else {
+                setModalText('잠시 후 다시 시도해주세요.');
                 setModalState(true);
             }
             console.error('아이디 중복 확인 오류:', error);

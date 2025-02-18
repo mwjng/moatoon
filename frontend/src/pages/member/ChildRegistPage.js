@@ -20,7 +20,8 @@ export default function ChildRegistPage() {
     const [registState, setRegistState] = useState([
         {
             id: 'loginId',
-            value: '아이디',
+            placeholder: '아이디',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -28,7 +29,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'password',
-            value: '비밀번호',
+            placeholder: '비밀번호',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -36,7 +38,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'confirmPassword',
-            value: '비밀번호 확인',
+            placeholder: '비밀번호 확인',
+            value: '',
             type: 'password',
             required: true,
             comment: '',
@@ -44,7 +47,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'name',
-            value: '이름',
+            placeholder: '이름',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -52,7 +56,8 @@ export default function ChildRegistPage() {
         },
         {
             id: 'nickname',
-            value: '닉네임',
+            placeholder: '닉네임',
+            value: '',
             type: 'text',
             required: true,
             comment: '',
@@ -66,9 +71,7 @@ export default function ChildRegistPage() {
         let comment = '';
         let cmtColor = '#FF0000';
 
-        if (password == '비밀번호' && confirmPassword == '비밀번호 확인') {
-            comment = '';
-        } else if (!confirmPassword) {
+        if (!confirmPassword) {
             comment = '비밀번호 확인 값을 입력해주세요.';
         } else if (password === confirmPassword) {
             comment = '비밀번호가 일치합니다.';
@@ -143,12 +146,11 @@ export default function ChildRegistPage() {
     };
 
     const checkDuplicate = async loginId => {
-        if (loginId.length > 20) {
+        if (loginId.length > 20 || !loginId) {
             setModalText('아이디 값을 확인해주세요.');
             setModalState(true);
             return;
         }
-        if (!loginId) return;
 
         try {
             const res = await loginIdCheck(loginId);
