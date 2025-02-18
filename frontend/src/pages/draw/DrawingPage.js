@@ -4,11 +4,10 @@ import { fetchCutsInfo } from '../../store/cutsSlice';
 import Overview from '../../components/draw/Overview';
 import Drawing from '../../components/draw/Drawing';
 import Navigation from '../../components/Navigation';
-import { useNavigate, useParams } from 'react-router';
 import Loading from '../../components/Loading';
-import { useSession } from '../../hooks/SessionProvider';
 import { authInstance } from '../../api/axios';
 import { setLines } from '../../store/canvasSlice';
+import TimeNotification from '../../components/time/TimeNotification';
 
 const DrawingPage = ({
     scheduleId,
@@ -31,7 +30,29 @@ const DrawingPage = ({
     const [isLoading, setIsLoading] = useState(false);
     const [isFirstDrawingVisit, setIsFirstDrawingVisit] = useState(true);
     const [isFirstOverviewVisit, setIsFirstOverviewVisit] = useState(true);
+    const [timeNotification, setTimeNotification] = useState(null);
     const drawingRef = useRef(null);
+
+    const handleTimeNotification = (timeLeft) => {
+        let message = '';
+        
+        if (timeLeft === 'TEN_LEFT') {
+            message = '10분 남았어!';
+        } else if (timeLeft === 'FIVE_LEFT') {
+            message = '5분 남았어!';
+        } else if (timeLeft === 'ONE_LEFT') {
+            message = '1분 남았어!';
+        }
+        
+        if (message) {
+            setTimeNotification(message);
+            
+            // 10초 후에 알림 제거
+            setTimeout(() => {
+                setTimeNotification(null);
+            }, 10000);
+        }
+    };
 
     const toggleView = () => {
         setIsDrawing(prev => !prev);
@@ -94,6 +115,7 @@ const DrawingPage = ({
             <div className="w-full mb-5">
                 <Navigation
                     stage="drawing"
+                    onTimeNotification={handleTimeNotification}
                     stageDuration={sessionStageData.sessionDuration}
                     sessionStartTime={sessionStageData.sessionStartTime}
                     serverTime={sessionStageData.serverTime}
@@ -139,6 +161,7 @@ const DrawingPage = ({
                     SVG 내보내기 확인
                 </button>
             </div> */}
+            {timeNotification && <TimeNotification message={timeNotification} />}
         </div>
     );
 };

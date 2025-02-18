@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import base64 from 'base-64';
+import utf8 from 'utf8';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
@@ -17,7 +18,7 @@ const useOpenViduSession = () => {
         if (accessToken) {
             try {
                 const payloadBase64 = accessToken.split('.')[1];
-                const decodedPayload = JSON.parse(base64.decode(payloadBase64));
+                const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
                 setNickname(decodedPayload.nickname || '게스트');
             } catch (error) {
                 console.error('JWT 파싱 에러', error);
