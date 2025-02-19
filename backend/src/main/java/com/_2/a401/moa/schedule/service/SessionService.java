@@ -1,10 +1,7 @@
 package com._2.a401.moa.schedule.service;
 
-import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
 import com._2.a401.moa.member.domain.Member;
-import com._2.a401.moa.party.domain.Party;
-import com._2.a401.moa.party.domain.PartyKeyword;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
 import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.schedule.domain.Schedule;
@@ -64,7 +61,7 @@ public class SessionService {
         sessionMemberRedisRepository.save(sessionMember);
     }
 
-    public synchronized void close(final Long scheduleId) {
+    public void close(final Long scheduleId) {
         scheduleRepository.validateExistsById(scheduleId);
         scheduleRepository.completeScheduleById(scheduleId);
 
