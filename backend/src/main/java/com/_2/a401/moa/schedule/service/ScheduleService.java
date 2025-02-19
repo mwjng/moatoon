@@ -66,7 +66,7 @@ public class ScheduleService {
         ScheduleInfo firstSchedule = schedules.get(0);
 
         log.info("첫 일정의 날짜: {}", firstSchedule.getSessionTimeAsLocalDateTime());
-        log.info("오늘의 날짜: {}", LocalDate.now());
+        log.info("오늘의 날짜: {}", LocalDateTime.now().plusHours(9));
         boolean isTodaySchedule = isToday(firstSchedule.getSessionTimeAsLocalDateTime());
         log.info("처음 일정이 오늘인가?: {}", isTodaySchedule);
 
@@ -136,6 +136,6 @@ public class ScheduleService {
     }
 
     private boolean isToday(LocalDateTime dateTime) {
-        return dateTime.toLocalDate().equals(LocalDate.now());
+        return dateTime.toLocalDate().equals(LocalDateTime.now().plusHours(9).toLocalDate());
     }
 }
