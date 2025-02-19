@@ -202,7 +202,6 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
         SATURDAY: '토',
         SUNDAY: '일',
     };
-
     if (loading) return <div className="loading loading-spinner loading-lg"></div>;
     if (error) return <div className="text-red-600">오류가 발생했습니다: {error}</div>;
 
