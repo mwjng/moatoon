@@ -78,7 +78,7 @@ const Drawing = forwardRef(
                     <div className="w-72 mr-5">
                         <div className="rounded-lg overflow-hidden mb-4">
                             {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
-                            <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" />
+                            <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" small/>
                             <WordButton onClick={viewEbook} color="bg-dark-yellow w-full mt-5" size="md">
                                 지난 이야기 전체 보기
                             </WordButton>

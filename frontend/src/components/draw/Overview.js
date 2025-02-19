@@ -30,10 +30,10 @@ const Overview = ({
             <AudioPlayer audioType="FULLCUT" isOn={isFirstOverviewVisit} />
             <div className="flex p-5">
                 <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto ml-0 self-start">
+                    <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
                         <SubscriberVideo key={index} streamManager={subscriber} />
                     ))}
-                    <MyCamera streamManager={publisher} nickname={nickname} />
                 </div>
                 <div className="flex flex-col items-center ml-24">
                     <CanvasGrid partyId={partyId} cutIds={cutIds} toggleView={toggleView} cutsInfo={cutsInfo} readyStatusResponse = {readyStatusResponse} />
