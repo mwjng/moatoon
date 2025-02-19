@@ -16,11 +16,12 @@ import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -31,6 +32,7 @@ import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_PARTY;
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class SessionStageService {
 
@@ -43,26 +45,8 @@ public class SessionStageService {
     private final TaskScheduler taskScheduler;
     private final DrawingService drawingService;
     private final PartyRepository partyRepository;
-
-    public SessionStageService(final SessionRedisRepository sessionRedisRepository,
-                               final SessionMemberRedisRepository sessionMemberRedisRepository,
-                               final PartyMemberRepository partyMemberRepository,
-                               final ScheduleRepository scheduleRepository,
-                               final SimpMessagingTemplate messagingTemplate,
-                               final SessionMailService sessionMailService,
-                               @Qualifier("taskScheduler") final TaskScheduler taskScheduler,
-                               final DrawingService drawingService,
-                               final PartyRepository partyRepository) {
-        this.sessionRedisRepository = sessionRedisRepository;
-        this.sessionMemberRedisRepository = sessionMemberRedisRepository;
-        this.partyMemberRepository = partyMemberRepository;
-        this.scheduleRepository = scheduleRepository;
-        this.messagingTemplate = messagingTemplate;
-        this.sessionMailService = sessionMailService;
-        this.taskScheduler = taskScheduler;
-        this.drawingService = drawingService;
-        this.partyRepository = partyRepository;
-    }
+    private final SessionService sessionService;
+    private final TransactionTemplate transactionTemplate;
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
         final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
@@ -249,29 +233,27 @@ public class SessionStageService {
         // 1. 퀴즈 참여 안한 인원에게 메일 보냄
         handleUncompletedQuizMembers(scheduleId);
 
-        // TODO: 2~3번이 동시에 일어나야해서 @Transactional을 넣고 싶었는데, handleSessionDone을 이 클래스에서 호출해서 못 넣었음..
-        // 2. Schedule 상태 변경
-        scheduleRepository.completeScheduleById(scheduleId); // Schedule의 status를 DONE으로 변경
+        transactionTemplate.execute(tx -> {
+            sessionService.close(scheduleId);
 
-        // 3. Party 상태 변경
-        scheduleRepository.findPartyIdById(scheduleId)
-            .ifPresent(partyId -> { // schedule_id로 party_id 찾아옴
+            // 3. Party 상태 변경
+            scheduleRepository.findPartyIdById(scheduleId)
+                .ifPresent(partyId -> { // schedule_id로 party_id 찾아옴
 
-                // Party의 progerss_count를 1 증가시키기, 만약 마지막 세션이었다면 1증가가 아니라 DONE으로 변경
-                Party party = partyRepository.findById(partyId)
+                    // Party의 progerss_count를 1 증가시키기, 만약 마지막 세션이었다면 1증가가 아니라 DONE으로 변경
+                    Party party = partyRepository.findById(partyId)
                         .orElseThrow(() -> new MoaException(INVALID_PARTY));
 
-                // Party 진행도 증가
-                party.setProgressCount(party.getProgressCount()+1);
+                    // Party 진행도 증가
+                    party.setProgressCount(party.getProgressCount()+1);
 
-                // 마지막 세션이면 Party 상태를 DONE으로 변경
-                if (party.getProgressCount() >= party.getEpisodeCount()) {
-                    party.setStatus(PartyState.DONE);
-                }
-
-                partyRepository.save(party); // 더티체킹 못해서 명시적 save 함.
-            });
-
+                    // 마지막 세션이면 Party 상태를 DONE으로 변경
+                    if (party.getProgressCount() >= party.getEpisodeCount()) {
+                        party.setStatus(PartyState.DONE);
+                    }
+                });
+            return null;
+        });
     }
 
 }
