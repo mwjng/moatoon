@@ -39,8 +39,6 @@ const BookStoryGenerator = ({
 
     const fetchWords = async () => {
         try {
-            
-
             const data = await fetchRandomWords(difficulty, episodeLength);
             if (!data || !data.words || data.words.length === 0) {
                 throw new Error('단어를 가져오는 데 실패했습니다.');
@@ -73,9 +71,10 @@ const BookStoryGenerator = ({
         }
     }, [words]);
 
-    const wordListWithId = words.map((w, idx) => `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`).join('\n');
+  
 
     const generateStory = async () => {
+
         const payload = {
             startDate,
             episodeLength,
@@ -364,7 +363,8 @@ const BookStoryGenerator = ({
                     <div className="flex justify-center gap-3">
                         <button
                             onClick={() => {
-                                generateStory();
+                                // generateStory();
+                                fetchWords();
                                 // setRegenerateCount(prev => prev + 1);
                             }}
                             disabled={isGenerating || regenerateCount >= 3}
