@@ -52,7 +52,7 @@ public class SessionStageService {
                                final SessionMailService sessionMailService,
                                @Qualifier("taskScheduler") final TaskScheduler taskScheduler,
                                final DrawingService drawingService,
-                               PartyRepository partyRepository) {
+                               final PartyRepository partyRepository) {
         this.sessionRedisRepository = sessionRedisRepository;
         this.sessionMemberRedisRepository = sessionMemberRedisRepository;
         this.partyMemberRepository = partyMemberRepository;
