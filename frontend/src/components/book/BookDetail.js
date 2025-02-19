@@ -7,7 +7,7 @@ import ConfirmModal from '../common/ConfirmModal';
 import defaultProfileImage from '../../assets/duckduck.png';
 import { useNavigate } from 'react-router-dom';
 
-const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate}) => {
+const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) => {
     const navigate = useNavigate();
     const [partyDetails, setPartyDetails] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate}) =>
     const getRemainingTime = () => {
         if (!partyDetails) return 0;
         const start = new Date(partyDetails.startDate);
-        start.setHours(start.getHours() + 9);
+        start.setHours(start.getHours());
         const now = new Date();
         return (start.getTime() - now.getTime()) / (1000 * 60 * 60);
     };
@@ -234,9 +234,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate}) =>
                     </span>
                     <span className="text-sm">
                         시간:{' '}
-                        {new Date(
-                            new Date(partyDetails.startDate).setHours(new Date(partyDetails.startDate).getHours() + 9),
-                        ).toLocaleTimeString('ko-KR', {
+                        {new Date(partyDetails.startDate).toLocaleTimeString('ko-KR', {
                             hour: '2-digit',
                             minute: '2-digit',
                             hour12: false,

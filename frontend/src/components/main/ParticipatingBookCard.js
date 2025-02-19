@@ -6,7 +6,7 @@ const ParticipatingBookCard = ({ item, onClick }) => {
     
     try {
       const date = new Date(dateString);
-      date.setHours(date.getHours() + 9);
+      date.setHours(date.getHours());
       
       if (isNaN(date.getTime())) return null;
       
