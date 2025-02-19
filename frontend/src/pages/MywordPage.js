@@ -125,7 +125,7 @@ const MyWordPage = () => {
                 ) : (
                     <div className="flex z-0 items-center">
                         <img src={bracketLeft} alt="" className="h-[120px] p-4 cursor-pointer" onClick={handlePrev} />
-                        <div className="relative z-10 p-4 gap-4 flex ">
+                        <div className="relative z-5 p-4 gap-4 flex ">
                             {words.map((word, index) => (
                                 <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
                             ))}

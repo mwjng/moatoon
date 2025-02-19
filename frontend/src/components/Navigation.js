@@ -171,7 +171,7 @@ function Navigation({
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산 (밀리초)
                 const totalDuration = stageDuration * SECOND; // 현재 스테이지에 주어진 전체 시간 (밀리초)
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산 (밀리초)
-                
+
                 // 새로 추가된 1분 알림 로직
                 if (
                     stage === 'waiting' &&
@@ -240,7 +240,7 @@ function Navigation({
                     {timeThresholds.oneMinute && <AudioPlayer audioType="ONE_LEFT" />}
                 </>
             )}
-            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[3]">
+            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[11]">
                 {stage ? (
                     <div className="flex flew-row justify-between py-4 px-10 items-center">
                         {stage === 'waiting' ? (
@@ -254,7 +254,7 @@ function Navigation({
                                         {/* sessionStartTime이 세션의 시작시간이 아니라 대기방 시작시간입니니다! 
                                             오늘의 일정 : (대기방 시작시간 + 대기방 대기시간) ~ (대기방 시작시간 + 대기방 대기시간 + 30분)*/}
                                         오늘의 일정 : {getTimeFormatted(addSeconds(sessionStartTime, stageDuration))} ~{' '}
-                                        {getTimeFormatted(addSeconds(sessionStartTime, stageDuration+30*60))}
+                                        {getTimeFormatted(addSeconds(sessionStartTime, stageDuration + 30 * 60))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">
