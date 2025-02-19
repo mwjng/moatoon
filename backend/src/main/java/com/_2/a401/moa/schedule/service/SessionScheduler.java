@@ -79,6 +79,20 @@ public class SessionScheduler {
         scheduleRepository.bulkUpdateScheduleStatus(scheduleIds, ONGOING);
     }
 
+    @Scheduled(cron = "0 25,55 * * * *")
+    public void garbageCollectSession() {
+        LocalDateTime now = now();
+        LocalDateTime thirtyMinutesBefore = now.minusMinutes(30);
+        log.info("SessionScheduler.garbageCollectSession - thirtyMinutesBefore: {}", thirtyMinutesBefore);
+
+        final List<Schedule> garbageSessions = scheduleRepository.findBySessionTimeLessThanEqualAndStatusNot(thirtyMinutesBefore, ScheduleState.DONE);
+        for (Schedule schedule : garbageSessions) {
+            log.info("SessionScheduler.garbageCollectSession - garbage collect schedule: {}", schedule.getId());
+
+            schedule.endSchedule();
+        }
+    }
+
     public void divideCut(List<Party> upcomingParties) {
 
         for (Party party : upcomingParties) {

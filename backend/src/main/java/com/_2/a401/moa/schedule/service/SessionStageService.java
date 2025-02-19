@@ -28,19 +28,37 @@ import java.util.Map;
 
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 
-@RequiredArgsConstructor
-@Service
 @Slf4j
+@Service
 public class SessionStageService {
+
     private final SessionRedisRepository sessionRedisRepository;
     private final SessionMemberRedisRepository sessionMemberRedisRepository;
     private final PartyMemberRepository partyMemberRepository;
     private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final SessionMailService sessionMailService;
-    @Qualifier("taskScheduler")  // WebSocket의 TaskScheduler 사용 - TaskScheduler 빈 충돌 해결용
+    @Qualifier("taskScheduler")
     private final TaskScheduler taskScheduler;
     private final DrawingService drawingService;
+
+    public SessionStageService(final SessionRedisRepository sessionRedisRepository,
+                               final SessionMemberRedisRepository sessionMemberRedisRepository,
+                               final PartyMemberRepository partyMemberRepository,
+                               final ScheduleRepository scheduleRepository,
+                               final SimpMessagingTemplate messagingTemplate,
+                               final SessionMailService sessionMailService,
+                               @Qualifier("taskScheduler") final TaskScheduler taskScheduler,
+                               final DrawingService drawingService) {
+        this.sessionRedisRepository = sessionRedisRepository;
+        this.sessionMemberRedisRepository = sessionMemberRedisRepository;
+        this.partyMemberRepository = partyMemberRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.sessionMailService = sessionMailService;
+        this.taskScheduler = taskScheduler;
+        this.drawingService = drawingService;
+    }
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
         final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
