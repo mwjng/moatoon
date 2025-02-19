@@ -167,9 +167,9 @@ function Navigation({
             // 타이머 초기화
             const updateRemainTime = () => {
                 const sessionStartTimestamp = new Date(sessionStartTime).getTime();
-                const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산
-                const totalDuration = (stageDuration / 60) * MINUTE; // 현재 스테이지에 주어진 전체 시간
-                let remaining = totalDuration - elapsedTime; // 남은 시간 계산
+                const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산 (밀리초)
+                const totalDuration = stageDuration * SECOND; // 현재 스테이지에 주어진 전체 시간 (밀리초)
+                let remaining = totalDuration - elapsedTime; // 남은 시간 계산 (밀리초)
 
                 // 새로 추가된 1분 알림 로직
                 if (
@@ -189,7 +189,7 @@ function Navigation({
                         timeoutNotEvented = false;
                     }
                 }
-                let percent = (remaining / (stageDuration * MINUTE)) * 100;
+                let percent = (remaining / stageDuration) * 100;
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);
