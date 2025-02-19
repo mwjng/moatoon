@@ -20,9 +20,7 @@ const WordModal = ({ word, onClose }) => {
                 {/* Title Section with enhanced emphasis */}
                 <div className="pt-12 pb-6 px-12 flex justify-center">
                     <div className="relative inline-block">
-                        <h1 className="text-[42px] font-bold text-gray-800 relative z-10">
-                            {word.word}
-                        </h1>
+                        <h1 className="text-[42px] font-bold text-gray-800 relative z-10">{word.word}</h1>
                         <div className="absolute -bottom-2 left-0 w-full h-4 bg-yellow-200/60 -rotate-1" />
                     </div>
                 </div>
@@ -32,12 +30,14 @@ const WordModal = ({ word, onClose }) => {
                     {/* Meaning Section */}
                     <div className="mb-8">
                         <h2 className="font-bold text-2xl text-gray-700 mb-4 flex items-center">
-                            <div className="w-1.5 h-7 bg-purple-400 rounded-full mr-2"></div>
-                            뜻
+                            <div className="w-1.5 h-7 bg-purple-400 rounded-full mr-2"></div>뜻
                         </h2>
                         <div className="space-y-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 shadow-inner">
                             {filteredMeaning.map((line, index) => (
-                                <p key={index} className="text-xl text-gray-600 leading-relaxed pl-2 border-l-2 border-purple-200">
+                                <p
+                                    key={index}
+                                    className="text-xl text-gray-600 leading-relaxed pl-2 border-l-2 border-purple-200"
+                                >
                                     {line.trim()}
                                 </p>
                             ))}
@@ -57,15 +57,15 @@ const WordModal = ({ word, onClose }) => {
                                     <p className="text-xl text-gray-600 leading-relaxed group-hover:text-gray-800 transition-colors">
                                         {example.split(/(\*.*?\*)/).map((part, idx) =>
                                             part.startsWith('*') && part.endsWith('*') ? (
-                                                <span 
-                                                    key={idx} 
+                                                <span
+                                                    key={idx}
                                                     className="font-bold text-gray-800 bg-yellow-100 rounded px-1.5 py-0.5"
                                                 >
                                                     {part.slice(1, -1)}
                                                 </span>
                                             ) : (
                                                 part
-                                            )
+                                            ),
                                         )}
                                     </p>
                                 </div>
