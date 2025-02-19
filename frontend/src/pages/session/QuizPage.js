@@ -111,7 +111,7 @@ const QuizPage = ({partyId, scheduleId, onChangeStage}) => {
             <AudioPlayer audioType="QUIZ" />
             <Navigation 
                 stage={'quiz'} 
-                stageDuration={60*1}
+                stageDuration={60*5}
                 sessionStartTime={sessionStart}
                 serverTime={sessionStart}
                 onTimeOut={handleTimeOut} 
