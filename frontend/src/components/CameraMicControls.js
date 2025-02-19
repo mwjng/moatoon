@@ -97,6 +97,8 @@ function CameraMicControls({ publisher, small }) {
                 <span className="mt-1 text-sm">{micText}</span>
             </button>
             {small ? (
+                <></>
+            ) : (
                 <button onClick={toggleGuide} className="flex flex-col items-center justify-center text-black p-1">
                     <img src={guideIcon} alt="guide-icon" className="w-8 h-8" />
                     <span className="mt-1 text-sm">
@@ -106,8 +108,6 @@ function CameraMicControls({ publisher, small }) {
                     </span>
                     <span className="mt-1 text-sm">{guideText}</span>
                 </button>
-            ) : (
-                <></>
             )}
         </div>
     );
