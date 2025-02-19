@@ -197,11 +197,14 @@ public class SessionStageService {
 
     // 외부(WaitingRoom)에서 호출할  최초 타이머(대기방에서 10분 뒤 울릴 알람) 설정
     public void setWaitingRoomTimer(Long scheduleId) {
+        log.info("SessionStageService.setWaitingRoomTimer");
         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
         FullSessionStage currentStage = session.getSessionStage();
         LocalDateTime startTime = session.getStartTime();
+        log.info("일정 {} - 단계:{}, 시작시간:{}", scheduleId, currentStage, startTime);
 
         if (currentStage != FullSessionStage.DONE) {
+            log.info("일정 {}의 타이머를 {}로 설정", scheduleId, startTime.plusSeconds(currentStage.getDuration()));
             setEndTimeTimer(
                     scheduleId, // 스케줄 아이디
                     startTime.plusSeconds(currentStage.getDuration()), // 타이머가 끝났으면 하는 시간

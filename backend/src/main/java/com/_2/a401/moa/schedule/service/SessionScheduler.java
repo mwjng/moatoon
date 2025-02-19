@@ -45,20 +45,25 @@ public class SessionScheduler {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void createSession() {
+        log.info("SessionScheduler.createSession");
         LocalDateTime now = now();
+        log.info("현재 시간: {}", now);
         LocalDateTime thirtyMinutesLater = now.plusMinutes(30);
+        log.info("현재 시간 + 30분: {}", thirtyMinutesLater);
         final List<Schedule> schedules = scheduleRepository.findBySessionTimeBetweenAndStatus(now(), thirtyMinutesLater, ScheduleState.BEFORE);
         final List<Party> upcomingParties = partyRepository.findPartiesStartingSoon(now, thirtyMinutesLater);
 
         if(!upcomingParties.isEmpty()) {
+            log.info("upComingParties 있음");
             divideCut(upcomingParties);
         }
 
         if(schedules.isEmpty()) {
+            log.info("시작할 일정 없음");
             return;
         }
         for (Schedule schedule : schedules) {
-            log.info("schedule: {}", schedule.getId());
+            log.info("Redis에 저장할 일정: {}", schedule.getId());
 
             // Redis에 저장
             final Session session = new Session(
@@ -67,10 +72,13 @@ public class SessionScheduler {
                     WAITING,
                     schedule.getSessionTime().plusHours(9).minusSeconds(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
             );
+
+            log.info("Redis에 저장된 일정: {}", session.toString());
             sessionRedisRepository.save(session);
             sessionMemberRedisRepository.save(new SessionMember(schedule.getId()));
 
             // 세션 시작 후, 10분뒤 다음 단계로 넘어가기 위한 타이머 설정
+            log.info("일정 {}의 타이머 설정", schedule.getId());
             sessionStageService.setWaitingRoomTimer(schedule.getId());
         }
         final Set<Long> scheduleIds = schedules.stream()
@@ -81,13 +89,15 @@ public class SessionScheduler {
 
     @Scheduled(cron = "0 25,55 * * * *")
     public void garbageCollectSession() {
+        log.info("SessionScheduler.garbageCollectSession");
         LocalDateTime now = now();
+        log.info("현재 시간: {}", now);
         LocalDateTime thirtyMinutesBefore = now.minusMinutes(30);
-        log.info("SessionScheduler.garbageCollectSession - thirtyMinutesBefore: {}", thirtyMinutesBefore);
+        log.info("현재 시간 - 30분: {}", thirtyMinutesBefore);
 
         final List<Schedule> garbageSessions = scheduleRepository.findBySessionTimeLessThanEqualAndStatusNot(thirtyMinutesBefore, ScheduleState.DONE);
         for (Schedule schedule : garbageSessions) {
-            log.info("SessionScheduler.garbageCollectSession - garbage collect schedule: {}", schedule.getId());
+            log.info("일정 종료: {}", schedule.getId());
 
             schedule.endSchedule();
         }

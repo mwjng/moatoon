@@ -1,6 +1,7 @@
 package com._2.a401.moa.schedule.domain;
 
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Getter
 @RedisHash(value = "session", timeToLive = 5400)
+@ToString
 public class Session {
 
     @Id
