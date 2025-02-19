@@ -36,9 +36,11 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
 
     return (
         <div className="relative w-[300px] h-[300px] border-2 border-black border-solid bg-white">
-            <button className="absolute left-2 px-3 py-1 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-50">
-                {nickname}
-            </button>
+            {nickname && (
+                <button className="absolute left-2 px-3 py-1 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-50">
+                    {nickname}
+                </button>
+            )}
 
             <Stage width={fixedWidth} height={fixedHeight} ref={stageRef} className="relative">
                 <Layer>

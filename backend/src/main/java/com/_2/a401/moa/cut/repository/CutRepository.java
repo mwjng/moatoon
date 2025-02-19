@@ -28,7 +28,7 @@ public interface CutRepository extends JpaRepository<Cut, Long> {
 
     @Query(value = "SELECT c.id AS cutId, c.content AS content, c.cut_order AS cutOrder, " +
             "c.member_id AS memberId, m.nickname AS nickname, c.word_id as wordId, c.party_id as partyId FROM cut c " +
-            "JOIN member m ON m.id=c.member_id " +
+            "LEFT JOIN member m ON m.id=c.member_id " +
             "WHERE c.party_id = :partyId " +
             "AND c.cut_order BETWEEN :startRange AND :endRange", nativeQuery = true)
     List<CutInfoResponse> getCutsAndMemberByRange(@Param("partyId") Long partyId,@Param("startRange") int startRange,@Param("endRange") int endRange);
