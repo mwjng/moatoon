@@ -120,7 +120,11 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         return () => clearInterval(intervalId);
     }, [lines, connected]);
 
-    const handleMouseDown = e => {
+    const handlePointerDown = e => {
+        const pointerType = e.evt.pointerType;
+        if (pointerType === 'touch') return; // 터치는 무시 (펜 or 마우스만 허용)
+
+        e.evt.preventDefault();
         isDrawing.current = true;
         const pos = e.target.getStage().getPointerPosition();
         const newLine = {
@@ -133,8 +137,12 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         dispatch(addLine(newLine));
     };
 
-    const handleMouseMove = e => {
+    const handlePointerMove = e => {
         if (!isDrawing.current) return;
+
+        const pointerType = e.evt.pointerType;
+        if (pointerType === 'touch') return;
+        e.evt.preventDefault();
 
         const stage = e.target.getStage();
         const point = stage.getPointerPosition();
@@ -160,7 +168,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         }
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
         isDrawing.current = false;
     };
 
@@ -249,9 +257,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                 <Stage
                     width={600}
                     height={600}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
+                    onMouseDown={handlePointerDown}
+                    onMouseMove={handlePointerMove}
+                    onMouseUp={handlePointerUp}
                     style={{ border: '2px solid black' }}
                     ref={stageRef}
                 >
