@@ -76,10 +76,7 @@ function WaitingRoom({
                         className="flex flex-col bg-white rounded-3xl p-3 shadow-md justify-between items-center"
                         style={{ width: '900px', height: '580px' }}
                     >
-                        <div className="flex flex-row gap-4 items-center justify-center" style={{ height: '300px' }}>
-                            <MyCamera streamManager={publisher} nickname={nickname} />
-                            <CameraMicControls publisher={publisher} />
-                        </div>
+                        <MyCamera streamManager={publisher} nickname={nickname} />
                         <div className="flex flex-row mt-4 gap-8 content-evenly mx-auto">
                             {subscribers.map((subscriber, index) => (
                                 <SubscriberVideo key={index} streamManager={subscriber} />
