@@ -70,7 +70,7 @@ public class SessionScheduler {
                     schedule.getId(),
                     null,
                     WAITING,
-                    schedule.getSessionTime().plusHours(9).minusSeconds(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
+                    schedule.getSessionTime().minusSeconds(WAITING.getDuration()) // redis에 저장하는 startTime은 각 단게의 시작시간이므로 여기서도 대기방의 시작시간을 넣어줘야한다.
             );
 
             log.info("Redis에 저장된 일정: {}", session.toString());

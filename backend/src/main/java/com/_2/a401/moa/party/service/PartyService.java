@@ -68,7 +68,7 @@ public class PartyService {
                 .pinNumber(pinNumber)
                 .level(request.getLevel())
                 .episodeCount(request.getEpisodeLength())
-                .startDate(startDate.minusHours(9L))
+                .startDate(startDate)
                 .endDate(endDate)
                 .status(PartyState.BEFORE)
                 .isPublic(request.isPublicStatus())
