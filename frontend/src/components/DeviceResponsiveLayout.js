@@ -161,18 +161,31 @@ const DeviceResponsiveLayout = ({ children }) => {
     );
   };
 
+  // 콘텐츠가 보여야 하는지 여부 확인
+  const shouldShowContent = () => {
+    return (isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape);
+  };
+
   return (
     <div className="app-container">
+      {/* 항상 children을 렌더링하되 display 속성으로 숨김/표시 전환 */}
+      <div
+        style={{
+          display: shouldShowContent() ? 'block' : 'none',
+          width: '100%',
+          height: '100%'
+        }}
+      >
+        {children}
+      </div>
+      
       {/* Desktop: Show unsupported screen size message if needed */}
       {isDesktop && showDesktopMessage && <DesktopSizeMessage />}
       
       {/* Mobile: Show orientation alert if in portrait mode */}
       {!isDesktop && showOrientationAlert && <MobileOrientationAlert />}
       
-      {/* Render content appropriately */}
-      {(isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape) ? children : null}
-      
-      <style jsx>{`
+      <style>{`
         .app-container {
           width: 100%;
           height: 100%;

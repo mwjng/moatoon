@@ -373,7 +373,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                     </div>
                 </div>
                 {/* 제출 버튼 */}
-                <div className="flex justify-end col-span-2">
+                <div className="flex justify-end col-span-2 -mt-8 -ml-12">
                     <button onClick={handleSubmit} className="px-10 py-3 bg-[#FFB703] text-white font-bold rounded-lg">
                         생성하기
                     </button>
