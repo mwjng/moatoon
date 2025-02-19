@@ -157,7 +157,9 @@ public class SessionStageService {
                     }else {
                         if(expectedStage == FullSessionStage.DRAWING) {
                             log.info("next session: done(그림그리기 끝난 상태. 8분 뒤에 타이머 울림)");
+                            log.info("그림 그리기 끝남. export 시작");
                             drawingService.exportSVG(scheduleId);
+                            log.info("export 완료");
                         }
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
