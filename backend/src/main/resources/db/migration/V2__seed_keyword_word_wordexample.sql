@@ -1,40 +1,48 @@
 insert into keyword (keyword, type) values
-                                        ('신비로운', 'MOOD'),
-                                        ('따뜻한', 'MOOD'),
-                                        ('평화로운', 'MOOD'),
-                                        ('호기심', 'MOOD'),
-                                        ('모험적인', 'MOOD'),
-                                        ('놀라운', 'MOOD'),
-                                        ('유쾌한', 'MOOD'),
-                                        ('시끌벅적', 'MOOD'),
-                                        ('공주/왕자', 'THEME'),
-                                        ('공룡', 'THEME'),
-                                        ('동물', 'THEME'),
-                                        ('마법', 'THEME'),
-                                        ('요정', 'THEME'),
-                                        ('우주', 'THEME'),
-                                        ('바다', 'THEME'),
-                                        ('사막', 'THEME'),
-                                        ('하늘', 'THEME'),
-                                        ('용기', 'THEME'),
-                                        ('민속', 'THEME'),
-                                        ('중세', 'THEME'),
-                                        ('요리', 'THEME'),
-                                        ('역할극', 'THEME'),
-                                        ('영웅', 'THEME'),
-                                        ('로봇', 'THEME'),
-                                        ('자동차', 'THEME'),
-                                        ('모험', 'GENRE'),
-                                        ('판타지', 'GENRE'),
-                                        ('로맨스', 'GENRE'),
-                                        ('신화', 'GENRE'),
-                                        ('역사', 'GENRE'),
-                                        ('일상', 'GENRE'),
-                                        ('코믹', 'GENRE'),
-                                        ('액션', 'GENRE'),
-                                        ('드라마', 'GENRE'),
-                                        ('스포츠', 'GENRE');
+    ('신비로운', 'MOOD'),
+    ('따뜻한', 'MOOD'),
+    ('평화로운', 'MOOD'),
+    ('호기심', 'MOOD'),
+    ('모험적인', 'MOOD'),
+    ('놀라운', 'MOOD'),
+    ('유쾌한', 'MOOD'),
+    ('시끌벅적', 'MOOD'),
+    ('공주/왕자', 'THEME'),
+    ('공룡', 'THEME'),
+    ('동물', 'THEME'),
+    ('마법', 'THEME'),
+    ('요정', 'THEME'),
+    ('우주', 'THEME'),
+    ('바다', 'THEME'),
+    ('사막', 'THEME'),
+    ('하늘', 'THEME'),
+    ('용기', 'THEME'),
+    ('민속', 'THEME'),
+    ('중세', 'THEME'),
+    ('요리', 'THEME'),
+    ('역할극', 'THEME'),
+    ('영웅', 'THEME'),
+    ('로봇', 'THEME'),
+    ('자동차', 'THEME'),
+    ('모험', 'GENRE'),
+    ('판타지', 'GENRE'),
+    ('로맨스', 'GENRE'),
+    ('신화', 'GENRE'),
+    ('역사', 'GENRE'),
+    ('일상', 'GENRE'),
+    ('코믹', 'GENRE'),
+    ('액션', 'GENRE'),
+    ('드라마', 'GENRE'),
+    ('스포츠', 'GENRE');
 
+insert into word (level, word, meaning) values (1,'그림','선이나 색채를 써서 사물의 형상이나 이미지를 평면 위에 나타낸 것.\n아름다운 경치를 비유적으로 이르는 말.');
+insert into word (level, word, meaning) values (1,'그만','그 정도까지.\n그대로 곧.\n자신도 모르는 사이에.');
+insert into word (level, word, meaning) values (1,'글씨','쓴 글자의 모양.');
+insert into word (level, word, meaning) values (1,'글자','말을 적는 일정한 체계의 부호.');
+insert into word (level, word, meaning) values (1,'금요일','월요일을 기준으로 한 주의 다섯째 날.');
+insert into word (level, word, meaning) values (1,'기다리다','어떤 사람이나 때가 오기를 바라다.');
+insert into word (level, word, meaning) values (1,'기린','린과의 포유류. 키는 6미터 정도로 포유류 가운데 가장 크며, 목과 다리가 특히 길다.\n초원에서 먹이를 찾는다.');
+insert into word (level, word, meaning) values (1,'기차','여객차나 화차를 끌고 다니는 철도 차량.\n기차역에서 출발하여 여러 역을 거치는 이동 수단.');
 insert into word (level, word, meaning) values (1,'기침','기도의 점막이 자극을 받아 갑자기 숨소리를 터트려 내는 일.\n목감기 등의 증상 중 하나.');
 insert into word (level, word, meaning) values (1,'가방','물건을 넣어 들거나 메고 다닐 수 있게 만든 용구. 가죽이나 천, 비닐 따위로 만든다.');
 insert into word (level, word, meaning) values (1,'가위','옷감, 종이, 머리털 따위를 자르는 기구.\n가위바위보에서, 집게손가락과 가운뎃손가락 또는 엄지손가락을 벌려 내미는 동작.\n무서운 내용의 꿈. 또는 꿈에 나타나는 무서운 것.');
