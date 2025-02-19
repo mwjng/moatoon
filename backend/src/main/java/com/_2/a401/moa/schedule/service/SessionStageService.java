@@ -131,6 +131,14 @@ public class SessionStageService {
             setEndTimeTimer(scheduleId, now.plusSeconds(nextSessionStage.getDuration()), nextSessionStage);
         }
 
+        //그림 그리기 끝난 후 svg export하기
+        if(currentSessionStage == FullSessionStage.DRAWING) {
+            log.info("next session: done(그림그리기 끝난 상태. 8분 뒤에 타이머 울림)");
+            log.info("그림 그리기 끝남. export 시작");
+            drawingService.exportSVG(scheduleId);
+            log.info("export 완료");
+        }
+
         // 세션 전환 메시지 생성
         WsSessionTransferResponse response = WsSessionTransferResponse.builder()
                 .type("SESSION_TRANSFER")
@@ -155,12 +163,6 @@ public class SessionStageService {
                         log.info("next session: 없음(그림그리기 끝나고 8분 뒤(3분:그림감상/5분:퀴즈)의 상태.)");
                         handleSessionDone(scheduleId);
                     }else {
-                        if(expectedStage == FullSessionStage.DRAWING) {
-                            log.info("next session: done(그림그리기 끝난 상태. 8분 뒤에 타이머 울림)");
-                            log.info("그림 그리기 끝남. export 시작");
-                            drawingService.exportSVG(scheduleId);
-                            log.info("export 완료");
-                        }
                         // 현재 세션 정보 조회
                         Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
                         log.info("session: {}", session.getSessionId());
