@@ -77,8 +77,7 @@ const DeviceResponsiveLayout = ({ children }) => {
     };
 
     return (
-      <div className="fixed top-0 left-0 right-0 bottom-0 bg-amber-50 z-50 flex flex-col items-center justify-center px-4">
-        
+      <div className="size-message-overlay">
         <style>
           {`
             @keyframes bigBounce {
@@ -93,37 +92,37 @@ const DeviceResponsiveLayout = ({ children }) => {
         </style>
 
         {/* Characters container */}
-        <div className="flex justify-center items-end mb-8" style={{ marginTop: '-20px' }}>
-          <div className="w-24 h-24 -mr-10">
+        <div className="character-container">
+          <div className="character character1">
             <img
               src={bbi_normal}
               alt="character1"
-              className="w-full h-full object-contain"
+              className="character-img"
               style={{ ...bounceStyle }}
             />
           </div>
-          <div className="w-40 h-40 relative z-10">
+          <div className="character character2">
             <img
               src={duckduck}
               alt="character2"
-              className="w-full h-full object-contain"
+              className="character-img"
               style={{ ...bounceStyle, animationDelay: '0.2s' }}
             />
           </div>
-          <div className="w-24 h-24 -ml-11">
+          <div className="character character3">
             <img
               src={cado}
               alt="character3"
-              className="w-full h-full object-contain"
+              className="character-img"
               style={{ ...bounceStyle, animationDelay: '0.4s' }}
             />
           </div>
         </div>
         
         {/* Message */}
-        <div className="text-center mb-8">
-          <p className="text-xl font-bold text-gray-800 mb-2">지원하지 않는 화면 크기입니다.</p>
-          <p className="text-base text-gray-600">더 큰 화면에서 이용해주세요.</p>
+        <div className="message-box">
+          <p className="message-main">지원하지 않는 화면 크기입니다.</p>
+          <p className="message-sub">더 큰 화면에서 이용해주세요.</p>
         </div>
       </div>
     );
@@ -139,10 +138,10 @@ const DeviceResponsiveLayout = ({ children }) => {
               <img 
                 src={bbi}
                 alt="BBI 캐릭터" 
-                className="bbi-character mr-4"
+                className="bbi-character"
               />
               
-              <div className="phone-wrapper mb-6">
+              <div className="phone-wrapper">
                 <div className="phone-icon">
                   <div className="phone-screen"></div>
                 </div>
@@ -161,18 +160,28 @@ const DeviceResponsiveLayout = ({ children }) => {
     );
   };
 
+  // 이 함수에서 콘텐츠가 표시되어야 하는지 판단
+  const shouldShowContent = () => {
+    return (isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape);
+  };
+
   return (
     <div className="app-container">
-      {/* Desktop: Show unsupported screen size message if needed */}
-      {isDesktop && showDesktopMessage && <DesktopSizeMessage />}
+      {/* Main content - 항상 렌더링하지만 display로 제어 */}
+      <div 
+        className="content-container"
+        style={{
+          display: shouldShowContent() ? 'block' : 'none',
+        }}
+      >
+        {children}
+      </div>
       
-      {/* Mobile: Show orientation alert if in portrait mode */}
+      {/* Overlay messages */}
+      {isDesktop && showDesktopMessage && <DesktopSizeMessage />}
       {!isDesktop && showOrientationAlert && <MobileOrientationAlert />}
       
-      {/* Render content appropriately */}
-      {(isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape) ? children : null}
-      
-      <style jsx>{`
+      <style>{`
         .app-container {
           width: 100%;
           height: 100%;
@@ -180,6 +189,81 @@ const DeviceResponsiveLayout = ({ children }) => {
           background-color: #f0f5ff;
         }
 
+        .content-container {
+          width: 100%;
+          height: 100%;
+        }
+
+        /* Desktop message */
+        .size-message-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #fef3c7; /* amber-50 */
+          z-index: 9999;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        .character-container {
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          margin-bottom: 2rem;
+          margin-top: -1.25rem;
+        }
+
+        .character {
+          position: relative;
+        }
+
+        .character1 {
+          width: 6rem;
+          height: 6rem;
+          margin-right: -2.5rem;
+        }
+
+        .character2 {
+          width: 10rem;
+          height: 10rem;
+          z-index: 10;
+        }
+
+        .character3 {
+          width: 6rem;
+          height: 6rem;
+          margin-left: -2.75rem;
+        }
+
+        .character-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .message-box {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .message-main {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1f2937; /* gray-800 */
+          margin-bottom: 0.5rem;
+        }
+
+        .message-sub {
+          font-size: 1rem;
+          color: #4b5563; /* gray-600 */
+        }
+
+        /* Mobile orientation alert */
         .orientation-alert {
           position: fixed;
           top: 0;
@@ -231,6 +315,7 @@ const DeviceResponsiveLayout = ({ children }) => {
           object-fit: contain;
           position: relative;
           z-index: 2;
+          margin-right: 1rem;
         }
 
         .phone-wrapper {
@@ -238,6 +323,7 @@ const DeviceResponsiveLayout = ({ children }) => {
           bottom: 35px;
           right: 30px;
           z-index: 3;
+          margin-bottom: 1.5rem;
         }
 
         .phone-icon {
