@@ -223,7 +223,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
                 style={{ fontFamily: 'S-CoreDream-3Light', color: 'red' }}
             >
                 <div className="flex items-center gap-4 text-gray-600">
-                    <span className="text-sm">시작일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
+                    <span className="text-sm">책 생성일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
                     <span className="text-sm">
                         요일:{' '}
                         {partyDetails.dayWeeks
