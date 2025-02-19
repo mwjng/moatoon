@@ -6,7 +6,7 @@ public enum FullSessionStage {
     WORD(60L),      // TODO:7분
     CUT_ASSIGN(7L), //
     DRAWING(60L),   // TODO:15분
-    DONE(120L),    // 8분 뒤 이메일 알람 설정 위함
+    DONE(120L),    // 퀴즈 종료 8분 뒤 이메일 알람 설정 위함
     TIMER_END(0L);     // 타이머 종료 상태
 
     private final Long duration; // SECOND 기준

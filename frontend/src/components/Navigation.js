@@ -23,7 +23,7 @@ import AudioPlayer from './audio/AudioPlayer';
 function Navigation({
     stage,
     leaveSession,
-    stageDuration = 60,
+    stageDuration = 60, // SECOND!!!
     sessionStartTime,
     serverTime,
     bookTitle,
@@ -115,9 +115,9 @@ function Navigation({
     };
 
     // 시간 더하기 함수 (분 단위로 처리)
-    const addMinutes = (timestamp, minutes = 0) => {
+    const addSeconds = (timestamp, second = 0) => {
         const time = new Date(timestamp);
-        return new Date(time.getTime() + minutes * 60000);
+        return new Date(time.getTime() + second * 1000);
     };
 
     //hh:mm 형식 반환
@@ -248,10 +248,11 @@ function Navigation({
                                 </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">{bookTitle}</span>
-                                    {/*이거 sessionStartTime이 대기방 시작시간이라 10분, 70분 더하는게 맞습니다!*/}
                                     <span>
-                                        오늘의 일정 : {getTimeFormatted(addMinutes(sessionStartTime, 10))} ~{' '}
-                                        {getTimeFormatted(addMinutes(sessionStartTime, 70))}
+                                        {/* sessionStartTime이 세션의 시작시간이 아니라 대기방 시작시간입니니다! 
+                                            오늘의 일정 : (대기방 시작시간 + 대기방 대기시간) ~ (대기방 시작시간 + 대기방 대기시간 + 30분)*/}
+                                        오늘의 일정 : {getTimeFormatted(addSeconds(sessionStartTime, stageDuration))} ~{' '}
+                                        {getTimeFormatted(addSeconds(sessionStartTime, stageDuration+30*60))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">
