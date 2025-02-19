@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import CameraMicControls from './CameraMicControls';
 
-function MyCamera({ streamManager, nickname, small }) {
+function MyCamera({ streamManager, nickname, small = false }) {
     const videoRef = useRef();
 
     useEffect(() => {

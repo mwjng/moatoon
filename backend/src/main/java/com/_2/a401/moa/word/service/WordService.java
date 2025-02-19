@@ -177,6 +177,7 @@ public class WordService {
                     .back(split[2])
                     .wordId(example.getWord().getId())
                     .word(example.getWord().getWord())
+                    .full(example.getExample())
                     .build());
             quizWords.add(QuizWord
                     .builder()
