@@ -2,9 +2,11 @@ package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
-import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.cut.service.DrawingService;
+import com._2.a401.moa.party.domain.Party;
+import com._2.a401.moa.party.domain.PartyState;
 import com._2.a401.moa.party.repository.PartyMemberRepository;
+import com._2.a401.moa.party.repository.PartyRepository;
 import com._2.a401.moa.schedule.domain.FullSessionStage;
 import com._2.a401.moa.schedule.domain.Session;
 import com._2.a401.moa.schedule.domain.SessionMember;
@@ -14,7 +16,6 @@ import com._2.a401.moa.schedule.dto.response.WsSessionTransferResponse;
 import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,6 +27,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 
+import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_PARTY;
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
 
 @Slf4j
@@ -40,6 +42,7 @@ public class SessionStageService {
     private final SessionMailService sessionMailService;
     private final TaskScheduler taskScheduler;
     private final DrawingService drawingService;
+    private final PartyRepository partyRepository;
 
     public SessionStageService(final SessionRedisRepository sessionRedisRepository,
                                final SessionMemberRedisRepository sessionMemberRedisRepository,
@@ -48,7 +51,8 @@ public class SessionStageService {
                                final SimpMessagingTemplate messagingTemplate,
                                final SessionMailService sessionMailService,
                                @Qualifier("taskScheduler") final TaskScheduler taskScheduler,
-                               final DrawingService drawingService) {
+                               final DrawingService drawingService,
+                               PartyRepository partyRepository) {
         this.sessionRedisRepository = sessionRedisRepository;
         this.sessionMemberRedisRepository = sessionMemberRedisRepository;
         this.partyMemberRepository = partyMemberRepository;
@@ -57,6 +61,7 @@ public class SessionStageService {
         this.sessionMailService = sessionMailService;
         this.taskScheduler = taskScheduler;
         this.drawingService = drawingService;
+        this.partyRepository = partyRepository;
     }
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
@@ -163,12 +168,11 @@ public class SessionStageService {
                 () -> {
                     log.info("타이머 완료!!!: scheduleId: {}", scheduleId);
                     if(expectedStage == FullSessionStage.DONE) {
-                        log.info("next session: done");
-                        handleUncompletedQuizMembers(scheduleId);
-                        scheduleRepository.completeScheduleById(scheduleId);
+                        log.info("next session: 없음(그림그리기 끝나고 8분 뒤(3분:그림감상/5분:퀴즈)의 상태.)");
+                        handleSessionDone(scheduleId);
                     }else {
                         if(expectedStage == FullSessionStage.DRAWING) {
-                            log.info("next session: drawing");
+                            log.info("next session: done(그림그리기 끝난 상태. 8분 뒤에 타이머 울림)");
                             drawingService.exportSVG(scheduleId);
                         }
                         // 현재 세션 정보 조회
@@ -238,4 +242,36 @@ public class SessionStageService {
             sessionMailService.sendBadChildNotice(uncompletedMembers); // 세션에 끝까지 참여안한 아이들 알림보내기
         }
     }
+
+    // 세션 종료되었을 때 실행되는 작업들
+    private void handleSessionDone(Long scheduleId) {
+
+        // 1. 퀴즈 참여 안한 인원에게 메일 보냄
+        handleUncompletedQuizMembers(scheduleId);
+
+        // TODO: 2~3번이 동시에 일어나야해서 @Transactional을 넣고 싶었는데, handleSessionDone을 이 클래스에서 호출해서 못 넣었음..
+        // 2. Schedule 상태 변경
+        scheduleRepository.completeScheduleById(scheduleId); // Schedule의 status를 DONE으로 변경
+
+        // 3. Party 상태 변경
+        scheduleRepository.findPartyIdById(scheduleId)
+            .ifPresent(partyId -> { // schedule_id로 party_id 찾아옴
+
+                // Party의 progerss_count를 1 증가시키기, 만약 마지막 세션이었다면 1증가가 아니라 DONE으로 변경
+                Party party = partyRepository.findById(partyId)
+                        .orElseThrow(() -> new MoaException(INVALID_PARTY));
+
+                // Party 진행도 증가
+                party.setProgressCount(party.getProgressCount()+1);
+
+                // 마지막 세션이면 Party 상태를 DONE으로 변경
+                if (party.getProgressCount() >= party.getEpisodeCount()) {
+                    party.setStatus(PartyState.DONE);
+                }
+
+                partyRepository.save(party); // 더티체킹 못해서 명시적 save 함.
+            });
+
+    }
+
 }
