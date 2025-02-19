@@ -7,6 +7,7 @@ import com._2.a401.moa.cut.dto.response.CutInfoResponse;
 import com._2.a401.moa.cut.repository.CutRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class DrawingService {
     private final CutService cutService;
     private final S3Service s3Service;
@@ -33,6 +35,7 @@ public class DrawingService {
                 .collect(Collectors.toList());
 
         for(Long cutId:cuts){
+            log.info("cutId: "+cutId);
             CanvasRedisResponse redisCutData=cutService.getTempCanvasData(cutId);
 
             if (redisCutData != null && redisCutData.getCanvasData() != null) {
@@ -44,6 +47,7 @@ public class DrawingService {
 
                 // SVG DB에 저장
                 String cutFileUrl = s3Service.uploadSvgString(svgString);
+                log.info(cutFileUrl);
 
                 cutRepository.savePictureByCutId(cutFileUrl, cutId);
 
