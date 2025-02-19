@@ -60,6 +60,11 @@ public class BookService {
                 .partyId(partyId)
                 .bookCover(party.getBookCover())
                 .bookTitle(party.getBookTitle())
+                .introduction(party.getIntroduction())
+                .episodeCount(party.getEpisodeCount())
+                .progressCount(party.getProgressCount())
+                .startDate(party.getStartDate())
+                .endDate(party.getEndDate())
                 .cuts(cuts)
                 .build();
 
