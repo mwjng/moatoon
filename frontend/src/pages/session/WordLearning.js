@@ -17,6 +17,10 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
     const [checkedWords, setCheckedWords] = useState(new Set());
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log('WordLearning - sessionStageData:', sessionStageData);
+    }, []);
+
     const handleCheck = wordId => {
         setCheckedWords(prev => {
             const newSet = new Set(prev);

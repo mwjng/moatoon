@@ -159,11 +159,17 @@ const SessionContainer = () => {
     useEffect(() => {
         console.log('세션 변경 감지');
         if (sessionTransferResponse?.nextSessionStage) {
+            const sessionStartTime = sessionTransferResponse.sessionStartTime ? 
+            new Date(sessionTransferResponse.sessionStartTime) : new Date();
+        
+            const serverTime = sessionTransferResponse.serverTime ?
+                new Date(sessionTransferResponse.serverTime) : new Date();
+                
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
-                sessionStartTime: new Date(sessionTransferResponse.sessionStageStartTime),
-                serverTime: new Date(sessionTransferResponse.serverTime),
-                sessionDuration: sessionTransferResponse.sessionDuration,
+                sessionStartTime: sessionStartTime,
+                serverTime: serverTime,
+                sessionDuration: sessionTransferResponse.sessionDuration || prev.sessionDuration,
             }));
         }
     }, [sessionTransferResponse]);
@@ -205,6 +211,7 @@ const SessionContainer = () => {
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
+            console.log('SessionContainer - sessionStageData:', sessionStageData);
             return null;
         }
 

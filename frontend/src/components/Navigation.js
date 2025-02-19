@@ -161,6 +161,7 @@ function Navigation({
 
     useEffect(() => {
         if (stage && sessionStartTime) {
+            console.log(`sessionStartTime: ${sessionStartTime} serverTime: ${serverTime}`)
             let timeoutNotEvented = true;
             let tenSecondNotified = false; // 새로 추가
 
@@ -170,7 +171,7 @@ function Navigation({
                 const elapsedTime = getServerNow() - sessionStartTimestamp; // 서버 시간 기준으로 경과 시간 계산 (밀리초)
                 const totalDuration = stageDuration * SECOND; // 현재 스테이지에 주어진 전체 시간 (밀리초)
                 let remaining = totalDuration - elapsedTime; // 남은 시간 계산 (밀리초)
-
+                
                 // 새로 추가된 1분 알림 로직
                 if (
                     stage === 'waiting' &&
@@ -189,7 +190,8 @@ function Navigation({
                         timeoutNotEvented = false;
                     }
                 }
-                let percent = (remaining / stageDuration) * 100;
+                let percent = (remaining / totalDuration) * 100;
+                percent = Math.min(Math.max(percent, 0), 100);
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);

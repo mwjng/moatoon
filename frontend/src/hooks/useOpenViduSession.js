@@ -65,7 +65,7 @@ const useOpenViduSession = () => {
             if (error.response && error.response.data && error.response.data.code) {
                 errorCode = error.response.data.code;
             }
-            navigate('/session-error', { state: { errorCode } });
+            //navigate('/session-error', { state: { errorCode } });
         }
     };
 
