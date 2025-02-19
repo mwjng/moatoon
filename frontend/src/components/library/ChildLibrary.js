@@ -5,6 +5,7 @@ import cado from '../../assets/cado.svg';
 import useFetchBooks from '../../hooks/useLibraryBooks.js'; // 서버 페이징 적용된 훅
 import { debounce } from 'lodash';
 import { useSelector } from 'react-redux';
+import Loading from '../Loading.js';
 
 function ChildLibraryPage() {
     const userInfo = useSelector(state => state.user.userInfo);
@@ -20,7 +21,7 @@ function ChildLibraryPage() {
             <div className="shadow-md bg-white rounded-xl p-4 mt-6 mb-6 flex items-center justify-center">
                 <div className="flex items-center gap-2">
                     <img src={cado} alt="아보카도" className="w-20 h-20" />
-                    <span className="text-xl font-bold">김싸피의 도서관</span>
+                    <span className="text-xl font-bold">{userInfo.nickname}의 도서관</span>
                     <img src={cado} alt="아보카도" className="w-20 h-20" />
                 </div>
             </div>
@@ -29,28 +30,28 @@ function ChildLibraryPage() {
             <div className="w-full">
                 {bookList
                     .reduce((rows, book, index) => {
-                        if (index % colsPerRow === 0) rows.push([]); // 새로운 줄 만들기
+                        if (index % colsPerRow === 0) rows.push([]);
                         rows[rows.length - 1].push(book);
                         return rows;
                     }, [])
                     .map((row, rowIndex) => (
-                        <div
-                            key={rowIndex}
-                            className={`flex justify-center gap-6 py-4 ${backgroundColors[rowIndex % 3]}`}
-                        >
-                            {row.map(book => (
-                                <div
-                                    key={book.id}
-                                    className="w-36 h-64 cursor-pointer"
-                                    onClick={() => window.open(`/ebook/${book.id}`, '_blank')}
-                                >
-                                    <LibraryBookCard item={book} />
-                                </div>
-                            ))}
+                        <div key={rowIndex} className={`flex gap-6 py-12 ${backgroundColors[rowIndex % 3]}`}>
+                            {/* 책들을 감싸는 고정 너비의 컨테이너 추가 */}
+                            <div className="mx-auto w-[930px] flex justify-start w-[1000px] space-x-12">
+                                {row.map(book => (
+                                    <div
+                                        key={book.id}
+                                        className="w-44 h-64 cursor-pointer"
+                                        onClick={() => window.open(`/ebook/${book.id}`, '_blank')}
+                                    >
+                                        <LibraryBookCard item={book} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ))}
             </div>
-            {loading && <div className="mt-4 text-gray-500">Loading...</div>}
+            {loading && <Loading />}
             {/*!hasMore && <div className="mt-4 text-gray-500"></div>*/}
             <div ref={observerRef} className="h-10"></div>
         </div>
