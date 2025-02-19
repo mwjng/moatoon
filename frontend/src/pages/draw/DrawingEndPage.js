@@ -62,7 +62,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"
-                    stageDuration={30} // ! DrawingEndPage Duration은 3*60=180
+                    stageDuration={180} // ! DrawingEndPage Duration은 3*60=180초
                     sessionStartTime={sessionStageData?.sessionStartTime}
                     serverTime={sessionStageData?.serverTime}
                     onTimeOut={onTimeout}
