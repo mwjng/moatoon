@@ -45,7 +45,7 @@ const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
 
   if (!schedule) {
     return (
-      <div className="rounded-2xl shadow-md bg-orange1 w-[350px] h-[290px]">
+      <div className="rounded-2xl shadow-md bg-orange1 w-[370px] h-[290px]">
         <div className="text-2xl font-bold pt-4 pb-1 text-white text-center">
           오늘의 일정
         </div>
