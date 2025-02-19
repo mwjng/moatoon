@@ -47,6 +47,7 @@ const EBookPage = () => {
             {isLoading ? (
                 <div>
                     <Loading />
+    
                 </div>
             ) : (
                 <div className="flex justify-center items-center">
@@ -60,10 +61,14 @@ const EBookPage = () => {
                         <img src={backgroundImage} alt="background" className="absolute max-w-5xl object-cover" />
 
                         {currentPage === 0 ? (
-                            <div className="flex flex-col items-center mt-16 p-8 z-10 relative">
-                                <div className="rounded-2xl p-8">
-                                    <div className="flex flex-col md:flex-row gap-10 items-center">
-                                        <div className="relative w-[420px]">
+                            <div className="flex flex-col items-center mt-8 p-8 z-10 relative h-screen">
+                                <div className="h-[100%] rounded-2xl p-16 mr-9">
+                                <h1 className="text-3xl font-bold bg-gradient-to-r bg-clip-text bg-black text-transparent text-center mb-5">
+                                                {comicData.bookTitle}
+                                            </h1>
+                                    <div className="flex flex-col md:flex-row gap-10  h-[90%] overflow-hidden">
+                                        
+                                        <div className="relative flex-1">
                                             <div className="absolute -inset-1 bg-gradient-to-r rounded-lg blur opacity-25"></div>
                                             <img
                                                 src={comicData.bookCover}
@@ -72,15 +77,12 @@ const EBookPage = () => {
                                             />
                                         </div>
 
-                                        <div className="flex flex-col space-y-6 w-[400px]">
-                                            <h1 className="text-6xl font-bold bg-gradient-to-r bg-clip-text bg-black text-transparent">
-                                                {comicData.bookTitle}
-                                            </h1>
+                                        <div className="flex flex-col flex-1 space-y-6 h-[80%]">
 
                                             <div className="space-y-5">
-                                                <div className="bg-gray-50 p-6 rounded-lg">
+                                                <div className="bg-gray-50 p-6 rounded-lg h-[30%] overflow-y-auto">
                                                     <h2 className="text-xl font-semibold text-gray-800 mb-2">개요</h2>
-                                                    <p className="text-lg text-gray-600 leading-relaxed">
+                                                    <p className="text-lg text-gray-600 leading-relaxed overflow-y-auto">
                                                         {comicData.introduction}
                                                     </p>
                                                 </div>
