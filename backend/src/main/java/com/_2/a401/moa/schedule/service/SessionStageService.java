@@ -47,7 +47,7 @@ public class SessionStageService {
                                final ScheduleRepository scheduleRepository,
                                final SimpMessagingTemplate messagingTemplate,
                                final SessionMailService sessionMailService,
-                               final TaskScheduler taskScheduler,
+                               @Qualifier("taskScheduler") final TaskScheduler taskScheduler,
                                final DrawingService drawingService) {
         this.sessionRedisRepository = sessionRedisRepository;
         this.sessionMemberRedisRepository = sessionMemberRedisRepository;
