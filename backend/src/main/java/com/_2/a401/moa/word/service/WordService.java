@@ -51,7 +51,7 @@ public class WordService {
         } else if (page > totalPage) {
             searchPage = totalPage;
         } else {
-            searchPage = 1;
+            searchPage = page;
         }
         log.info("totalCount: {}, totalPage: {}, searchPage: {}", totalCount, totalPage, searchPage);
 

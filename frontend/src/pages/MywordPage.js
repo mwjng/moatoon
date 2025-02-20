@@ -24,23 +24,16 @@ const MyWordPage = () => {
         setShowHint(!showHint);
     };
 
-    const updateWords = () => {
-        if (page < 1) {
-            setPage(1);
-        } else if (page > totalPage) {
-            setPage(totalPage);
-        }
+    useEffect(() => {
         getMyWordWithPage();
-    };
+    }, [page]);
 
-    const handlePrev = async () => {
-        setPage(page - 1);
-        updateWords();
+    const handlePrev = () => {
+        setPage(prevPage => Math.max(prevPage - 1, 1));
     };
 
     const handleNext = () => {
-        setPage(page + 1);
-        updateWords();
+        setPage(prevPage => Math.min(prevPage + 1, totalPage));
     };
 
     const handleRemoveMyWord = (wordId, word) => {
