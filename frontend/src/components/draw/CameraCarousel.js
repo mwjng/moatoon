@@ -22,7 +22,7 @@ function CameraCarousel({ publisher, subscribers, nickname }) {
                 <IoIosArrowBack className="h-6 w-6" />
             </button>
             <div className={`absolute ${isMyCamera ? '' : 'invisible'}`}>
-                <MyCamera streamManager={publisher} nickname={nickname} />
+                <MyCamera streamManager={publisher} nickname={nickname} small />
             </div>
 
             {subscribers.length > 0 &&
