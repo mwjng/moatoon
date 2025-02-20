@@ -72,6 +72,7 @@ const MyWordPage = () => {
             .catch(error => {
                 console.error(error);
             });
+        setDeleteModal(false);
     };
 
     return (
@@ -148,8 +149,8 @@ const MyWordPage = () => {
                                 onClick={handlePrev}
                             />
                             <div className="relative z-5 p-4 gap-4 flex ">
-                                {words.map((word, index) => (
-                                    <MyWordInfo word={word} key={index} removeMyWord={handleRemoveMyWord} />
+                                {words.map(word => (
+                                    <MyWordInfo word={word} key={word.id} removeMyWord={handleRemoveMyWord} />
                                 ))}
                             </div>
                             <img

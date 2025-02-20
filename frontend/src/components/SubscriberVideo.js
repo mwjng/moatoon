@@ -16,6 +16,7 @@ function SubscriberVideo({ streamManager, small = false }) {
 
     useEffect(() => {
         if (streamManager && videoRef.current) {
+            console.log('streamManager:', streamManager);
             streamManager.addVideoElement(videoRef.current);
         }
     }, [streamManager]);
