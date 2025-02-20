@@ -328,7 +328,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
             style={{
                 width: '530px',
                 height: '530px',
-                position: 'relative'
+                position: 'relative',
             }}
         >
             <div className="flex flex-col w-full relative">

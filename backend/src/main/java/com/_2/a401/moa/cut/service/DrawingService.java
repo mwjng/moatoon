@@ -81,7 +81,7 @@ public class DrawingService {
 
     public String generateSVGFromLineRequests(List<LineRequest> lines) {
         StringBuilder svgBuilder = new StringBuilder();
-        svgBuilder.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"600\" height=\"600\">");
+        svgBuilder.append("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"530\" height=\"530\">");
 
         // 각 LineRequest를 기반으로 polyline 생성
         for (LineRequest line : lines) {
