@@ -131,7 +131,7 @@ const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
           <div className="bg-orange2 px-3 py-4 rounded-xl shadow-sm flex flex-col items-center justify-center w-full h-[130px]"> 
             <div className="flex flex-col items-center w-full">
               <div className="text-lg font-bold text-[#FFF3C6]">{schedule.episodeNumber}일차</div>
-              <div className="text-lg font-bold text-[#FFF3C6]">{sessionTime.slice(3)} 시작</div>
+              <div className="text-lg font-bold text-[#FFF3C6]">{sessionTime.slice(3)}</div>
             </div>
 
             <div className="flex items-center gap-2 mt-4">

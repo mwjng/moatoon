@@ -144,6 +144,7 @@ const DrawingPage = ({
                             nickname={nickname}
                             isFirstDrawingVisit={isFirstDrawingVisit}
                             setIsFirstDrawingVisit={setIsFirstDrawingVisit}
+                            readyStatus = {readyStatusResponse?.[userId]}
                         />
                     ) : (
                         <Overview

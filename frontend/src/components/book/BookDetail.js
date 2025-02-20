@@ -88,7 +88,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
 
     const handleJoinSession = () => {
         if (activeSchedule) {
-            navigate(`/session/${partyDetails.pinNumber}}`);
+            navigate(`/session/${partyDetails.pinNumber}`);
         }
     };
 

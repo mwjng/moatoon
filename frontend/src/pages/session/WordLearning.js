@@ -46,7 +46,7 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
 
     const sendReadyRequest = async () => {
         try {
-            sendReady();
+            sendReady(true);
             // 성공 로직
         } catch (error) {
             console.error('레디 요청 중 에러 발생:', error.message);
