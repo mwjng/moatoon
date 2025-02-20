@@ -94,7 +94,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
 
     //이북보기
     const handlePreviousStory = () => {
-        navigate(`/ebook/${partyDetails.id}`);
+        window.open(`/ebook/${partyDetails.id}`, '_blank');
     };
 
     // 멤버 관리 함수들
