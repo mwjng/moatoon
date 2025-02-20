@@ -299,7 +299,24 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     }
 
     return (
-        <div className="flex bg-white" style={{ width: '600px', height: '600px', position: 'relative' }}>
+        <div
+            className="flex bg-white"
+            style={{
+                width: '600px',
+                height: '600px',
+                position: 'relative',
+                overflowY: 'auto',
+                touchAction: 'pan-x pan-y',
+            }}
+            onPointerDown={e => {
+                // 터치일 때만 스크롤 허용
+                if (e.pointerType === 'touch') {
+                    e.currentTarget.style.touchAction = 'pan-x pan-y';
+                } else {
+                    e.currentTarget.style.touchAction = 'none';
+                }
+            }}
+        >
             <div className="flex flex-col">
                 <Stage
                     width={600}
@@ -307,7 +324,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
-                    style={{ border: '2px solid black', touchAction: 'auto' }}
+                    style={{ border: '2px solid black', touchAction: 'none' }}
                     ref={stageRef}
                 >
                     <Layer>
