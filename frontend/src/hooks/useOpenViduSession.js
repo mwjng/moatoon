@@ -71,7 +71,7 @@ const useOpenViduSession = () => {
 
     const leaveSession = async scheduleId => {
         if (session) {
-            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${scheduleId}/session/leave`, {
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/schedules/${scheduleId}/session/leave`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             session.disconnect();
