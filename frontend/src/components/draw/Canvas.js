@@ -127,7 +127,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         lastPointerType.current = pointerType;
 
         // 터치 이벤트일 경우 스크롤을 위해 이벤트를 그대로 전달
-        if (pointerType === 'touch') {
+        if (pointerType === 'touch' && !e.evt.isPrimary) {
             touchStarted.current = true;
             return;
         }
@@ -149,7 +149,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         const pointerType = e.evt.pointerType;
 
         // 터치 이벤트이고 터치가 시작됐다면 스크롤을 위해 이벤트를 그대로 전달
-        if (pointerType === 'touch' && touchStarted.current) {
+        if (pointerType === 'touch' && !e.evt.isPrimary) {
             return;
         }
 
