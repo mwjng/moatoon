@@ -34,7 +34,6 @@ const Drawing = forwardRef(
         const cutIds = cutsInfo.map(item => item.cutId);
         const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
         const userStory = cutsInfo.filter(cut => cut.memberId === userId);
-        const allPublishers = [publisher, ...subscribers];
 
         // SVG 변환 및 다운로드 함수
         const exportToSVGAndUpload = async () => {
@@ -95,17 +94,7 @@ const Drawing = forwardRef(
                             <div className="rounded-lg mb-4 flex flex-col space-y-6">
                                 {/* Camera component */}
                                 <div className="ml-8">
-                                    {/* <div className="w-full overflow-x-auto flex space-x-4 p-2 bg-gray-100 rounded-xl">
-                                        {subscribers.map((subscriber, index) => (
-                                            <MyCamera
-                                                key={index}
-                                                streamManager={subscriber}
-                                                nickname={subscriber.nickname}
-                                                small
-                                            />
-                                        ))}
-                                    </div> */}
-                                    <CameraCarousel publishers={allPublishers} />
+                                    <CameraCarousel publishers={publisher} subscribers={subscribers} />
                                 </div>
 
                                 {/* Ebook button with increased margin to avoid overlap */}
