@@ -38,66 +38,66 @@ const ToolBar = ({ setPenColor, setStrokeWidth, setMode, undo, redo, clearCanvas
     };
 
     return (
-        <div className="flex ml-10 flex-col items-center space-y-4 backdrop-blur-md bg-white/50 p-4 rounded-lg shadow">
-            <div className="flex flex-col items-center space-y-2">
+        <div className="flex flex-col items-center space-y-2 backdrop-blur-md bg-white/50 p-2 rounded-lg shadow-sm">
+            <div className="flex flex-col items-center space-y-1">
                 <button
                     type="button"
                     onClick={() => handleButtonClick('pen')}
-                    className={`w-12 h-12 flex justify-center items-center hover:bg-gray-300 rounded ${activeButton === 'pen' ? 'bg-blue-100' : ''}`}
+                    className={`w-10 h-10 flex justify-center items-center hover:bg-gray-300 rounded ${activeButton === 'pen' ? 'bg-blue-100' : ''}`}
                 >
-                    <BiPencil size={24} />
+                    <BiPencil size={20} />
                 </button>
                 <button
                     type="button"
                     onClick={() => handleButtonClick('eraser')}
-                    className={`w-12 h-12 flex justify-center items-center hover:bg-gray-300 rounded ${activeButton === 'eraser' ? 'bg-blue-100' : ''}`}
+                    className={`w-10 h-10 flex justify-center items-center hover:bg-gray-300 rounded ${activeButton === 'eraser' ? 'bg-blue-100' : ''}`}
                 >
-                    <BiEraser size={24} />
+                    <BiEraser size={20} />
                 </button>
             </div>
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-1">
                 <button
                     type="button"
                     onClick={undo}
-                    className="w-12 h-12 flex justify-center items-center hover:bg-gray-300 rounded"
+                    className="w-10 h-10 flex justify-center items-center hover:bg-gray-300 rounded"
                 >
-                    <BiUndo size={24} />
+                    <BiUndo size={20} />
                 </button>
                 <button
                     type="button"
                     onClick={redo}
-                    className="w-12 h-12 flex justify-center items-center hover:bg-gray-300 rounded"
+                    className="w-10 h-10 flex justify-center items-center hover:bg-gray-300 rounded"
                 >
-                    <BiRedo size={24} />
+                    <BiRedo size={20} />
                 </button>
                 <button
                     type="button"
                     onClick={clearCanvas}
-                    className="w-12 h-12 flex justify-center items-center hover:bg-gray-300 rounded"
+                    className="w-10 h-10 flex justify-center items-center hover:bg-gray-300 rounded"
                 >
-                    <BiTrash size={24} />
+                    <BiTrash size={20} />
                 </button>
             </div>
-            <div className="flex flex-col items-center space-y-2">
+            <div className="flex flex-col items-center space-y-1">
                 {strokeWidths.map(width => (
                     <button
                         key={width}
                         type="button"
                         onClick={() => handleStrokeButtonClick(width)}
-                        className={`w-8 h-8 hover:bg-gray-300 rounded ${activeStrokeWidth === width ? 'bg-blue-100' : ''}`}
+                        className={`w-7 h-7 hover:bg-gray-300 rounded ${activeStrokeWidth === width ? 'bg-blue-100' : ''}`}
                     >
-                        <img src={strokeIcons[width]} alt={`stroke-${width}`} className="w-6 h-6" />
+                        <img src={strokeIcons[width]} alt={`stroke-${width}`} className="w-5 h-5" />
                     </button>
                 ))}
             </div>
 
             {activeButton === 'pen' && (
-                <ul className="flex flex-col items-center space-y-2">
+                <ul className="flex flex-col items-center space-y-1">
                     {colorArray.map((color, index) => (
-                        <li key={index} className="w-8 h-8 flex justify-center items-center hover:bg-gray-300 rounded">
+                        <li key={index} className="w-7 h-7 flex justify-center items-center hover:bg-gray-300 rounded">
                             <div
                                 onClick={() => handleColorCircleClick(color)}
-                                className={`w-5 h-5 rounded-full border ${color === '#FFFFFF' ? 'border-gray-500' : ''} ${activeColor === color ? 'bg-blue-100' : ''}`}
+                                className={`w-4 h-4 rounded-full border ${color === '#FFFFFF' ? 'border-gray-500' : ''} ${activeColor === color ? 'bg-blue-100' : ''}`}
                                 style={{ backgroundColor: color }}
                             />
                         </li>
@@ -106,7 +106,7 @@ const ToolBar = ({ setPenColor, setStrokeWidth, setMode, undo, redo, clearCanvas
                         type="color"
                         value={activeColor}
                         onChange={handleChangeColor}
-                        className="w-8 h-8 border rounded"
+                        className="w-7 h-7 border rounded"
                     />
                 </ul>
             )}

@@ -322,10 +322,10 @@ function Navigation({
                             </>
                         ) : stage === 'endDrawing' ? (
                             <>
-                                <div className="flex flex-col text-center gap-4">
-                                    <span className="text-2xl font-bold">오늘의 그림</span>
-                                </div>
                                 <div></div>
+                                <div className="flex flex-col text-center gap-4">
+                                    <span className="text-2xl font-bold">마무리 시간</span>
+                                </div>
                                 <div className="flex flex-col text-center gap-4">
                                     <span>남은 시간 {getRemainingTimeFormatted()}</span>
                                     <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 rotate-180">

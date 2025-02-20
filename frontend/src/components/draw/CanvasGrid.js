@@ -83,13 +83,13 @@ const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo, readyStatusResponse
     }, []);
 
     return (
-        <div className="flex justify-center items-center">
-            <div className="p-4 border-2 border-black bg-white" style={{ border: '2px solid black' }}>
-                <div className="grid grid-cols-2 gap-4 w-full h-full">
+        <div className="flex justify-center items-center -mt-14 h-screen overflow-hidden">
+            <div className="p-4 border-2 border-black bg-white max-h-full" style={{ border: '2px solid black' }}>
+                <div className="grid grid-cols-2 gap-4 w-full h-full max-h-full overflow-hidden">
                     {cutsInfo.map(cut => {
                         const cutData = canvasData[cut.cutId] || [];
                         return (
-                            <div key={cut.cutId} className="border-2 border-gray-300 rounded aspect-square">
+                            <div key={cut.cutId} className="border-2 border-gray-300 rounded aspect-square overflow-hidden">
                                 <CanvasAll
                                     key={cut.cutId}
                                     cutId={cut.cutId}

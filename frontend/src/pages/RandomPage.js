@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 export default function RandomPage({ sessionStageData }) {
     const [ready, setReady] = useState(false);
 
-    //const cut = 1; // todo: 내 담당 컷 번호 작성하기
     const userId = useSelector(state => state.user.userInfo.id);
     const cutsState = useSelector(state => state.cuts.cuts);
 
@@ -24,8 +23,16 @@ export default function RandomPage({ sessionStageData }) {
         return () => clearTimeout(timer);
     }, []);
 
+    // 페이지 로드 시 body에 overflow:hidden 추가하고 언마운트 시 제거
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     return (
-        <div className="bg-[#FEFBEB] w-full h-screen">
+        <div className="bg-[#FEFBEB] w-screen h-screen flex flex-col overflow-hidden absolute inset-0">
             <Navigation
                 stage="picking"
                 onTimeOut={handleTimeOut}
@@ -33,11 +40,13 @@ export default function RandomPage({ sessionStageData }) {
                 sessionStartTime={sessionStageData.sessionStartTime}
                 serverTime={sessionStageData.serverTime}
             />
-            {ready ? (
-                <img src={randomStop} style={{ margin: 'auto' }} />
-            ) : (
-                <img src={random} style={{ margin: 'auto' }} />
-            )}
+            <div className="flex-1 flex justify-center items-center -mt-8 p-4">
+                {ready ? (
+                    <img src={randomStop} className="max-h-[80vh] w-auto object-contain" />
+                ) : (
+                    <img src={random} className="max-h-[80vh] w-auto object-contain" />
+                )}
+            </div>
             {ready && <RandomResult cut={cut} />}
         </div>
     );
