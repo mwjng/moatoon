@@ -86,12 +86,12 @@ public class WordService {
 
     @Transactional
     public void removeWord(long memberId, WordIdRequest wordIdRequest) {
-        long wordId = wordIdRequest.getWordId();
+        long myWordId = wordIdRequest.getWordId();
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
 
-        MyWord myWord = myWordRepository.findByIdAndMemberId(memberId, wordId)
+        MyWord myWord = myWordRepository.findById(myWordId)
                 .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
 
         myWord.delete();
