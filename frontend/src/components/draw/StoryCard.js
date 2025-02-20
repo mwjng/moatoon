@@ -29,7 +29,7 @@ const StoryCard = ({ story }) => {
                 {/* Left navigation button */}
                 <button
                     onClick={handlePrev}
-                    className="p-1.5 bg-white rounded-full shadow-md z-20 hover:bg-gray-100 flex-shrink-0 mr-3"
+                    className="p-1.5 bg-white rounded-full shadow-md z-10 hover:bg-gray-100 flex-shrink-0 mr-3"
                     aria-label="Previous story"
                 >
                     <FaChevronLeft size={16} />
@@ -48,7 +48,7 @@ const StoryCard = ({ story }) => {
                 {/* Right navigation button */}
                 <button
                     onClick={handleNext}
-                    className="p-1.5 bg-white rounded-full shadow-md z-20 hover:bg-gray-100 flex-shrink-0 ml-3"
+                    className="p-1.5 bg-white rounded-full shadow-md z-10 hover:bg-gray-100 flex-shrink-0 ml-3"
                     aria-label="Next story"
                 >
                     <FaChevronRight size={16} />
