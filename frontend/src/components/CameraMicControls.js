@@ -83,7 +83,7 @@ function CameraMicControls({ publisher, small }) {
     return (
         <div
             className="w-15 shadow-md items-center justify-center rounded-lg absolute right-0"
-            style={{ height: small ? '200px' : '285px', backgroundColor: '#FDFCDC' }}
+            style={{ height: small ? '100px' : '285px', backgroundColor: '#FDFCDC' }}
         >
             <button onClick={toggleCamera} className="flex flex-col items-center justify-center p-1 text-black">
                 <img src={cameraIcon} alt="camera-icon" className="w-8 h-8" />
