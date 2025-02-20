@@ -127,7 +127,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         lastPointerType.current = pointerType;
 
         // 터치 이벤트일 경우 스크롤을 위해 이벤트를 그대로 전달
-        if (pointerType === 'touch') {
+        if (pointerType === 'touch' && tool !== 'pen') {
             touchStarted.current = true;
             return;
         }
