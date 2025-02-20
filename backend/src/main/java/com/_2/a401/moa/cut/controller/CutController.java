@@ -73,4 +73,9 @@ public class CutController {
         return ResponseEntity.ok().body(cutInfoResponse);
     }
 
+    @DeleteMapping("/temp/delete/{scheduleId}")
+    public ResponseEntity<Void> deleteTempCanvasData(@PathVariable Long scheduleId) {
+        cutService.deleteTempCanvasData(scheduleId);
+        return ResponseEntity.noContent().build();
+    }
 }
