@@ -2,85 +2,84 @@ import React, { useState, useEffect } from 'react';
 import bbi from '../assets/bbi.png';
 import bbi_normal from '../assets/bbi_normal.png';
 import duckduck from '../assets/duckduck.png';
-import cado from '../assets/cado.svg';
+import cado from '../assets/kado.png';
 
 const DeviceResponsiveLayout = ({ children }) => {
-  const [isLandscape, setIsLandscape] = useState(false);
-  const [showOrientationAlert, setShowOrientationAlert] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [showDesktopMessage, setShowDesktopMessage] = useState(false);
+    const [isLandscape, setIsLandscape] = useState(false);
+    const [showOrientationAlert, setShowOrientationAlert] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
+    const [showDesktopMessage, setShowDesktopMessage] = useState(false);
 
-  // Device type detection
-  const detectDeviceType = () => {
-    // Common mobile device detection
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    setIsDesktop(!isMobile);
-    
-    // Handle screen size for desktop separately
-    if (!isMobile) {
-      const minWidth = 800; // Minimum acceptable width for desktop view
-      const minHeight = 600; // Minimum acceptable height for desktop view
-      setShowDesktopMessage(window.innerWidth < minWidth || window.innerHeight < minHeight);
-    }
-  };
+    // Device type detection
+    const detectDeviceType = () => {
+        // Common mobile device detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        setIsDesktop(!isMobile);
 
-  // Screen orientation detection - only for mobile
-  const checkOrientation = () => {
-    // Only check and enforce orientation for mobile devices
-    if (!isDesktop) {
-      // First check using window.orientation if available (more reliable on mobile)
-      if (window.orientation !== undefined) {
-        const orientation = Math.abs(window.orientation);
-        const newIsLandscape = orientation === 90;
-        setIsLandscape(newIsLandscape);
-        setShowOrientationAlert(!newIsLandscape);
-      } else {
-        // Fallback method using dimensions
-        const newIsLandscape = window.innerWidth > window.innerHeight;
-        setIsLandscape(newIsLandscape);
-        setShowOrientationAlert(!newIsLandscape);
-      }
-    } else {
-      // For desktop, we don't enforce orientation, just set the state
-      setIsLandscape(window.innerWidth > window.innerHeight);
-      setShowOrientationAlert(false); // Never show orientation alert on desktop
-    }
-  };
-
-  // Initialize and set up event listeners
-  useEffect(() => {
-    detectDeviceType();
-    checkOrientation();
-    
-    const handleResize = () => {
-      detectDeviceType();
-      checkOrientation();
-    };
-    
-    const handleOrientationChange = () => {
-      checkOrientation();
-    };
-    
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleOrientationChange);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    };
-  }, [isDesktop]);
-
-  // Desktop unsupported screen size message
-  const DesktopSizeMessage = () => {
-    const bounceStyle = {
-      animation: 'bigBounce 1s infinite',
+        // Handle screen size for desktop separately
+        if (!isMobile) {
+            const minWidth = 800; // Minimum acceptable width for desktop view
+            const minHeight = 600; // Minimum acceptable height for desktop view
+            setShowDesktopMessage(window.innerWidth < minWidth || window.innerHeight < minHeight);
+        }
     };
 
-    return (
-      <div className="fixed top-0 left-0 right-0 bottom-0 bg-amber-50 z-50 flex flex-col items-center justify-center px-4">
-        
-        <style>
-          {`
+    // Screen orientation detection - only for mobile
+    const checkOrientation = () => {
+        // Only check and enforce orientation for mobile devices
+        if (!isDesktop) {
+            // First check using window.orientation if available (more reliable on mobile)
+            if (window.orientation !== undefined) {
+                const orientation = Math.abs(window.orientation);
+                const newIsLandscape = orientation === 90;
+                setIsLandscape(newIsLandscape);
+                setShowOrientationAlert(!newIsLandscape);
+            } else {
+                // Fallback method using dimensions
+                const newIsLandscape = window.innerWidth > window.innerHeight;
+                setIsLandscape(newIsLandscape);
+                setShowOrientationAlert(!newIsLandscape);
+            }
+        } else {
+            // For desktop, we don't enforce orientation, just set the state
+            setIsLandscape(window.innerWidth > window.innerHeight);
+            setShowOrientationAlert(false); // Never show orientation alert on desktop
+        }
+    };
+
+    // Initialize and set up event listeners
+    useEffect(() => {
+        detectDeviceType();
+        checkOrientation();
+
+        const handleResize = () => {
+            detectDeviceType();
+            checkOrientation();
+        };
+
+        const handleOrientationChange = () => {
+            checkOrientation();
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleOrientationChange);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleOrientationChange);
+        };
+    }, [isDesktop]);
+
+    // Desktop unsupported screen size message
+    const DesktopSizeMessage = () => {
+        const bounceStyle = {
+            animation: 'bigBounce 1s infinite',
+        };
+
+        return (
+            <div className="fixed top-0 left-0 right-0 bottom-0 bg-amber-50 z-50 flex flex-col items-center justify-center px-4">
+                <style>
+                    {`
             @keyframes bigBounce {
               0%, 100% {
                 transform: translateY(0);
@@ -90,102 +89,98 @@ const DeviceResponsiveLayout = ({ children }) => {
               }
             }
           `}
-        </style>
+                </style>
 
-        {/* Characters container */}
-        <div className="flex justify-center items-end mb-8" style={{ marginTop: '-20px' }}>
-          <div className="w-24 h-24 -mr-10">
-            <img
-              src={bbi_normal}
-              alt="character1"
-              className="w-full h-full object-contain"
-              style={{ ...bounceStyle }}
-            />
-          </div>
-          <div className="w-40 h-40 relative z-10">
-            <img
-              src={duckduck}
-              alt="character2"
-              className="w-full h-full object-contain"
-              style={{ ...bounceStyle, animationDelay: '0.2s' }}
-            />
-          </div>
-          <div className="w-24 h-24 -ml-11">
-            <img
-              src={cado}
-              alt="character3"
-              className="w-full h-full object-contain"
-              style={{ ...bounceStyle, animationDelay: '0.4s' }}
-            />
-          </div>
-        </div>
-        
-        {/* Message */}
-        <div className="text-center mb-8">
-          <p className="text-xl font-bold text-gray-800 mb-2">지원하지 않는 화면 크기입니다.</p>
-          <p className="text-base text-gray-600">더 큰 화면에서 이용해주세요.</p>
-        </div>
-      </div>
-    );
-  };
-
-  // Mobile portrait orientation alert
-  const MobileOrientationAlert = () => {
-    return (
-      <div className="orientation-alert">
-        <div className="alert-card">
-          <div className="content-container">
-            <div className="bbi-with-phone">
-              <img 
-                src={bbi}
-                alt="BBI 캐릭터" 
-                className="bbi-character mr-4"
-              />
-              
-              <div className="phone-wrapper mb-6">
-                <div className="phone-icon">
-                  <div className="phone-screen"></div>
+                {/* Characters container */}
+                <div className="flex justify-center items-end mb-8" style={{ marginTop: '-20px' }}>
+                    <div className="w-24 h-24 -mr-10">
+                        <img
+                            src={bbi_normal}
+                            alt="character1"
+                            className="w-full h-full object-contain"
+                            style={{ ...bounceStyle }}
+                        />
+                    </div>
+                    <div className="w-40 h-40 relative z-10">
+                        <img
+                            src={duckduck}
+                            alt="character2"
+                            className="w-full h-full object-contain"
+                            style={{ ...bounceStyle, animationDelay: '0.2s' }}
+                        />
+                    </div>
+                    <div className="w-24 h-24 -ml-11">
+                        <img
+                            src={cado}
+                            alt="character3"
+                            className="w-full h-full object-contain"
+                            style={{ ...bounceStyle, animationDelay: '0.4s' }}
+                        />
+                    </div>
                 </div>
-              </div>
-            </div>
-            
-            <div className="message-container">
-              <div className="message-bubble">
-                <p className="main-message">화면을 가로로 돌려주세요</p>
-                <p className="sub-message">가로 모드로 볼 수 있어요</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
-  // 콘텐츠가 보여야 하는지 여부 확인
-  const shouldShowContent = () => {
-    return (isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape);
-  };
+                {/* Message */}
+                <div className="text-center mb-8">
+                    <p className="text-xl font-bold text-gray-800 mb-2">지원하지 않는 화면 크기입니다.</p>
+                    <p className="text-base text-gray-600">더 큰 화면에서 이용해주세요.</p>
+                </div>
+            </div>
+        );
+    };
 
-  return (
-    <div className="app-container">
-      {/* 항상 children을 렌더링하되 display 속성으로 숨김/표시 전환 */}
-      <div
-        style={{
-          display: shouldShowContent() ? 'block' : 'none',
-          width: '100%',
-          height: '100%'
-        }}
-      >
-        {children}
-      </div>
-      
-      {/* Desktop: Show unsupported screen size message if needed */}
-      {isDesktop && showDesktopMessage && <DesktopSizeMessage />}
-      
-      {/* Mobile: Show orientation alert if in portrait mode */}
-      {!isDesktop && showOrientationAlert && <MobileOrientationAlert />}
-      
-      <style>{`
+    // Mobile portrait orientation alert
+    const MobileOrientationAlert = () => {
+        return (
+            <div className="orientation-alert">
+                <div className="alert-card">
+                    <div className="content-container">
+                        <div className="bbi-with-phone">
+                            <img src={bbi} alt="BBI 캐릭터" className="bbi-character mr-4" />
+
+                            <div className="phone-wrapper mb-6">
+                                <div className="phone-icon">
+                                    <div className="phone-screen"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="message-container">
+                            <div className="message-bubble">
+                                <p className="main-message">화면을 가로로 돌려주세요</p>
+                                <p className="sub-message">가로 모드로 볼 수 있어요</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // 콘텐츠가 보여야 하는지 여부 확인
+    const shouldShowContent = () => {
+        return (isDesktop && !showDesktopMessage) || (!isDesktop && isLandscape);
+    };
+
+    return (
+        <div className="app-container">
+            {/* 항상 children을 렌더링하되 display 속성으로 숨김/표시 전환 */}
+            <div
+                style={{
+                    display: shouldShowContent() ? 'block' : 'none',
+                    width: '100%',
+                    height: '100%',
+                }}
+            >
+                {children}
+            </div>
+
+            {/* Desktop: Show unsupported screen size message if needed */}
+            {isDesktop && showDesktopMessage && <DesktopSizeMessage />}
+
+            {/* Mobile: Show orientation alert if in portrait mode */}
+            {!isDesktop && showOrientationAlert && <MobileOrientationAlert />}
+
+            <style>{`
         .app-container {
           width: 100%;
           height: 100%;
@@ -308,8 +303,8 @@ const DeviceResponsiveLayout = ({ children }) => {
           30%, 70% { transform: rotate(90deg); }
         }
       `}</style>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default DeviceResponsiveLayout;

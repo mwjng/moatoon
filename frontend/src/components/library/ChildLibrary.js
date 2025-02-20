@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import Navigation from '../Navigation.js';
 import LibraryBookCard from './LibraryBookCard.js';
-import cado from '../../assets/cado.svg';
+import cado from '../../assets/kado.png';
 import useFetchBooks from '../../hooks/useLibraryBooks.js'; // 서버 페이징 적용된 훅
 import { debounce } from 'lodash';
 import { useSelector } from 'react-redux';
@@ -20,9 +20,9 @@ function ChildLibraryPage() {
             </div>
             <div className="shadow-md bg-white rounded-xl p-4 mt-6 mb-6 flex items-center justify-center">
                 <div className="flex items-center gap-2">
-                    <img src={cado} alt="아보카도" className="w-20 h-20" />
-                    <span className="text-xl font-bold">{userInfo.nickname}의 도서관</span>
-                    <img src={cado} alt="아보카도" className="w-20 h-20" />
+                    <img src={cado} alt="아보카도" className="h-16" />
+                    <span className="text-xl font-bold m-3">{userInfo.nickname}의 도서관</span>
+                    <img src={cado} alt="아보카도" className="h-16" />
                 </div>
             </div>
             <div className="text-center mb-6 text-gray-600">에피소드가 완료된 그림책은 여기서 보관돼요</div>

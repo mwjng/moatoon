@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Btn from '../../components/member/Btn';
 import duck from '../../assets/duckduck.png';
 import AuthModal from '../../components/member/AuthModal';
@@ -38,7 +38,7 @@ export default function ManagerModify(props) {
             placeholder: '새로운 비밀번호',
             type: 'password',
             required: true,
-            comment: '영어 대소문자, 특수문자, 숫자 포함 8자 이상 20자 이내',
+            comment: '',
             cmtColor: '#FF0000',
         },
         {
@@ -79,7 +79,29 @@ export default function ManagerModify(props) {
             cmtColor: '#000',
         },
     ]);
+    useEffect(() => {
+        const password = modifyState.find(input => input.id === 'password')?.value || '';
+        const confirmPassword = modifyState.find(input => input.id === 'confirmPassword')?.value || '';
 
+        let comment = '';
+        let cmtColor = '#FF0000';
+
+        if (!confirmPassword) {
+            comment = '비밀번호 확인 값을 입력해주세요.';
+        } else if (password === confirmPassword) {
+            comment = '비밀번호가 일치합니다.';
+            cmtColor = '#009951';
+        } else {
+            comment = '비밀번호가 일치하지 않습니다.';
+        }
+
+        setModifyState(prevState =>
+            prevState.map(input => (input.id === 'confirmPassword' ? { ...input, comment, cmtColor } : input)),
+        );
+    }, [
+        modifyState.find(input => input.id === 'password')?.value,
+        modifyState.find(input => input.id === 'confirmPassword')?.value,
+    ]);
     const changeValue = (key, value) => {
         setModifyState(prevState => prevState.map(input => (input.id === key ? { ...input, value } : input)));
 
