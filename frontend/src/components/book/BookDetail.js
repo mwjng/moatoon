@@ -139,6 +139,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
             setSelectedNewChildren([]);
 
             setAlertMessage('등록되었습니다.');
+            onPartyUpdate();
             setAlertModalState(true);
             setConfirmModalState(false);
         } catch (err) {
@@ -171,6 +172,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
             const updatedData = await getPartyDetail(partyId);
             setPartyDetails(updatedData);
 
+            onPartyUpdate();
             setAlertMessage('삭제되었습니다.');
             setAlertModalState(true);
         } catch (err) {
