@@ -27,7 +27,7 @@ const RoundText = () => (
     </svg>
 );
 
-const QuizEndPage = ({ onEndStage }) => {
+const QuizEndPage = ({ leaveSession }) => {
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(7);
     const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -45,7 +45,7 @@ const QuizEndPage = ({ onEndStage }) => {
 
     useEffect(async () => {
         if (shouldRedirect) {
-            onEndStage();
+            leaveSession();
         }
     }, [shouldRedirect]);
 
