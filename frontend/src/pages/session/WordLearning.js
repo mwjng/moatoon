@@ -87,7 +87,7 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
                 <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
                     <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
-                        <SubscriberVideo key={index} streamManager={subscriber} />
+                        <SubscriberVideo key={index} streamManager={subscriber} small />
                     ))}
                 </div>
                 <WordInfo
