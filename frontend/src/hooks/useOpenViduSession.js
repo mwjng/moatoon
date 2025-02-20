@@ -5,6 +5,7 @@ import utf8 from 'utf8';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 
 const useOpenViduSession = () => {
     const [session, setSession] = useState(null);

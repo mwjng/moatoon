@@ -111,57 +111,49 @@ const DrawingPage = ({
     };
 
     return (
-        <div className="h-screen bg-light-cream-yellow">
-            <div className="w-full mb-5">
-                <Navigation
-                    stage="drawing"
-                    onTimeNotification={handleTimeNotification}
-                    stageDuration={sessionStageData.sessionDuration}
-                    sessionStartTime={sessionStageData.sessionStartTime}
-                    serverTime={sessionStageData.serverTime}
-                    onTimeOut={handleTimeOut}
-                />
+        <div className="h-screen overflow-hidden bg-light-cream-yellow">
+            <Navigation
+                stage="drawing"
+                onTimeNotification={handleTimeNotification}
+                stageDuration={sessionStageData.sessionDuration}
+                sessionStartTime={sessionStageData.sessionStartTime}
+                serverTime={sessionStageData.serverTime}
+                onTimeOut={handleTimeOut}
+            />
+            
+            <div className="h-[calc(100vh-64px)] -mt-6">
+                {cutsState.loading && <p>Loading...</p>}
+                {cutsState.error && <p>Error: {cutsState.error}</p>}
+                {!cutsState.loading &&
+                    !cutsState.error &&
+                    cutsState.cuts.length > 0 &&
+                    (isDrawing ? (
+                        <Drawing
+                            ref={drawingRef}
+                            toggleView={toggleView}
+                            cutsInfo={cutsState.cuts}
+                            userId={userId}
+                            sendReady={sendReady}
+                            publisher={publisher}
+                            nickname={nickname}
+                            isFirstDrawingVisit={isFirstDrawingVisit}
+                            setIsFirstDrawingVisit={setIsFirstDrawingVisit}
+                        />
+                    ) : (
+                        <Overview
+                            toggleView={toggleView}
+                            cutsInfo={cutsState.cuts}
+                            subscribers={subscribers}
+                            publisher={publisher}
+                            nickname={nickname}
+                            isFirstOverviewVisit={isFirstOverviewVisit}
+                            setIsFirstOverviewVisit={setIsFirstOverviewVisit}
+                            readyStatusResponse={readyStatusResponse}
+                        />
+                    ))}
+                {isLoading && <Loading />}
+                {timeNotification && <TimeNotification message={timeNotification} />}
             </div>
-            {cutsState.loading && <p>Loading...</p>}
-            {cutsState.error && <p>Error: {cutsState.error}</p>}
-            {!cutsState.loading &&
-                !cutsState.error &&
-                cutsState.cuts.length > 0 &&
-                (isDrawing ? (
-                    <Drawing
-                        ref={drawingRef}
-                        toggleView={toggleView}
-                        cutsInfo={cutsState.cuts}
-                        userId={userId}
-                        sendReady={sendReady}
-                        publisher={publisher}
-                        nickname={nickname}
-                        isFirstDrawingVisit={isFirstDrawingVisit}
-                        setIsFirstDrawingVisit={setIsFirstDrawingVisit}
-                    />
-                ) : (
-                    <Overview
-                        toggleView={toggleView}
-                        cutsInfo={cutsState.cuts}
-                        subscribers={subscribers}
-                        publisher={publisher}
-                        nickname={nickname}
-                        isFirstOverviewVisit={isFirstOverviewVisit}
-                        setIsFirstOverviewVisit={setIsFirstOverviewVisit}
-                        readyStatusResponse={readyStatusResponse}
-                    />
-                ))}
-            {isLoading && <Loading />}
-            {/* Export SVG 버튼
-            <div className="flex justify-center mt-5">
-                <button
-                    className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600"
-                    onClick={handleExportSVG} // exportToSVGAndUpload 호출
-                >
-                    SVG 내보내기 확인
-                </button>
-            </div> */}
-            {timeNotification && <TimeNotification message={timeNotification} />}
         </div>
     );
 };
