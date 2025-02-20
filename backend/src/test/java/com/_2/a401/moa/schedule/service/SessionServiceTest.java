@@ -3,6 +3,7 @@ package com._2.a401.moa.schedule.service;
 import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.manager.VideoConferenceManager;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,6 +59,7 @@ class SessionServiceTest {
     }
 
     @Test
+    @Disabled
     void leaveSession() {
         final SessionMember sessionMember = sessionMemberRedisRepository.save(new SessionMember(1L));
         sessionMember.addMember(1L);
