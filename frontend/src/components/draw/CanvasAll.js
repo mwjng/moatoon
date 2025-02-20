@@ -37,7 +37,7 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
     return (
         <div className="relative w-[265px] h-[265px] border-2 border-black border-solid bg-white">
             {nickname && (
-                <button className="absolute left-2 px-2.5 py-0.5 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-5 text-sm">
+                <button className="absolute left-2 px-2.5 py-0.5 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-10 text-sm">
                     {nickname}
                 </button>
             )}
