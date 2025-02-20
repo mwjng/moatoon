@@ -5,7 +5,6 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 
 function CameraCarousel({ publisher, subscribers, nickname }) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const totalParticipants = publishers.length + subscribers.length;
 
     const prevCamera = () => {
         setCurrentIndex(prev => (prev === 0 ? subscribers.length : prev - 1));
