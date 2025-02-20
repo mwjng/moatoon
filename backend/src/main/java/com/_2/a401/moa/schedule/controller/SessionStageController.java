@@ -8,6 +8,7 @@ import com._2.a401.moa.schedule.service.SessionService;
 import com._2.a401.moa.schedule.service.SessionStageService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class SessionStageController {
     private final JwtUtil jwtUtil;
     private final SessionStageService sessionStageService;
@@ -47,8 +49,9 @@ public class SessionStageController {
 
     @MessageMapping("/ready")
     public void updateReadyStatus(ReadyRequest request) {
+        log.info(request.toString());
         String token = request.accessToken();
         Long memberId = jwtUtil.getMemberId(token);
-        sessionStageService.updateReadyStatus(request.scheduleId(), memberId, true); // 확장성(ready 해제)을 위해 true 파라미터도 넣음
+        sessionStageService.updateReadyStatus(request.scheduleId(), memberId, request.status()); // 확장성(ready 해제)을 위해 true 파라미터도 넣음
     }
 }

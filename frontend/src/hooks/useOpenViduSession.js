@@ -1,32 +1,54 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import base64 from 'base-64';
 import utf8 from 'utf8';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
-import { useNavigate } from 'react-router';
-import { useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
 
 const useOpenViduSession = () => {
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
-    const [nickname, setNickname] = useState('게스트');
     const accessToken = localStorage.getItem('accessToken');
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        if (accessToken) {
-            try {
-                const payloadBase64 = accessToken.split('.')[1];
-                const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
-                console.log(decodedPayload);
-                setNickname(decodedPayload.nickname || '게스트');
-            } catch (error) {
-                console.error('JWT 파싱 에러', error);
-            }
+    const parseNicknameFromToken = () => {
+        if (!accessToken) return '게스트';
+
+        try {
+            console.log('accessToken: ', accessToken);
+            const payloadBase64 = accessToken.split('.')[1];
+            console.log('payloadBase64: ', payloadBase64);
+            const base64Decode = base64.decode(payloadBase64);
+            console.log('base64Decode: ', base64Decode);
+            const utf8Decode = utf8.decode(base64Decode);
+            console.log('utf8Decode: ', utf8Decode);
+            const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
+            console.log('decodedPayload', decodedPayload);
+
+            const decoded = jwtDecode(accessToken);
+            console.log('decoded: ', decoded);
+            console.log('nickname: ', decoded.nickname);
+            return decoded.nickname || '게스트';
+        } catch (error) {
+            console.error('JWT 파싱 에러', error);
+            return '게스트';
         }
-    }, [accessToken]);
+    };
+    const nickname = parseNicknameFromToken();
+
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         try {
+    //             const payloadBase64 = accessToken.split('.')[1];
+    //             const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
+    //             console.log(decodedPayload);
+    //             setNickname(decodedPayload.nickname || '게스트');
+    //         } catch (error) {
+    //             console.error('JWT 파싱 에러', error);
+    //         }
+    //     }
+    // }, [accessToken]);
 
     const joinSession = async scheduleId => {
         const openVidu = new OpenVidu();
