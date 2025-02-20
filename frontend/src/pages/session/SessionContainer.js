@@ -277,7 +277,7 @@ const SessionContainer = () => {
                     />
                 );
             case 'QUIZ_END':
-                return <QuizEndPage />;
+                return <QuizEndPage onEndStage={handleLeaveSession} />;
             default:
                 //navigate('/home');
                 return null;

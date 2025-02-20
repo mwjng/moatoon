@@ -12,7 +12,6 @@ const useOpenViduSession = () => {
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
     const [nickname, setNickname] = useState('게스트');
-    const nicknameRef = useRef('게스트');
     const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
 
@@ -23,7 +22,6 @@ const useOpenViduSession = () => {
                 const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
                 console.log(decodedPayload);
                 setNickname(decodedPayload.nickname || '게스트');
-                nicknameRef.current = decodedPayload.nickname || '게스트';
             } catch (error) {
                 console.error('JWT 파싱 에러', error);
             }
@@ -46,8 +44,8 @@ const useOpenViduSession = () => {
         try {
             const token = await getSessionToken(scheduleId);
             console.log('token: ', token.token);
-            console.log('nickname: ', nicknameRef.current);
-            await newSession.connect(token.token, { clientData: nicknameRef.current });
+            console.log('nickname: ', nickname);
+            await newSession.connect(token.token, { clientData: nickname });
 
             const newPublisher = await openVidu.initPublisherAsync(undefined, {
                 audioSource: undefined,
@@ -76,7 +74,7 @@ const useOpenViduSession = () => {
 
     const leaveSession = async scheduleId => {
         if (session) {
-            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${scheduleId}/session/leave`, {
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/schedules/${scheduleId}/session/leave`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             session.disconnect();

@@ -2,6 +2,8 @@ package com._2.a401.moa.schedule.service;
 
 import com._2.a401.moa.common.exception.ExceptionCode;
 import com._2.a401.moa.common.exception.MoaException;
+import com._2.a401.moa.cut.dto.response.CutInfoResponse;
+import com._2.a401.moa.cut.service.CutService;
 import com._2.a401.moa.cut.service.DrawingService;
 import com._2.a401.moa.party.domain.Party;
 import com._2.a401.moa.party.domain.PartyState;
@@ -27,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com._2.a401.moa.common.exception.ExceptionCode.INVALID_PARTY;
 import static com._2.a401.moa.schedule.domain.FullSessionStage.WAITING;
@@ -47,6 +50,7 @@ public class SessionStageService {
     private final PartyRepository partyRepository;
     private final SessionService sessionService;
     private final TransactionTemplate transactionTemplate;
+    private final CutService cutService;
 
     public void dummyRedis(Long scheduleId, List<Long> memberIds) {
         final Session session = new Session(scheduleId, "openviduSessionId", WAITING, LocalDateTime.now());
@@ -233,6 +237,9 @@ public class SessionStageService {
 
     // 세션 종료되었을 때 실행되는 작업들
     private void handleSessionDone(Long scheduleId) {
+
+        // 필요없는 컷 redis 데이터 삭제
+        cutService.deleteTempCanvasData(scheduleId);
 
         // 1. 퀴즈 참여 안한 인원에게 메일 보냄
         handleUncompletedQuizMembers(scheduleId);

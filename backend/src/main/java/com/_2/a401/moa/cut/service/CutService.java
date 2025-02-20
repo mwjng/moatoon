@@ -80,6 +80,26 @@ public class CutService {
         }
     }
 
+    public void deleteTempCanvasData(Long scheduleId) {
+        List<Long> cutIds=getCutsInfo(scheduleId)
+                .stream()
+                .map(CutInfoResponse::getCutId)
+                .collect(Collectors.toList());
+
+        if (cutIds == null || cutIds.isEmpty()) {
+            throw new MoaException(ExceptionCode.INVALID_REQUEST);
+        }
+
+        // 삭제할 Redis 키 리스트 생성
+        List<String> keys = cutIds.stream()
+                .map(id -> CACHE_PREFIX + id)
+                .collect(Collectors.toList());
+
+        // Redis에서 일괄 삭제
+        redisTemplate.delete(keys);
+    }
+
+
     @Transactional
     public String savePicture(Long cutId, MultipartFile file) {
         String cutFileUrl = s3Service.upload(file);
