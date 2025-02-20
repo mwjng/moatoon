@@ -41,6 +41,7 @@ public class WordService {
     private final MemberRepository memberRepository;
 
     public MyWordsResponse getMyWords(Long memberId, Integer page, String keyword) {
+        log.info("WordService.getMyWords - memberId: {}, page: {}, keyword: {}", memberId, page, keyword);
         Long totalCount = myWordRepository.countAll(memberId, keyword);
         int totalPage = (int) (totalCount % 2) == 0 ? (int) (totalCount / 2) : (int) (totalCount / 2) + 1;
         int searchPage;
@@ -52,16 +53,14 @@ public class WordService {
         } else {
             searchPage = 1;
         }
+        log.info("totalCount: {}, totalPage: {}, searchPage: {}", totalCount, totalPage, searchPage);
 
         List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, searchPage - 1, keyword);
-
-        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
-        if (myWordExamples.isEmpty()) {
-            return MyWordsResponse.builder()
-                    .myWordWithExamples(myWordWithExamples)
-                    .build();
+        for (MyWordExample myWordExample: myWordExamples) {
+            log.info("myWordExample: {}", myWordExample);
         }
 
+        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
         for (int i = 0; i < myWordExamples.size(); i += 2) {
             List<String> examples = new ArrayList<>();
             examples.add(myWordExamples.get(i).getExample());
@@ -74,6 +73,9 @@ public class WordService {
                     .failCount(myWordExamples.get(i).getFailCount())
                     .examples(examples)
                     .build());
+        }
+        for (MyWordWithExamples myWordWithExamples1 : myWordWithExamples) {
+            log.info("myWordWithExamples: {}", myWordWithExamples1);
         }
 
         return MyWordsResponse.builder()
