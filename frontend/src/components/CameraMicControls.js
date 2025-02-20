@@ -87,14 +87,26 @@ function CameraMicControls({ publisher, small }) {
         >
             <button onClick={toggleCamera} className="flex flex-col items-center justify-center p-1 text-black">
                 <img src={cameraIcon} alt="camera-icon" className="w-8 h-8" />
-                <span className="mt-1 text-sm">카메라</span>
-                <span className="mt-1 text-sm">{cameraText}</span>
+                {small ? (
+                    <></>
+                ) : (
+                    <>
+                        <span className="mt-1 text-sm">카메라</span>
+                        <span className="mt-1 text-sm">{cameraText}</span>
+                    </>
+                )}
             </button>
 
             <button onClick={toggleMic} className="flex flex-col items-center justify-center text-black p-1">
                 <img src={micIcon} alt="mic-icon" className="w-8 h-8" />
-                <span className="mt-1 text-sm">마이크</span>
-                <span className="mt-1 text-sm">{micText}</span>
+                {small ? (
+                    <></>
+                ) : (
+                    <>
+                        <span className="mt-1 text-sm">마이크</span>
+                        <span className="mt-1 text-sm">{micText}</span>
+                    </>
+                )}
             </button>
             {small ? (
                 <></>

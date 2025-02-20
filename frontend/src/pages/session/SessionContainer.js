@@ -159,12 +159,14 @@ const SessionContainer = () => {
     useEffect(() => {
         console.log('세션 변경 감지');
         if (sessionTransferResponse?.nextSessionStage) {
-            const sessionStartTime = sessionTransferResponse.sessionStartTime ? 
-            new Date(sessionTransferResponse.sessionStartTime) : new Date();
-        
-            const serverTime = sessionTransferResponse.serverTime ?
-                new Date(sessionTransferResponse.serverTime) : new Date();
-                
+            const sessionStartTime = sessionTransferResponse.sessionStartTime
+                ? new Date(sessionTransferResponse.sessionStartTime)
+                : new Date();
+
+            const serverTime = sessionTransferResponse.serverTime
+                ? new Date(sessionTransferResponse.serverTime)
+                : new Date();
+
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
                 sessionStartTime: sessionStartTime,

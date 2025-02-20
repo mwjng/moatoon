@@ -73,7 +73,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
                 <div className="flex flex-col mt-4 gap-8 content-evenly">
                     <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
-                        <SubscriberVideo key={index} streamManager={subscriber} />
+                        <SubscriberVideo key={index} streamManager={subscriber} small />
                     ))}
                 </div>
 
