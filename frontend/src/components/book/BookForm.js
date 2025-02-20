@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchKeywords } from '../../api/party';
-import { GiCancel, } from 'react-icons/gi';
-import { FaRegQuestionCircle } from "react-icons/fa";
+import { GiCancel } from 'react-icons/gi';
+import { FaRegQuestionCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import AlertModal from '../../components/common/AlertModal';
 
@@ -63,26 +63,26 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         }
     };
 
-    const explainTime= () => {
-        setModalText("세션은 시작 가능일 이후, 선택한 요일마다 반복됩니다.");
+    const explainTime = () => {
+        setModalText('세션은 시작 가능일 이후, 선택한 요일마다 반복됩니다.');
         setModalState(true);
-    }
+    };
 
     // 시간 드롭다운 옵션 생성 (09:00 ~ 22:00, 30분 단위)
     const generateTimeOptions = () => {
         let times = [];
 
         // [원래 코드]
-        // for (let hour = 9; hour <= 22; hour++) {
-        //     times.push(`${String(hour).padStart(2, '0')}:00`);
-        //     if (hour < 22) times.push(`${String(hour).padStart(2, '0')}:30`);
-        // }
+        for (let hour = 9; hour <= 22; hour++) {
+            times.push(`${String(hour).padStart(2, '0')}:00`);
+            if (hour < 22) times.push(`${String(hour).padStart(2, '0')}:30`);
+        }
 
         // [개발용 임시] 0:00~23:30까지지
-        for (let hour = 0; hour < 24; hour++) {
-            times.push(`${String(hour).padStart(2, '0')}:00`);
-            if (hour < 24) times.push(`${String(hour).padStart(2, '0')}:30`);
-        }
+        // for (let hour = 0; hour < 24; hour++) {
+        //     times.push(`${String(hour).padStart(2, '0')}:00`);
+        //     if (hour < 24) times.push(`${String(hour).padStart(2, '0')}:30`);
+        // }
 
         return times;
     };
@@ -141,7 +141,7 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                 keyword: genres.find(g => g.id === parseInt(genre))?.keyword || '',
             },
 
-            difficulty: parseInt(level.match(/Lv(\d+)/)[1])
+            difficulty: parseInt(level.match(/Lv(\d+)/)[1]),
         });
     };
 
@@ -224,13 +224,12 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
                 </div>
                 {/* 요일 선택 */}
                 <div className="flex items-center">
-                    
                     <label htmlFor="select-day" className="w-[120px] relative flex items-center gap-2">
                         <p>진행 요일</p>
-                        <FaRegQuestionCircle 
+                        <FaRegQuestionCircle
                             onClick={explainTime}
-                            style={{cursor:"pointer"}}
-                            className='text-[#bbb] text-[16px]'
+                            style={{ cursor: 'pointer' }}
+                            className="text-[#bbb] text-[16px]"
                         />
                     </label>
 
