@@ -304,9 +304,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                 <Stage
                     width={600}
                     height={600}
-                    onMouseDown={handlePointerDown}
-                    onMouseMove={handlePointerMove}
-                    onMouseUp={handlePointerUp}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
                     style={{ border: '2px solid black', touchAction: 'auto' }}
                     ref={stageRef}
                 >
