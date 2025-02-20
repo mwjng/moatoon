@@ -106,12 +106,12 @@ export default function ManagerRegistPage() {
         let comment = '';
         let cmtColor = '#FF0000';
 
-        if (!confirmPassword) {
+        if (!confirmPassword && password) {
             comment = '비밀번호 확인 값을 입력해주세요.';
-        } else if (password === confirmPassword) {
+        } else if (password && confirmPassword && password === confirmPassword) {
             comment = '비밀번호가 일치합니다.';
             cmtColor = '#009951';
-        } else {
+        } else if (password && confirmPassword && password !== confirmPassword) {
             comment = '비밀번호가 일치하지 않습니다.';
         }
 
