@@ -25,8 +25,8 @@ function SubscriberVideo({ streamManager, small = false }) {
         <div
             className="rounded-3xl flex items-center justify-center bg-gray-300 text-black relative"
             style={{
-                height: small ? '100px' : '200px',
-                width: small ? '150px' : '250px',
+                height: small ? '140px' : '200px',
+                width: small ? '190px' : '250px',
             }}
         >
             <video ref={videoRef} autoPlay className="object-cover w-full h-full rounded-3xl" />
