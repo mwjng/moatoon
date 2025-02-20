@@ -7,10 +7,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 
 const useOpenViduSession = () => {
+    const userInfo = useSelector(state => state.user.userInfo);
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
-    const [nickname, setNickname] = useState('게스트');
+    const [nickname, setNickname] = useState(userInfo.nickname);
     const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
 
@@ -71,7 +72,7 @@ const useOpenViduSession = () => {
 
     const leaveSession = async scheduleId => {
         if (session) {
-            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${scheduleId}/session/leave`, {
+            await axios.delete(`${process.env.REACT_APP_SERVER_URL}/schedules/${scheduleId}/session/leave`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             session.disconnect();

@@ -89,7 +89,7 @@ function ManagerLibraryPage() {
                             return rows;
                         }, [])
                         .map((row, rowIndex) => (
-                            <div key={rowIndex} className={`w-full py-4 ${backgroundColors[rowIndex % 3]}`}>
+                            <div key={rowIndex} className={`w-full gap-6 py-12 ${backgroundColors[rowIndex % 3]}`}>
                                 {/* 책 리스트 컨테이너 (가로 제한 및 중앙 정렬) */}
                                 <div className="max-w-[1000px] mx-auto grid grid-cols-5 gap-2">
                                     {row.map(book => (

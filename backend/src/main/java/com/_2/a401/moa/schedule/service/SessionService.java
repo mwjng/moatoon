@@ -14,6 +14,7 @@ import com._2.a401.moa.schedule.repository.ScheduleRepository;
 import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import com._2.a401.moa.schedule.repository.SessionRedisRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import static java.time.LocalDateTime.now;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class SessionService {
 
     private static final Long MAX_SESSION_CAPACITY = 4L;
@@ -41,15 +43,19 @@ public class SessionService {
     private final PartyRepository partyRepository;
 
     public synchronized SessionTokenResponse join(final Member member, final Long scheduleId) {
+        log.info("SessionService.SessionTokenResponse - member: {}, scheduleId: {}", member.getId(), scheduleId);
         validateSessionJoin(member, scheduleId);
+        log.info("validate success");
         final Session session = sessionRedisRepository.fetchByScheduleId(scheduleId);
         if (Objects.isNull(session.getSessionId())) {
+            log.info("create session");
             final String sessionId = videoConferenceManager.createSession();
             session.updateSessionId(sessionId);
             sessionRedisRepository.save(session);
         }
         final String token = videoConferenceManager.createConnection(session.getSessionId());
         final SessionMember sessionMember = sessionMemberRedisRepository.fetchByScheduleId(scheduleId);
+        log.info("token: {}, sessionMember: {}", token, sessionMember.getSessionMembers());
         sessionMember.addMember(member.getId());
         sessionMemberRedisRepository.save(sessionMember);
         return new SessionTokenResponse(token);
