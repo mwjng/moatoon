@@ -18,6 +18,7 @@ const MyWordPage = () => {
     const [showHint, setShowHint] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
     const [selectedMyWordId, setSelectedMyWordId] = useState(null);
+    const [selectedMyWord, setSelectedMyWord] = useState(null);
 
     const handleHint = () => {
         setShowHint(!showHint);
@@ -42,8 +43,9 @@ const MyWordPage = () => {
         updateWords();
     };
 
-    const handleRemoveMyWord = wordId => {
+    const handleRemoveMyWord = (wordId, word) => {
         setSelectedMyWordId(wordId);
+        setSelectedMyWord(word);
         setDeleteModal(true);
     };
 
@@ -76,7 +78,7 @@ const MyWordPage = () => {
         <>
             <ConfirmModal
                 modalState={deleteModal}
-                text="로그아웃 하시겠습니까?"
+                text={`"${selectedMyWord}" 꼭 기억하자!`}
                 cancelHandler={cancelModal}
                 confirmHandler={removeMyWord}
             />
