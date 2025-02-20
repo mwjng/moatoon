@@ -9,7 +9,7 @@ import MyCamera from '../MyCamera.js';
 
 const Drawing = forwardRef(
     (
-        { toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname },
+        { toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname, readyStatus },
         ref,
     ) => {
         // 페이지 진입 시 Drawing 방문 상태 업데이트
@@ -109,6 +109,7 @@ const Drawing = forwardRef(
                                 cutId={cutId}
                                 cutIds={cutIds}
                                 userStory={userStory}
+                                readyStatus = {readyStatus}
                             />
                         </div>
                     </div>

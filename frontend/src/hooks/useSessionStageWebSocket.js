@@ -30,6 +30,7 @@ export const useSessionStageWebSocket = scheduleId => {
                         });
                     } else if (response.type === 'READY_STATUS') {
                         console.log('READY_STATUS 메세지 전달받음.');
+                        console.log(response.readyMembers)
                         setReadyStatusResponse(response.readyMembers); // Map<Long, Boolean> readyMembers
                     }
                 });
@@ -52,7 +53,7 @@ export const useSessionStageWebSocket = scheduleId => {
         };
     }, [scheduleId]);
 
-    const sendReady = useCallback(() => {
+    const sendReady = useCallback((readyStatus) => {
         if (stompClient && stompClient.connected) {
             console.log('useSessionStageWebSocket: 웹소켓에 READY 상태 변경 요청');
             stompClient.publish({
@@ -60,6 +61,7 @@ export const useSessionStageWebSocket = scheduleId => {
                 body: JSON.stringify({
                     scheduleId,
                     accessToken: localStorage.getItem('accessToken'),
+                    status: readyStatus
                 }),
             });
         }

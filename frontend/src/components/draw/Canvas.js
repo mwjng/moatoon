@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setLines, addLine, undoLine, redoLine, clearCanvas } from '../../store/canvasSlice';
 import StoryLine from './StoryLine';
 
-const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
+const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory, readyStatus }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(3);
@@ -26,8 +26,19 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     // 웹소켓 훅 사용
     const handleComplete = async () => {
+        console.log("완료 버튼 클릭! 현재 readyStatus:", readyStatus);
+        if (readyStatus) {
+            // 이미 완료 상태면 ready 상태를 false로 변경
+            console.log("완료상태에서 미완료상태로 변경 시도");
+            sendReady(!readyStatus); // ready 상태 토글
+            console.log("sendReady 함수 호출 완료");
+            return;
+        }
+        console.log("미완료상태에서 완료상태로 변경 시도");
         await handleExportCanvasData(); // 캔버스 데이터 임시 저장
-        sendReady(); // 완료 신호 전송
+        console.log("캔버스 데이터 저장 완료, 완료 신호 전송");
+        sendReady(!readyStatus); // 완료 신호 전송
+        console.log("sendReady 함수 호출 완료");
     };
 
     //redis에 cut 초기화 데이터 추가
@@ -109,12 +120,10 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     useEffect(() => {
         const saveCanvasData = () => {
-            //console.log('임시저장 시작');
             if (!connected || !stompClient.current) return;
 
             const canvasData = JSON.stringify(lines);
             sendCanvasData(canvasData);
-            //console.log('임시저장 끝');
         };
 
         const intervalId = setInterval(saveCanvasData, 1000); // 캔버스 임시저장 1초마다 실행
@@ -123,6 +132,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     }, [lines, connected]);
 
     const handlePointerDown = e => {
+        // 완료 상태일 때는 그리기 비활성화
+        if (readyStatus) return;
+
         const pointerType = e.evt.pointerType;
         lastPointerType.current = pointerType;
 
@@ -146,6 +158,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     };
 
     const handlePointerMove = e => {
+        // 완료 상태일 때는 그리기 비활성화
+        if (readyStatus) return;
+        
         const pointerType = e.evt.pointerType;
 
         // 터치 이벤트이고 터치가 시작됐다면 스크롤을 위해 이벤트를 그대로 전달
@@ -220,7 +235,8 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     }, []);
 
     const handleUndo = () => {
-        if (lines.length === 0) return;
+        // 완료 상태일 때는 편집 기능 비활성화
+        if (readyStatus || lines.length === 0) return;
         dispatch(undoLine());
 
         //서버로 UNDO 신호 전송
@@ -237,7 +253,8 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     };
 
     const handleRedo = () => {
-        if (undoneLines.length === 0) return;
+        // 완료 상태일 때는 편집 기능 비활성화
+        if (readyStatus || undoneLines.length === 0) return;
         dispatch(redoLine());
 
         console.log(undoneLines[undoneLines.length - 1]);
@@ -257,6 +274,8 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     };
 
     const handleClear = () => {
+        // 완료 상태일 때는 편집 기능 비활성화
+        if (readyStatus) return;
         dispatch(clearCanvas());
 
         if (connected && stompClient.current) {
@@ -289,7 +308,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         if (isSaving) return;
         setIsSaving(true);
         try {
+            console.log("전체 보기 버튼 클릭: 캔버스 데이터 저장 시작");
             await handleExportCanvasData(); // 저장 완료될 때까지 기다림
+            console.log("캔버스 데이터 저장 완료, 화면 전환");
             toggleView(); // 저장 후 화면 전환
         } catch (error) {
             console.error('데이터 저장 중 오류 발생:', error);
@@ -297,6 +318,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
             setIsSaving(false);
         }
     }
+
+    // 완료 버튼 스타일 계산 - disabled 속성 제거
+    const completeBtnColor = readyStatus ? "bg-gray-400 hover:bg-gray-500" : "bg-light-orange hover:bg-yellow-400";
 
     return (
         <div
@@ -307,35 +331,50 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                 position: 'relative'
             }}
         >
-            <div className="flex flex-col w-full">
-                <Stage
-                    width={530}
-                    height={530}
-                    onPointerDown={handlePointerDown}
-                    onPointerMove={handlePointerMove}
-                    onPointerUp={handlePointerUp}
-                    style={{ border: '2px solid black', touchAction: 'none' }}
-                    ref={stageRef}
-                >
-                    <Layer>
-                        {lines.map((line, i) => (
-                            <Line
-                                points={line.points}
-                                stroke={line.color}
-                                strokeWidth={line.width}
-                                tension={0.5}
-                                lineCap="round"
-                                globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'}
-                            />
-                        ))}
-                    </Layer>
-                </Stage>
+            <div className="flex flex-col w-full relative">
+                <div className="relative">
+                    <Stage
+                        width={530}
+                        height={530}
+                        onPointerDown={handlePointerDown}
+                        onPointerMove={handlePointerMove}
+                        onPointerUp={handlePointerUp}
+                        style={{ border: '2px solid black', touchAction: 'none' }}
+                        ref={stageRef}
+                    >
+                        <Layer>
+                            {lines.map((line, i) => (
+                                <Line
+                                    key={i}
+                                    points={line.points}
+                                    stroke={line.color}
+                                    strokeWidth={line.width}
+                                    tension={0.5}
+                                    lineCap="round"
+                                    globalCompositeOperation={line.tool === 'eraser' ? 'destination-out' : 'source-over'}
+                                />
+                            ))}
+                        </Layer>
+                    </Stage>
+                </div>
                 <StoryLine
                     content={userStory[0].content}
                     textSize="text-lg"
                     leading="leading-relaxed"
                     padding="p-2.5"
                 />
+
+                {readyStatus && (
+                    <div 
+                        className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-85"
+                        style={{ pointerEvents: 'none', zIndex: 1 }}
+                    >
+                        <div className="text-center">
+                            <p className="text-2xl font-bold text-gray-800">그림그리기를 완료하였어요!</p>
+                            <p className="text-lg text-gray-600 mt-2">수정하시려면 완료됨 버튼을 다시 눌러주세요</p>
+                        </div>
+                    </div>
+                )}
                 <div className="flex justify-center gap-4 mt-3">
                     <WordButton
                         color="bg-light-orange"
@@ -347,13 +386,13 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                         전체 보기
                     </WordButton>
                     <WordButton
-                        color="bg-light-orange hover:bg-yellow-400"
+                        color={completeBtnColor}
                         textColor="text-white"
                         size="md"
                         textSize="large"
                         onClick={handleComplete}
                     >
-                        완료
+                        {readyStatus ? "완료됨" : "완료"}
                     </WordButton>
                 </div>
             </div>
