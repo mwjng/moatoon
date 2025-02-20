@@ -41,6 +41,7 @@ public class WordService {
     private final MemberRepository memberRepository;
 
     public MyWordsResponse getMyWords(Long memberId, Integer page, String keyword) {
+        log.info("WordService.getMyWords - memberId: {}, page: {}, keyword: {}", memberId, page, keyword);
         Long totalCount = myWordRepository.countAll(memberId, keyword);
         int totalPage = (int) (totalCount % 2) == 0 ? (int) (totalCount / 2) : (int) (totalCount / 2) + 1;
         int searchPage;
@@ -52,16 +53,14 @@ public class WordService {
         } else {
             searchPage = 1;
         }
+        log.info("totalCount: {}, totalPage: {}, searchPage: {}", totalCount, totalPage, searchPage);
 
         List<MyWordExample> myWordExamples = myWordRepository.findWithWordIdAndPage(memberId, searchPage - 1, keyword);
-
-        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
-        if (myWordExamples.isEmpty()) {
-            return MyWordsResponse.builder()
-                    .myWordWithExamples(myWordWithExamples)
-                    .build();
+        for (MyWordExample myWordExample: myWordExamples) {
+            log.info("myWordExample: {}", myWordExample);
         }
 
+        List<MyWordWithExamples> myWordWithExamples = new ArrayList<>();
         for (int i = 0; i < myWordExamples.size(); i += 2) {
             List<String> examples = new ArrayList<>();
             examples.add(myWordExamples.get(i).getExample());
@@ -75,6 +74,9 @@ public class WordService {
                     .examples(examples)
                     .build());
         }
+        for (MyWordWithExamples myWordWithExamples1 : myWordWithExamples) {
+            log.info("myWordWithExamples: {}", myWordWithExamples1);
+        }
 
         return MyWordsResponse.builder()
                 .myWordWithExamples(myWordWithExamples)
@@ -84,12 +86,12 @@ public class WordService {
 
     @Transactional
     public void removeWord(long memberId, WordIdRequest wordIdRequest) {
-        long wordId = wordIdRequest.getWordId();
+        long myWordId = wordIdRequest.getWordId();
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("No member found for id"));
 
-        MyWord myWord = myWordRepository.findByIdAndMemberId(memberId, wordId)
+        MyWord myWord = myWordRepository.findById(myWordId)
                 .orElseThrow(() -> new MoaException(ExceptionCode.WORD_NOT_FOUND));
 
         myWord.delete();
@@ -138,14 +140,21 @@ public class WordService {
 
     public QuizResponse generateQuiz(Long partyId) {
         // 현재 날짜에 해당하는 episode_number 조회
+        log.info("WordService.generateQuiz - partyId: {}", partyId);
         EpisodeNumberAndLevel episodeNumberAndLevel = partyRepository.findEpisodeNumberAndLevelByPartyIdAndToday(partyId)
                 .orElseThrow(() -> new EntityNotFoundException("No episode found for today's schedule"));
 
         int episodeNumber = episodeNumberAndLevel.episodeNumber();
         int level = episodeNumberAndLevel.level();
 
+        log.info("episodeNumber: {}, level: {}", episodeNumber, level);
+
         // party_id에 해당하는 예문 목록 가져오기
         List<WordExample> wordExamples = wordExampleRepository.findExamplesByPartyIdAndEpisodeNumber(partyId);
+        log.info("all word Exmaples: ");
+        for (WordExample wordExample : wordExamples) {
+            log.info("{}", wordExample);
+        }
 
         // 예문 목록에서 2개의 값마다 홀수번/짝수번 선택해서 리스트 만들기
         List<WordExample> selectExamples = new ArrayList<>();
@@ -161,24 +170,45 @@ public class WordService {
                 selectExamples.add(secondExample);
             }
         }
+        log.info("selected Exmaples: ");
+        for (WordExample wordExample : wordExamples) {
+            log.info("{}", wordExample);
+        }
 
         // level + 1에 해당하는 단어 4개 무작위 선택
         List<Word> randomWords = wordRepository.findRandomWordsByLevel(level == 6 ? level - 1 : level + 1, 4);
+        for (Word word : randomWords) {
+            log.info("random word: {}", word);
+        }
 
         // 예문을 퀴즈 형태로 분할 및 리스트 생성
         // 단어 선택지 리스트 생성
         List<QuizSentence> quizSentences = new ArrayList<>();
         List<QuizWord> quizWords = new ArrayList<>();
+        log.info("split examples: ");
         for (WordExample example : selectExamples) {
+            log.info("example: {}", example);
             String[] split = example.getExample().split("\\*");
-            quizSentences.add(QuizSentence
-                    .builder()
-                    .front(split[0])
-                    .back(split[2])
-                    .wordId(example.getWord().getId())
-                    .word(example.getWord().getWord())
-                    .full(example.getExample())
-                    .build());
+            if (split.length == 2) {
+                quizSentences.add(QuizSentence
+                        .builder()
+                        .front(split[0])
+                        .back("")
+                        .wordId(example.getWord().getId())
+                        .word(example.getWord().getWord())
+                        .answer(split[1])
+                        .build());
+            } else {
+                quizSentences.add(QuizSentence
+                        .builder()
+                        .front(split[0])
+                        .back(split[2])
+                        .wordId(example.getWord().getId())
+                        .word(example.getWord().getWord())
+                        .answer(split[1])
+                        .build());
+            }
+
             quizWords.add(QuizWord
                     .builder()
                     .wordId(example.getWord().getId())

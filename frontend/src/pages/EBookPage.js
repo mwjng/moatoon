@@ -61,12 +61,12 @@ const EBookPage = () => {
                         <img src={backgroundImage} alt="background" className="absolute max-w-5xl object-cover" />
 
                         {currentPage === 0 ? (
-                            <div className="flex flex-col items-center mt-8 p-8 z-10 relative h-screen">
-                                <div className="h-[100%] rounded-2xl p-16 mr-9">
-                                <h1 className="text-3xl font-bold bg-gradient-to-r bg-clip-text bg-black text-transparent text-center mb-5">
-                                                {comicData.bookTitle}
-                                            </h1>
-                                    <div className="flex flex-col md:flex-row gap-10  h-[90%] overflow-hidden">
+                            <div className="flex flex-col items-center p-8 z-10 relative h-screen">
+                                <div className="h-[100%] rounded-2xl p-16 mr-5">
+                                    <h1 className="text-3xl font-bold bg-gradient-to-r bg-clip-text bg-black text-transparent text-center mb-5">
+                                       {comicData.bookTitle}
+                                    </h1>
+                                    <div className="flex flex-col md:flex-row gap-10  h-[90%] w-[80%] justify-center m-auto pr-10 pl-5">
                                         
                                         <div className="relative flex-1">
                                             <div className="absolute -inset-1 bg-gradient-to-r rounded-lg blur opacity-25"></div>
@@ -80,7 +80,7 @@ const EBookPage = () => {
                                         <div className="flex flex-col flex-1 space-y-6 h-[80%]">
 
                                             <div className="space-y-5">
-                                                <div className="bg-gray-50 p-6 rounded-lg h-[30%] overflow-y-auto">
+                                                <div className="bg-gray-50 p-6 rounded-lg h-[45%] overflow-y-auto">
                                                     <h2 className="text-xl font-semibold text-gray-800 mb-2">개요</h2>
                                                     <p className="text-lg text-gray-600 leading-relaxed overflow-y-auto">
                                                         {comicData.introduction}

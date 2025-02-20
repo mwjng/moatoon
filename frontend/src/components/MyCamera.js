@@ -14,11 +14,17 @@ function MyCamera({ streamManager, nickname, small = false }) {
         <div
             className="flex flex-row gap-4 items-center justify-center relative"
             style={{
-                height: small ? '200px' : '300px',
-                width: small ? '250px' : 'auto',
+                height: small ? '100px' : '300px',
+                width: small ? '150px' : 'auto',
             }}
         >
-            <div className="w-96 h-72 relative bg-gray-200 items-center justify-center rounded-3xl">
+            <div
+                className="relative bg-gray-200 items-center justify-center rounded-3xl"
+                style={{
+                    height: small ? '100px' : '300px',
+                    width: small ? '150px' : 'auto',
+                }}
+            >
                 <video ref={videoRef} autoPlay muted className="object-cover w-full h-full rounded-3xl" />
                 <span className="absolute top-2 left-2 bg-yellow-300 text-black px-2 py-1 rounded-full text-sm font-bold">
                     {nickname}
