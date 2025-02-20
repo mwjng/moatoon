@@ -15,6 +15,8 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     const [penColor, setPenColor] = useState('#000000');
     const [strokeWidth, setStrokeWidth] = useState(5);
     const isDrawing = useRef(false);
+    const touchStarted = useRef(false);
+    const lastPointerType = useRef(null);
 
     const stompClient = useRef(null); // stompClient를 useRef로 초기화
     const [connected, setConnected] = useState(false); // WebSocket 연결 상태
@@ -122,7 +124,13 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     const handlePointerDown = e => {
         const pointerType = e.evt.pointerType;
-        if (pointerType === 'touch') return; // 터치는 무시 (펜 or 마우스만 허용)
+        lastPointerType.current = pointerType;
+
+        // 터치 이벤트일 경우 스크롤을 위해 이벤트를 그대로 전달
+        if (pointerType === 'touch') {
+            touchStarted.current = true;
+            return;
+        }
 
         e.evt.preventDefault();
         isDrawing.current = true;
@@ -138,12 +146,16 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
     };
 
     const handlePointerMove = e => {
+        const pointerType = e.evt.pointerType;
+
+        // 터치 이벤트이고 터치가 시작됐다면 스크롤을 위해 이벤트를 그대로 전달
+        if (pointerType === 'touch' && touchStarted.current) {
+            return;
+        }
+
         if (!isDrawing.current) return;
 
-        const pointerType = e.evt.pointerType;
-        if (pointerType === 'touch') return;
         e.evt.preventDefault();
-
         const stage = e.target.getStage();
         const point = stage.getPointerPosition();
 
@@ -168,9 +180,44 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         }
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = e => {
+        const pointerType = e.evt.pointerType;
+
+        // 터치 이벤트 종료
+        if (pointerType === 'touch') {
+            touchStarted.current = false;
+            return;
+        }
+
         isDrawing.current = false;
     };
+
+    // 터치 이벤트 중에 우발적인 그리기를 방지하기 위한 핸들러
+    const handleTouchStart = e => {
+        if (e.touches.length === 1) {
+            touchStarted.current = true;
+        }
+    };
+
+    const handleTouchEnd = () => {
+        touchStarted.current = false;
+    };
+
+    // Stage에 터치 이벤트 리스너 추가
+    useEffect(() => {
+        const stage = stageRef.current;
+        if (stage) {
+            stage.addEventListener('touchstart', handleTouchStart);
+            stage.addEventListener('touchend', handleTouchEnd);
+        }
+
+        return () => {
+            if (stage) {
+                stage.removeEventListener('touchstart', handleTouchStart);
+                stage.removeEventListener('touchend', handleTouchEnd);
+            }
+        };
+    }, []);
 
     const handleUndo = () => {
         if (lines.length === 0) return;
@@ -260,7 +307,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                     onMouseDown={handlePointerDown}
                     onMouseMove={handlePointerMove}
                     onMouseUp={handlePointerUp}
-                    style={{ border: '2px solid black' }}
+                    style={{ border: '2px solid black', touchAction: 'auto' }}
                     ref={stageRef}
                 >
                     <Layer>
