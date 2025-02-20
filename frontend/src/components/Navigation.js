@@ -285,9 +285,6 @@ function Navigation({
                             </>
                         ) : stage === 'picking' ? (
                             <>
-                                <button onClick={handleBackClick}>
-                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
-                                </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">내가 그리게 될 컷은 몇번일까요?</span>
                                 </div>

@@ -21,7 +21,7 @@ const StoryCard = ({ story }) => {
             {/* Increased top margin to accommodate tag */}
             <div className="mt-12 mb-2 text-center px-2">
                 <h2 className="text-lg font-bold truncate">
-                    컷 {story[index].cutId} : {story[index].nickname}
+                    컷 {story[index].cutOrder} : {story[index].nickname}
                 </h2>
             </div>
             

@@ -17,6 +17,7 @@ const DrawingPage = ({
     nickname,
     sendReady,
     readyStatusResponse,
+    leaveSession,
 }) => {
     const dispatch = useDispatch();
 
@@ -33,9 +34,9 @@ const DrawingPage = ({
     const [timeNotification, setTimeNotification] = useState(null);
     const drawingRef = useRef(null);
 
-    const handleTimeNotification = (timeLeft) => {
+    const handleTimeNotification = timeLeft => {
         let message = '';
-        
+
         if (timeLeft === 'TEN_LEFT') {
             message = '10분 남았어!';
         } else if (timeLeft === 'FIVE_LEFT') {
@@ -43,10 +44,10 @@ const DrawingPage = ({
         } else if (timeLeft === 'ONE_LEFT') {
             message = '1분 남았어!';
         }
-        
+
         if (message) {
             setTimeNotification(message);
-            
+
             // 10초 후에 알림 제거
             setTimeout(() => {
                 setTimeNotification(null);
@@ -70,6 +71,10 @@ const DrawingPage = ({
     }, [dispatch, scheduleId]);
 
     const handleTimeOut = async () => {};
+
+    const handleLeaveSession = () => {
+        leaveSession();
+    };
 
     const { lines, undoneLines } = useSelector(state => state.canvas);
 
@@ -119,8 +124,9 @@ const DrawingPage = ({
                 sessionStartTime={sessionStageData.sessionStartTime}
                 serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
+                leaveSession={handleLeaveSession}
             />
-            
+
             <div className="h-[calc(100vh-64px)] -mt-6">
                 {cutsState.loading && <p>Loading...</p>}
                 {cutsState.error && <p>Error: {cutsState.error}</p>}
