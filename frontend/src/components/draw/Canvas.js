@@ -305,16 +305,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                 width: '600px',
                 height: '600px',
                 position: 'relative',
-                overflowY: 'auto',
-                touchAction: 'pan-x pan-y',
-            }}
-            onPointerDown={e => {
-                // 터치일 때만 스크롤 허용
-                if (e.pointerType === 'touch') {
-                    e.currentTarget.style.touchAction = 'pan-x pan-y';
-                } else {
-                    e.currentTarget.style.touchAction = 'none';
-                }
             }}
         >
             <div className="flex flex-col">
