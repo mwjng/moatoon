@@ -1,6 +1,8 @@
 package com._2.a401.moa.schedule.service;
 
+import com._2.a401.moa.schedule.domain.SessionMember;
 import com._2.a401.moa.schedule.manager.VideoConferenceManager;
+import com._2.a401.moa.schedule.repository.SessionMemberRedisRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -25,6 +27,9 @@ class SessionServiceTest {
 
     @Autowired
     private TaskScheduler taskScheduler;
+
+    @Autowired
+    private SessionMemberRedisRepository sessionMemberRedisRepository;
 
     @Test
     void getSessionIdAndTokenFromOpenVidu() throws InterruptedException {
@@ -50,5 +55,21 @@ class SessionServiceTest {
     @Scheduled(fixedRate = 5000)
     public void testScheduledTask() {
         System.out.println("@Scheduled 실행 중 - 현재 스레드: " + Thread.currentThread().getName());
+    }
+
+    @Test
+    void leaveSession() {
+        final SessionMember sessionMember = sessionMemberRedisRepository.save(new SessionMember(1L));
+        sessionMember.addMember(1L);
+        sessionMemberRedisRepository.save(sessionMember);
+
+        sessionMember.addMember(2L);
+        sessionMemberRedisRepository.save(sessionMember);
+
+        sessionMember.removeMember(1L);
+        sessionMemberRedisRepository.save(sessionMember);
+
+        final SessionMember result = sessionMemberRedisRepository.fetchByScheduleId(1L);
+        assertThat(result.isMemberExists(1L)).isFalse();
     }
 }

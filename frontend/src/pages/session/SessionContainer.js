@@ -142,7 +142,7 @@ const SessionContainer = () => {
     };
 
     const handleLeaveSession = async () => {
-        await leaveSession().then(navigate('/home'));
+        await leaveSession(sessionData.current.scheduleId).then(navigate('/home'));
     };
 
     // 상태 업데이트를 확인하기 위한 별도의 useEffect
@@ -159,12 +159,14 @@ const SessionContainer = () => {
     useEffect(() => {
         console.log('세션 변경 감지');
         if (sessionTransferResponse?.nextSessionStage) {
-            const sessionStartTime = sessionTransferResponse.sessionStartTime ? 
-            new Date(sessionTransferResponse.sessionStartTime) : new Date();
-        
-            const serverTime = sessionTransferResponse.serverTime ?
-                new Date(sessionTransferResponse.serverTime) : new Date();
-                
+            const sessionStartTime = sessionTransferResponse.sessionStartTime
+                ? new Date(sessionTransferResponse.sessionStartTime)
+                : new Date();
+
+            const serverTime = sessionTransferResponse.serverTime
+                ? new Date(sessionTransferResponse.serverTime)
+                : new Date();
+
             setSessionStageData(prev => ({
                 currentStage: sessionTransferResponse.nextSessionStage,
                 sessionStartTime: sessionStartTime,
