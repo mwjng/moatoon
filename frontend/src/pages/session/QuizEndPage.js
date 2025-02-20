@@ -32,6 +32,10 @@ const QuizEndPage = ({ leaveSession }) => {
     const [countdown, setCountdown] = useState(7);
     const [shouldRedirect, setShouldRedirect] = useState(false);
 
+    const handleLeaveSession = () => {
+        leaveSession();
+    };
+
     useEffect(() => {
         if (countdown > 0) {
             const timer = setTimeout(() => {
@@ -44,13 +48,9 @@ const QuizEndPage = ({ leaveSession }) => {
     }, [countdown]);
 
     useEffect(() => {
-        const handleLeave = async () => {
-            if (shouldRedirect) {
-                console.log('shouldRedirect 감지됨, leaveSession 실행');
-                await leaveSession();
-            }
-        };
-        handleLeave();
+        if (shouldRedirect) {
+            handleLeaveSession();
+        }
     }, [shouldRedirect]);
 
     const bounceStyle = {

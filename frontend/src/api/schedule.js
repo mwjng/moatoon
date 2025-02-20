@@ -42,7 +42,7 @@ export const getSessionInfoByPinNumber = async (pinNumber) => {
 
 export const sendQuizDone = async (scheduleId) => {
     try {
-        const response = await authInstance.get(`${SCHEDULE_API_URL}/${scheduleId}/quiz-done`, {
+        const response = await authInstance.post(`${SCHEDULE_API_URL}/${scheduleId}/quiz-done`, {
         });
         return response.data;  
     } catch (error) {
