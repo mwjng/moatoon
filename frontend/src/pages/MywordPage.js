@@ -66,9 +66,9 @@ const MyWordPage = () => {
         setDeleteModal(false);
     };
 
-    const removeMyWord = () => {
+    const removeWord = () => {
         removeMyWord(selectedMyWordId)
-            .then(getMyWordWithPage)
+            .then(() => getMyWordWithPage())
             .catch(error => {
                 console.error(error);
             });
@@ -81,7 +81,7 @@ const MyWordPage = () => {
                 modalState={deleteModal}
                 text={`"${selectedMyWord}" 꼭 기억하자!`}
                 cancelHandler={cancelModal}
-                confirmHandler={removeMyWord}
+                confirmHandler={removeWord}
             />
             <div className="bg-[#FDFFE9] h-screen flex flex-col">
                 <Navigation />
