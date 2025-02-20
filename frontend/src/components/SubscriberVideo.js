@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function SubscriberVideo({ streamManager, small = false }) {
     const videoRef = useRef();
-    let nickname = 'Unknown';
+    const [nickname, setNickname] = useState('게스트');
 
     if (streamManager) {
         try {
             const connectionData = streamManager.stream.connection.data;
             const parsedData = JSON.parse(connectionData);
-            nickname = parsedData.clientData || '게스트';
+            setNickname(parsedData.clientData || '게스트');
         } catch (error) {
             console.error('닉네임 추출 실패', error);
         }
@@ -17,6 +17,7 @@ function SubscriberVideo({ streamManager, small = false }) {
     useEffect(() => {
         if (streamManager && videoRef.current) {
             streamManager.addVideoElement(videoRef.current);
+            setNickname(streamManager.stream.connection.data.clientData);
         }
     }, [streamManager]);
 
