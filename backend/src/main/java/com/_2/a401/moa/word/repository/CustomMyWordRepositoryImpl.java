@@ -8,12 +8,14 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class CustomMyWordRepositoryImpl implements CustomMyWordRepository{
     private final JPAQueryFactory queryFactory;
 
@@ -32,6 +34,7 @@ public class CustomMyWordRepositoryImpl implements CustomMyWordRepository{
         if (keyword != null && !keyword.isEmpty()) {
             builder.and(word.word.likeIgnoreCase("%" + keyword + "%")); // keyword 조건 추가
         }
+        log.info("where: {}", builder.toString());
 
         return queryFactory
                 .select(Projections.constructor(MyWordExample.class,
@@ -44,6 +47,7 @@ public class CustomMyWordRepositoryImpl implements CustomMyWordRepository{
                 .join(word).on(myWord.word.id.eq(word.id))
                 .join(wordExample).on(wordExample.word.id.eq(word.id))
                 .where(builder)
+                .orderBy(wordExample.id.asc())
                 .offset(page)
                 .limit(4)
                 .fetch();

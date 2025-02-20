@@ -14,7 +14,7 @@ const Overview = ({
     subscribers,
     publisher,
     nickname,
-    readyStatusResponse
+    readyStatusResponse,
 }) => {
     // 페이지 진입 시 Drawing 방문 상태 업데이트
     useEffect(() => {
@@ -30,13 +30,19 @@ const Overview = ({
             <AudioPlayer audioType="FULLCUT" isOn={isFirstOverviewVisit} />
             <div className="flex p-5">
                 <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto ml-0 self-start">
+                    <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
-                        <SubscriberVideo key={index} streamManager={subscriber} />
+                        <SubscriberVideo key={index} streamManager={subscriber} small />
                     ))}
-                    <MyCamera streamManager={publisher} nickname={nickname} />
                 </div>
                 <div className="flex flex-col items-center ml-24">
-                    <CanvasGrid partyId={partyId} cutIds={cutIds} toggleView={toggleView} cutsInfo={cutsInfo} readyStatusResponse = {readyStatusResponse} />
+                    <CanvasGrid
+                        partyId={partyId}
+                        cutIds={cutIds}
+                        toggleView={toggleView}
+                        cutsInfo={cutsInfo}
+                        readyStatusResponse={readyStatusResponse}
+                    />
                 </div>
             </div>
         </div>

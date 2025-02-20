@@ -9,5 +9,6 @@ public class QuizSentence {
     private String front;
     private String back;
     private String word;
+    private String answer;
     private Long wordId;
 }

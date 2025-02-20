@@ -17,6 +17,10 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
     const [checkedWords, setCheckedWords] = useState(new Set());
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log('WordLearning - sessionStageData:', sessionStageData);
+    }, []);
+
     const handleCheck = wordId => {
         setCheckedWords(prev => {
             const newSet = new Set(prev);
@@ -81,9 +85,9 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
             />
             <div className="flex m-8 justify-between h-[600px]">
                 <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
-                    <MyCamera streamManager={publisher} nickname={nickname} />
+                    <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
-                        <SubscriberVideo key={index} streamManager={subscriber} />
+                        <SubscriberVideo key={index} streamManager={subscriber} small />
                     ))}
                 </div>
                 <WordInfo

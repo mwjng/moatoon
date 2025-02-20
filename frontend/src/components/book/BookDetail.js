@@ -202,7 +202,6 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
         SATURDAY: '토',
         SUNDAY: '일',
     };
-
     if (loading) return <div className="loading loading-spinner loading-lg"></div>;
     if (error) return <div className="text-red-600">오류가 발생했습니다: {error}</div>;
 
@@ -224,7 +223,7 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
                 style={{ fontFamily: 'S-CoreDream-3Light', color: 'red' }}
             >
                 <div className="flex items-center gap-4 text-gray-600">
-                    <span className="text-sm">시작일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
+                    <span className="text-sm">책 생성일: {new Date(partyDetails.startDate).toLocaleDateString()}</span>
                     <span className="text-sm">
                         요일:{' '}
                         {partyDetails.dayWeeks

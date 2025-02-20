@@ -161,6 +161,7 @@ function Navigation({
 
     useEffect(() => {
         if (stage && sessionStartTime) {
+            console.log(`sessionStartTime: ${sessionStartTime} serverTime: ${serverTime}`)
             let timeoutNotEvented = true;
             let tenSecondNotified = false; // 새로 추가
 
@@ -189,7 +190,8 @@ function Navigation({
                         timeoutNotEvented = false;
                     }
                 }
-                let percent = (remaining / stageDuration) * 100;
+                let percent = (remaining / totalDuration) * 100;
+                percent = Math.min(Math.max(percent, 0), 100);
 
                 setRemainTime(remaining);
                 setRemainTimePercent(percent);
@@ -238,7 +240,7 @@ function Navigation({
                     {timeThresholds.oneMinute && <AudioPlayer audioType="ONE_LEFT" />}
                 </>
             )}
-            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[3]">
+            <header className="fixed shadow-lg rounded-b-3xl bg-white w-full z-[11]">
                 {stage ? (
                     <div className="flex flew-row justify-between py-4 px-10 items-center">
                         {stage === 'waiting' ? (
@@ -252,7 +254,7 @@ function Navigation({
                                         {/* sessionStartTime이 세션의 시작시간이 아니라 대기방 시작시간입니니다! 
                                             오늘의 일정 : (대기방 시작시간 + 대기방 대기시간) ~ (대기방 시작시간 + 대기방 대기시간 + 30분)*/}
                                         오늘의 일정 : {getTimeFormatted(addSeconds(sessionStartTime, stageDuration))} ~{' '}
-                                        {getTimeFormatted(addSeconds(sessionStartTime, stageDuration+30*60))}
+                                        {getTimeFormatted(addSeconds(sessionStartTime, stageDuration + 30 * 60))}
                                     </span>
                                 </div>
                                 <div className="flex flex-col text-center gap-4">

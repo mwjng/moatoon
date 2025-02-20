@@ -84,7 +84,7 @@ const TodayScheduleCard = ({ schedule, sessionTime, onRefresh }) => {
         if (onRefresh) {
           onRefresh();
         }
-        return '서비스 오류';
+        return '입장 불가';
       }
       
       if (!isWithinTenMinutes) {

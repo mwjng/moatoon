@@ -49,7 +49,7 @@ const MyWordInfo = ({ word, removeMyWord }) => {
                             {word.word}
                         </div>
                         <ol className="bg-[#F7F5F5] list-decimal pl-8 py-4 pr-4 rounded-[10px] w-full h-full text-[16px] leading-6">
-                            {word.meaning.split('\\n').map((line, index) => (
+                            {word.meaning.split('\n').map((line, index) => (
                                 <li key={index} className="my-2">
                                     {line}
                                 </li>

@@ -62,7 +62,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
             <div className="w-full">
                 <Navigation
                     stage="endDrawing"
-                    stageDuration={30} // ! DrawingEndPage Duration은 3*60=180
+                    stageDuration={180} // ! DrawingEndPage Duration은 3*60=180초
                     sessionStartTime={sessionStageData?.sessionStartTime}
                     serverTime={sessionStageData?.serverTime}
                     onTimeOut={onTimeout}
@@ -71,9 +71,9 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
 
             <div className="flex p-5">
                 <div className="flex flex-col mt-4 gap-8 content-evenly">
-                    <MyCamera streamManager={publisher} nickname={nickname} />
+                    <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
-                        <SubscriberVideo key={index} streamManager={subscriber} />
+                        <SubscriberVideo key={index} streamManager={subscriber} small />
                     ))}
                 </div>
 
