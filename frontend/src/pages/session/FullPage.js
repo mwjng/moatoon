@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import bbi_normal from '../../assets/bbi_normal.png';
 import duckduck from '../../assets/duckduck.png';
-import cado from '../../assets/cado.svg';
+import cado from '../../assets/kado.png';
 import { useNavigate } from 'react-router';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 
