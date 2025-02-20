@@ -81,9 +81,7 @@ function Navigation({
     };
 
     const handleBackClick = () => {
-        if (stage === 'waiting') {
-            leaveSession(); // 세션에서 나가기 - 여기서 /home으로 이동
-        }
+        leaveSession(); // 세션에서 나가기 - 여기서 /home으로 이동
     };
 
     //페이지 이동 핸들러
@@ -161,7 +159,7 @@ function Navigation({
 
     useEffect(() => {
         if (stage && sessionStartTime) {
-            console.log(`sessionStartTime: ${sessionStartTime} serverTime: ${serverTime}`)
+            console.log(`sessionStartTime: ${sessionStartTime} serverTime: ${serverTime}`);
             let timeoutNotEvented = true;
             let tenSecondNotified = false; // 새로 추가
 
@@ -269,7 +267,9 @@ function Navigation({
                             </>
                         ) : stage === 'learning' ? (
                             <>
-                                <div></div>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
+                                </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">오늘의 단어 학습</span>
                                 </div>
@@ -285,7 +285,9 @@ function Navigation({
                             </>
                         ) : stage === 'picking' ? (
                             <>
-                                <div></div>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
+                                </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">내가 그리게 될 컷은 몇번일까요?</span>
                                 </div>
@@ -293,6 +295,9 @@ function Navigation({
                             </>
                         ) : stage === 'drawing' ? (
                             <>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
+                                </button>
                                 <div className="flex items-center gap-8">
                                     <span className="text-2xl font-bold">오늘의 단어</span>
                                     <div className="flex gap-8">
@@ -322,7 +327,9 @@ function Navigation({
                             </>
                         ) : stage === 'endDrawing' ? (
                             <>
-                                <div></div>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
+                                </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">마무리 시간</span>
                                 </div>
@@ -338,7 +345,9 @@ function Navigation({
                             </>
                         ) : stage === 'quiz' ? (
                             <>
-                                <div></div>
+                                <button onClick={handleBackClick}>
+                                    <img src={`${arrowBack}`} alt="back" width="50"></img>
+                                </button>
                                 <div className="flex flex-col text-center gap-4">
                                     <span className="text-2xl font-bold">오늘의 단어 학습</span>
                                 </div>

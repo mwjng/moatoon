@@ -27,7 +27,7 @@ const RoundText = () => (
     </svg>
 );
 
-const QuizEndPage = () => {
+const QuizEndPage = ({ onEndStage }) => {
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(7);
     const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -43,9 +43,9 @@ const QuizEndPage = () => {
         }
     }, [countdown]);
 
-    useEffect(() => {
+    useEffect(async () => {
         if (shouldRedirect) {
-            navigate('/home'); // 홈화면으로 이동동
+            onEndStage();
         }
     }, [shouldRedirect]);
 
