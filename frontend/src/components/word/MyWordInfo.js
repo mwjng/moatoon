@@ -11,7 +11,7 @@ const MyWordInfo = ({ word, removeMyWord }) => {
 
     const handleRemove = event => {
         event.stopPropagation();
-        removeMyWord(word.id);
+        removeMyWord(word.id, word.word);
     };
 
     return (
