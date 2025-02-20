@@ -40,14 +40,19 @@ const QuizItem = ({ onCorrect, quiz, index, isCorrect, isEnd, onFail }) => {
                 className="absolute top-[-30px] left-[25px] transform -translate-x-1/2 h-[120px] object-fill"
                 style={{ display: isCorrect || isEnd ? 'block' : 'none' }}
             />
-            <div className="relative">{index + 1}.</div>
+            {isCorrect || isEnd ? (
+                <div className="relative">{`${index + 1}. ${quiz.front} ${quiz.answer} ${quiz.back}`}</div>
+            ) : (
+                <div className="relative">{`${index + 1}. ${quiz.front} ____ ${quiz.back}`}</div>
+            )}
+            {/* <div className="relative">{`${index + 1}. ${quiz.front}`}</div>
             <span>{quiz.front}</span>
             {isCorrect || isEnd ? (
                 <span className="px-4 bg-[#EDFEC3] rounded-full">{quiz.answer}</span>
             ) : (
                 <span className="w-[80px] bg-white rounded-full"></span>
             )}
-            <span>{quiz.back}</span>
+            <span>{quiz.back}</span> */}
         </div>
     );
 };
