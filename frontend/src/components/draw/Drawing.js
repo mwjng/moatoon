@@ -72,32 +72,45 @@ const Drawing = forwardRef(
         };
 
         return (
-            <div className="h-screen bg-light-cream-yellow">
+            <div className="h-screen bg-light-cream-yellow flex justify-center items-center p-0 -mt-12 pr-16">
                 <AudioPlayer audioType="MYCUT" isOn={isFirstDrawingVisit} />
-                <div className="flex gap-4 p-5">
-                    <div className="w-72 mr-5">
-                        <div className="rounded-lg overflow-hidden mb-4">
-                            {/* <img src={ChildImg} alt="참고 이미지" className="w-full" /> */}
-                            <MyCamera streamManager={publisher} nickname={nickname} className="ml-0 self-start" small/>
-                            <WordButton onClick={viewEbook} color="bg-dark-yellow w-full mt-5" size="md">
-                                지난 이야기 전체 보기
-                            </WordButton>
+                <div className="flex flex-col justify-center items-center w-full max-w-7xl px-0">
+                    {/* Sidebar and Canvas container */}
+                    <div className="flex justify-center items-center w-full">
+                        {/* Sidebar on the left */}
+                        <div className="w-64 mr-8 flex-shrink-0 flex flex-col">
+                            <div className="rounded-lg mb-4 flex flex-col space-y-6">
+                                {/* Camera component */}
+                                <div className='ml-8'>
+                                    <MyCamera streamManager={publisher} nickname={nickname} className="self-start" small/>
+                                </div>
+                                
+                                {/* Ebook button with increased margin to avoid overlap */}
+                                <div className="mt-4">
+                                    <WordButton onClick={viewEbook} color="bg-dark-yellow w-full" size="md">
+                                        지난 이야기 전체 보기
+                                    </WordButton>
+                                </div>
 
-                            <div className="relative w-full h-100 p-6 flex flex-col items-center mt-5">
-                                <StoryCard story={cutsInfo} />
+                                {/* StoryCard with proper spacing */}
+                                <div className="w-full">
+                                    <StoryCard story={cutsInfo} />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="relative w-full h-full">
-                        <Canvas
-                            sendReady={sendReady}
-                            stageRef={stageRef}
-                            toggleView={toggleView}
-                            partyId={partyId}
-                            cutId={cutId}
-                            cutIds={cutIds}
-                            userStory={userStory}
-                        />
+
+                        {/* Canvas in the center */}
+                        <div className="flex-grow-0 flex items-center mb-12 pb-12">
+                            <Canvas
+                                sendReady={sendReady}
+                                stageRef={stageRef}
+                                toggleView={toggleView}
+                                partyId={partyId}
+                                cutId={cutId}
+                                cutIds={cutIds}
+                                userStory={userStory}
+                            />
+                        </div>
                     </div>
                 </div>
                 {/* SVG 내보내기 버튼 추가

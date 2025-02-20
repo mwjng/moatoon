@@ -13,7 +13,7 @@ import StoryLine from './StoryLine';
 const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userStory }) => {
     const [tool, setTool] = useState('pen');
     const [penColor, setPenColor] = useState('#000000');
-    const [strokeWidth, setStrokeWidth] = useState(5);
+    const [strokeWidth, setStrokeWidth] = useState(3);
     const isDrawing = useRef(false);
     const touchStarted = useRef(false);
     const lastPointerType = useRef(null);
@@ -302,25 +302,15 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         <div
             className="flex bg-white"
             style={{
-                width: '600px',
-                height: '600px',
-                position: 'relative',
-                overflowY: 'auto',
-                touchAction: 'pan-x pan-y',
-            }}
-            onPointerDown={e => {
-                // 터치일 때만 스크롤 허용
-                if (e.pointerType === 'touch') {
-                    e.currentTarget.style.touchAction = 'pan-x pan-y';
-                } else {
-                    e.currentTarget.style.touchAction = 'none';
-                }
+                width: '530px',
+                height: '530px',
+                position: 'relative'
             }}
         >
-            <div className="flex flex-col">
+            <div className="flex flex-col w-full">
                 <Stage
-                    width={600}
-                    height={600}
+                    width={530}
+                    height={530}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
@@ -342,12 +332,11 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                 </Stage>
                 <StoryLine
                     content={userStory[0].content}
-                    textSize="text-xl"
+                    textSize="text-lg"
                     leading="leading-relaxed"
                     padding="p-2.5"
                 />
-                <div className="flex justify-center gap-4 mt-4">
-                    {/* <Link to="/session/overview"> */}
+                <div className="flex justify-center gap-4 mt-3">
                     <WordButton
                         color="bg-light-orange"
                         textColor="text-white"
