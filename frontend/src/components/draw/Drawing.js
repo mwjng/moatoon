@@ -6,10 +6,22 @@ import StoryCard from '../../components/draw/StoryCard.js';
 import { authInstance } from '../../api/axios';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 import MyCamera from '../MyCamera.js';
+import CameraCarousel from './CameraCarousel.js';
 
 const Drawing = forwardRef(
     (
-        { toggleView, cutsInfo, userId, sendReady, isFirstDrawingVisit, setIsFirstDrawingVisit, publisher, nickname, readyStatus },
+        {
+            toggleView,
+            cutsInfo,
+            userId,
+            sendReady,
+            isFirstDrawingVisit,
+            setIsFirstDrawingVisit,
+            publisher,
+            nickname,
+            readyStatus,
+            subscribers,
+        },
         ref,
     ) => {
         // 페이지 진입 시 Drawing 방문 상태 업데이트
@@ -22,6 +34,7 @@ const Drawing = forwardRef(
         const cutIds = cutsInfo.map(item => item.cutId);
         const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
         const userStory = cutsInfo.filter(cut => cut.memberId === userId);
+        const allPublishers = [publisher, ...subscribers];
 
         // SVG 변환 및 다운로드 함수
         const exportToSVGAndUpload = async () => {
@@ -81,10 +94,20 @@ const Drawing = forwardRef(
                         <div className="w-64 mr-8 flex-shrink-0 flex flex-col">
                             <div className="rounded-lg mb-4 flex flex-col space-y-6">
                                 {/* Camera component */}
-                                <div className='ml-8'>
-                                    <MyCamera streamManager={publisher} nickname={nickname} className="self-start" small/>
+                                <div className="ml-8">
+                                    {/* <div className="w-full overflow-x-auto flex space-x-4 p-2 bg-gray-100 rounded-xl">
+                                        {subscribers.map((subscriber, index) => (
+                                            <MyCamera
+                                                key={index}
+                                                streamManager={subscriber}
+                                                nickname={subscriber.nickname}
+                                                small
+                                            />
+                                        ))}
+                                    </div> */}
+                                    <CameraCarousel publishers={allPublishers} />
                                 </div>
-                                
+
                                 {/* Ebook button with increased margin to avoid overlap */}
                                 <div className="mt-4">
                                     <WordButton onClick={viewEbook} color="bg-dark-yellow w-full" size="md">
@@ -109,7 +132,7 @@ const Drawing = forwardRef(
                                 cutId={cutId}
                                 cutIds={cutIds}
                                 userStory={userStory}
-                                readyStatus = {readyStatus}
+                                readyStatus={readyStatus}
                             />
                         </div>
                     </div>
