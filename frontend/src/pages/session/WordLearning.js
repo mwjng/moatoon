@@ -83,8 +83,8 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
                 serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
             />
-            <div className="flex m-8 justify-between h-[600px]">
-                <div className="flex flex-col mt-4 gap-8 content-evenly mx-auto">
+            <div className="flex -mt-2 mx-8 justify-between h-[600px]">
+                <div className="flex flex-col mt-4 gap-2.5 content-evenly mx-auto">
                     <MyCamera streamManager={publisher} nickname={nickname} small />
                     {subscribers.map((subscriber, index) => (
                         <SubscriberVideo key={index} streamManager={subscriber} small />
