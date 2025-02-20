@@ -65,7 +65,7 @@ const SessionContainer = () => {
             fetchSessionInfo();
         }
 
-        return () => leaveSession();
+        return () => leaveSession(sessionData.current.scheduleId);
     }, [pinNumber, navigate]);
 
     useEffect(() => {
