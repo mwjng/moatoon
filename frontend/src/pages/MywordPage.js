@@ -24,17 +24,8 @@ const MyWordPage = () => {
         setShowHint(!showHint);
     };
 
-    const updateWords = () => {
-        if (page < 1) {
-            setPage(1);
-        } else if (page > totalPage) {
-            setPage(totalPage);
-        }
-        getMyWordWithPage();
-    };
-
     useEffect(() => {
-        updateWords();
+        getMyWordWithPage();
     }, [page]);
 
     const handlePrev = () => {
