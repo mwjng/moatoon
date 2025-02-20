@@ -17,6 +17,7 @@ const useOpenViduSession = () => {
         try {
             const payloadBase64 = accessToken.split('.')[1];
             const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
+            console.log('decodedPayload', decodedPayload);
             return decodedPayload.nickname || '게스트';
         } catch (error) {
             console.error('JWT 파싱 에러', error);
