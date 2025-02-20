@@ -8,8 +8,8 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
     const stageRef = useRef();
 
     // 95%로 줄인 캔버스 너비, 높이 (300px → 285px)
-    const fixedWidth = 285;
-    const fixedHeight = 285;
+    const fixedWidth = 265;
+    const fixedHeight = 265;
 
     // WebSocket 데이터가 전달되면 해당 데이터를 lines에 추가
     useEffect(() => {
@@ -21,8 +21,8 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
     // 선 데이터 비율 조정 함수
     const scaleLinePoints = line => {
         // 원본 캔버스 크기 설정 (기본 크기)
-        const originalWidth = 600;
-        const originalHeight = 600;
+        const originalWidth = 530;
+        const originalHeight = 530;
 
         const scaleX = fixedWidth / originalWidth;
         const scaleY = fixedHeight / originalHeight;
@@ -35,7 +35,7 @@ const CanvasAll = ({ cutId, canvasData, nickname, edit, toggleView, content, isR
     };
 
     return (
-        <div className="relative w-[285px] h-[285px] border-2 border-black border-solid bg-white">
+        <div className="relative w-[265px] h-[265px] border-2 border-black border-solid bg-white">
             {nickname && (
                 <button className="absolute left-2 px-2.5 py-0.5 bg-light-orange text-white text-bold rounded-bl-lg rounded-br-lg shadow-md z-5 text-sm">
                     {nickname}
