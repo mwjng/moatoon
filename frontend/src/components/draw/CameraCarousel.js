@@ -22,13 +22,13 @@ function CameraCarousel({ publisher, subscribers, nickname }) {
                 <IoIosArrowBack className="h-6 w-6" />
             </button>
             <div className={`absolute ${isMyCamera ? '' : 'invisible'}`}>
-                <MyCamera streamManager={publisher} nickname={nickname} />
+                <MyCamera streamManager={publisher} nickname={nickname} small />
             </div>
 
             {subscribers.length > 0 &&
                 subscribers.map((subscriber, index) => (
                     <div key={subscriber.id} className={`absolute ${index === currentIndex - 1 ? '' : 'invisible'}`}>
-                        <SubscriberVideo streamManager={subscriber} />
+                        <SubscriberVideo streamManager={subscriber} small />
                     </div>
                 ))}
             <button onClick={nextCamera} className="absolute right-0 bg-gray-300 p-2 rounded-full z-[3]">
