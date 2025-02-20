@@ -241,6 +241,7 @@ const SessionContainer = () => {
                         subscribers={subscribers}
                         nickname={nickname}
                         sendReady={sendReady}
+                        leaveSession={handleLeaveSession}
                     />
                 );
             case 'CUT_ASSIGN':
@@ -255,6 +256,7 @@ const SessionContainer = () => {
                         nickname={nickname}
                         sendReady={sendReady}
                         readyStatusResponse={readyStatusResponse}
+                        leaveSession={handleLeaveSession}
                     />
                 );
             case 'DONE':
@@ -266,6 +268,7 @@ const SessionContainer = () => {
                         publisher={publisher}
                         subscribers={subscribers}
                         nickname={nickname}
+                        leaveSession={handleLeaveSession}
                     />
                 );
             case 'QUIZ':
@@ -274,6 +277,7 @@ const SessionContainer = () => {
                         partyId={sessionData.current.partyId}
                         scheduleId={sessionData.current.scheduleId}
                         onChangeStage={handleQuizTimeout}
+                        leaveSession={handleLeaveSession}
                     />
                 );
             case 'QUIZ_END':

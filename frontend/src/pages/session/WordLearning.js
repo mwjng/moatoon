@@ -10,7 +10,7 @@ import AudioPlayer from '../../components/audio/AudioPlayer';
 
 // 카메라 연결 필요
 // 서버에서 모두 준비됐다는 이벤트 받으면 handleStep
-const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickname, sendReady }) => {
+const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickname, sendReady, leaveSession }) => {
     const [words, setWords] = useState([]);
     const [currentWordIdx, setCurrentWordIdx] = useState(0);
     const bgColors = ['bg-[#FFFFFF]', 'bg-[#FDFCDC]', 'bg-[#FED9B7]', 'bg-[#FFB5A7]'];
@@ -38,6 +38,10 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
         // 사용자가 시간 조작해서 더 빨리 다음 단계를 요청할 경우를 대비해서,
         // 서버에 현재 단계가 맞는지 요청 보내는 api 추가 예정
         // navigate('/session/draw'); //다음 단계의 url로 수정 필요
+    };
+
+    const handleLeaveSession = () => {
+        leaveSession();
     };
 
     const sendReadyRequest = async () => {
@@ -82,6 +86,7 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
                 sessionStartTime={sessionStageData.sessionStartTime}
                 serverTime={sessionStageData.serverTime}
                 onTimeOut={handleTimeOut}
+                leaveSession={handleLeaveSession}
             />
             <div className="flex -mt-2 mx-8 justify-between h-[600px]">
                 <div className="flex flex-col mt-4 gap-2.5 content-evenly mx-auto">

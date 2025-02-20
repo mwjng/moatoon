@@ -9,7 +9,15 @@ import MyCamera from '../../components/MyCamera.js';
 import AudioPlayer from '../../components/audio/AudioPlayer';
 import { useSelector } from 'react-redux';
 
-const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, subscribers, nickname }) => {
+const DrawingEndPage = ({
+    scheduleId,
+    sessionStageData,
+    onTimeout,
+    publisher,
+    subscribers,
+    nickname,
+    leaveSession,
+}) => {
     const [finalCuts, setFinalCuts] = useState([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(true); // 버튼 활성화 상태 관리
 
@@ -42,6 +50,10 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
         }
     };
 
+    const handleLeaveSession = () => {
+        leaveSession();
+    };
+
     const fetchPictures = async () => {
         try {
             const response = await authInstance.get(`/cuts/final/${scheduleId}`);
@@ -61,6 +73,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
                     sessionStartTime={sessionStageData?.sessionStartTime}
                     serverTime={sessionStageData?.serverTime}
                     onTimeOut={onTimeout}
+                    leaveSession={handleLeaveSession}
                 />
             </div>
 
@@ -99,7 +112,7 @@ const DrawingEndPage = ({ scheduleId, sessionStageData, onTimeout, publisher, su
                         </WordButton>
                     </div>
                 </div>
-                
+
                 {/* Character image */}
                 <img src={bbi} className="absolute w-36 bottom-0 right-0 object-contain" alt="bbi character" />
             </div>
