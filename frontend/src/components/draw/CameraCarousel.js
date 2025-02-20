@@ -28,7 +28,7 @@ function CameraCarousel({ publisher, subscribers, nickname }) {
             {subscribers.length > 0 &&
                 subscribers.map((subscriber, index) => (
                     <div key={subscriber.id} className={`absolute ${index === currentIndex - 1 ? '' : 'invisible'}`}>
-                        <SubscriberVideo streamManager={subscriber} />
+                        <SubscriberVideo streamManager={subscriber} small />
                     </div>
                 ))}
             <button onClick={nextCamera} className="absolute right-0 bg-gray-300 p-2 rounded-full z-[3]">
