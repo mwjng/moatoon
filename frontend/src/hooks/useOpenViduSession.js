@@ -7,10 +7,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router';
 
 const useOpenViduSession = () => {
+    const userInfo = useSelector(state => state.user.userInfo);
     const [session, setSession] = useState(null);
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]);
-    const [nickname, setNickname] = useState('게스트');
+    const [nickname, setNickname] = useState(userInfo.nickname);
     const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
 
