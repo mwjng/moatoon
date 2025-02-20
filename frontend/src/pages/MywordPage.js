@@ -33,14 +33,16 @@ const MyWordPage = () => {
         getMyWordWithPage();
     };
 
-    const handlePrev = async () => {
-        setPage(page - 1);
+    useEffect(() => {
         updateWords();
+    }, [page]);
+
+    const handlePrev = () => {
+        setPage(prevPage => Math.max(prevPage - 1, 1));
     };
 
     const handleNext = () => {
-        setPage(page + 1);
-        updateWords();
+        setPage(prevPage => Math.min(prevPage + 1, totalPage));
     };
 
     const handleRemoveMyWord = (wordId, word) => {
