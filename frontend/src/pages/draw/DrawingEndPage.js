@@ -93,7 +93,7 @@ const DrawingEndPage = ({
                             {finalCuts.map(cut => (
                                 <div
                                     key={cut.id}
-                                    className="comic-cut border-solid border-2 border-black p-1 overflow-hidden"
+                                    className="comic-cut border-solid border-2 border-black overflow-hidden"
                                 >
                                     <CutCard item={cut} />
                                 </div>

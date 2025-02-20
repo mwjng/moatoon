@@ -34,6 +34,7 @@ const Drawing = forwardRef(
         const cutIds = cutsInfo.map(item => item.cutId);
         const cutId = cutsInfo.find(item => item.memberId === userId)?.cutId;
         const userStory = cutsInfo.filter(cut => cut.memberId === userId);
+        const allPublishers = [publisher, ...subscribers];
 
         // SVG 변환 및 다운로드 함수
         const exportToSVGAndUpload = async () => {
