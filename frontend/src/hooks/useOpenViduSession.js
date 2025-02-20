@@ -4,6 +4,7 @@ import base64 from 'base-64';
 import utf8 from 'utf8';
 import { getSessionToken } from '../api/room';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const useOpenViduSession = () => {
     const [session, setSession] = useState(null);
@@ -15,10 +16,20 @@ const useOpenViduSession = () => {
         if (!accessToken) return '게스트';
 
         try {
+            console.log('accessToken: ', accessToken);
             const payloadBase64 = accessToken.split('.')[1];
+            console.log('payloadBase64: ', payloadBase64);
+            const base64Decode = base64.decode(payloadBase64);
+            console.log('base64Decode: ', base64Decode);
+            const utf8Decode = utf8.decode(base64Decode);
+            console.log('utf8Decode: ', utf8Decode);
             const decodedPayload = JSON.parse(utf8.decode(base64.decode(payloadBase64)));
             console.log('decodedPayload', decodedPayload);
-            return decodedPayload.nickname || '게스트';
+
+            const decoded = jwtDecode(accessToken);
+            console.log('decoded: ', decoded);
+            console.log('nickname: ', decoded.nickname);
+            return decoded.nickname || '게스트';
         } catch (error) {
             console.error('JWT 파싱 에러', error);
             return '게스트';
