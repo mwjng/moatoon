@@ -117,10 +117,10 @@ const QuizPage = ({ partyId, scheduleId, onChangeStage, leaveSession }) => {
                 onTimeOut={handleTimeOut}
                 leaveSession={handleLeaveSession}
             />
-            <div className="flex grow px-20 justify-between">
+            <div className="flex grow px-20 gap-20">
                 <DndProvider backend={HTML5Backend}>
                     <div
-                        className="flex grow-2 bg-no-repeat bg-center bg-contain relative min-h-screen p-12"
+                        className="flex grow bg-no-repeat bg-center bg-contain relative h-full p-12"
                         style={{ backgroundImage: `url(${quizBook})` }}
                     >
                         <img src={quizTitle} alt="" className="absolute top-10 left-0" />
