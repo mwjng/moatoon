@@ -198,7 +198,6 @@ export default function ChildModify(props) {
             );
 
             const res = await modify(modifyInfo);
-            console.log(res);
             if (res.status === 200) {
                 setModalText('회원정보 수정이 완료되었습니다.');
                 setModalState(true);

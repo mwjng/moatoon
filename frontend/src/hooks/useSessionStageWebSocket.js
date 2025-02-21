@@ -15,13 +15,11 @@ export const useSessionStageWebSocket = scheduleId => {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
             },
             onConnect: () => {
-                console.log('WebSocket Connected');
                 // 세션 스테이지 변경 구독
                 client.subscribe(`/topic/session-stage/${scheduleId}`, message => {
                     const response = JSON.parse(message.body);
 
                     if (response.type === 'SESSION_TRANSFER') {
-                        console.log('SESSION_TRANSFER 메세지 전달받음.');
                         setSessionTransferResponse({
                             currentSessionStage: response.currentSessionStage, // 현재 세션단계
                             nextSessionStage: response.nextSessionStage, // 넘어가야하는 세션단계
@@ -29,14 +27,11 @@ export const useSessionStageWebSocket = scheduleId => {
                             sessionDuration: response.sessionDuration, // 다음 단계 진행 시간
                         });
                     } else if (response.type === 'READY_STATUS') {
-                        console.log('READY_STATUS 메세지 전달받음.');
-                        console.log(response.readyMembers)
                         setReadyStatusResponse(response.readyMembers); // Map<Long, Boolean> readyMembers
                     }
                 });
             },
             onDisconnect: () => {
-                console.log('WebSocket Disconnected');
             },
             onStompError: frame => {
                 console.error('WebSocket Error:', frame);
@@ -55,7 +50,6 @@ export const useSessionStageWebSocket = scheduleId => {
 
     const sendReady = useCallback((readyStatus) => {
         if (stompClient && stompClient.connected) {
-            console.log('useSessionStageWebSocket: 웹소켓에 READY 상태 변경 요청');
             stompClient.publish({
                 destination: '/app/ready',
                 body: JSON.stringify({

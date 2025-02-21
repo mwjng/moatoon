@@ -66,7 +66,6 @@ const DrawingPage = ({
 
         // 컴포넌트가 언마운트 될 때 이벤트 리스너 제거
         return () => {
-            console.log('Drawing 페이지 종료됨');
         };
     }, [dispatch, scheduleId]);
 
@@ -99,9 +98,7 @@ const DrawingPage = ({
 
     const handlePageExit = async () => {
         setIsLoading(true);
-        console.log('handlePageExit');
         if (drawingRef.current) {
-            console.log('exportToSVGAndUpload 함수 호출??');
             await drawingRef.current.exportToSVGAndUpload(); // Drawing의 함수 호출
         }
         setIsLoading(false);
@@ -110,7 +107,6 @@ const DrawingPage = ({
     // 추가된 버튼을 통한 exportToSVGAndUpload 확인
     const handleExportSVG = () => {
         if (drawingRef.current) {
-            console.log('exportToSVGAndUpload 버튼 클릭됨');
             drawingRef.current.exportToSVGAndUpload();
         }
     };

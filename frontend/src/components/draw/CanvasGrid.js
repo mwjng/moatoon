@@ -18,12 +18,10 @@ const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo, readyStatusResponse
         const client = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
-                console.log('WebSocket 연결 성공!');
 
                 // partyId로 구독 시작
                 client.subscribe(`/topic/party/${partyId}`, message => {
                     const data = JSON.parse(message.body);
-                    console.log('메시지 수신:', message.body);
 
                     // 받은 데이터가 각 cutId에 해당하는 canvasData를 포함하는지 확인
                     if (data.cutId) {
@@ -38,7 +36,6 @@ const CanvasGrid = ({ partyId, cutIds, toggleView, cutsInfo, readyStatusResponse
                 });
             },
             onDisconnect: () => {
-                console.log('WebSocket 연결 종료');
             },
             onWebSocketError: error => {
                 console.error('WebSocket 에러:', error);

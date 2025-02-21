@@ -43,9 +43,7 @@ const QuizPage = ({ partyId, scheduleId, onChangeStage, leaveSession }) => {
 
     const handleFail = (quizWordIndex, quizWord) => {
         setFailList(prevFailList => new Set(prevFailList).add(quizWordIndex));
-        console.log('틀린 단어: ', quizWord);
         failWordsForMail.current.add(quizWord);
-        console.log('현재 failWords: ', failWordsForMail.current);
     };
 
     const handleStep = async () => {

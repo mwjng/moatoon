@@ -43,14 +43,12 @@ const SessionContainer = () => {
         const fetchSessionInfo = async () => {
             try {
                 const data = await getSessionInfoByPinNumber(pinNumber);
-                console.log(data);
                 sessionData.current = {
                     scheduleId: data.scheduleId,
                     partyId: data.partyId,
                 };
 
                 const bookCoverData = await getEBookCover(sessionData.current.partyId);
-                console.log('SessionContainer: getEBookCover:', bookCoverData);
                 setBookInfo(bookCoverData);
 
                 await joinSession(sessionData.current.scheduleId);
@@ -61,7 +59,6 @@ const SessionContainer = () => {
         };
 
         if (pinNumber) {
-            console.log(pinNumber);
             fetchSessionInfo();
         }
 
@@ -94,7 +91,6 @@ const SessionContainer = () => {
                     return;
                 }
 
-                console.log('세션 stage 조회 요청 성공(값): ', response.data);
                 setSessionStageData({
                     currentStage: response.data.currentSessionStage,
                     sessionStartTime: new Date(response.data.sessionStageStartTime),
@@ -107,7 +103,6 @@ const SessionContainer = () => {
             navigate('/home');
         } finally {
             setIsLoading(false);
-            console.log('sessionStageData', sessionStageData);
         }
     };
 
@@ -126,7 +121,6 @@ const SessionContainer = () => {
 
     // 타임아웃 처리 함수
     const handleDrawingTimeout = () => {
-        console.log('타임아웃 처리: QUIZ 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
             currentStage: 'QUIZ',
@@ -134,7 +128,6 @@ const SessionContainer = () => {
     };
 
     const handleQuizTimeout = () => {
-        console.log('타임아웃 처리: 퀴즈종료료 스테이지로 전환');
         setSessionStageData(prev => ({
             ...prev,
             currentStage: 'QUIZ_END',
@@ -146,19 +139,12 @@ const SessionContainer = () => {
         navigate('/home');
     };
 
-    // 상태 업데이트를 확인하기 위한 별도의 useEffect
-    // useEffect(() => {
-    //     console.log("세션 stage 업데이트됨: ", sessionStageData);
-    //     renderStage();
-    // }, [sessionStageData]);
-
     const { sendReady, readyStatusResponse, sessionTransferResponse, isConnected } = useSessionStageWebSocket(
         sessionData.current.scheduleId,
     );
 
     // sessionTransferResponse 변경시 stage 업데이트
     useEffect(() => {
-        console.log('세션 변경 감지');
         if (sessionTransferResponse?.nextSessionStage) {
             const sessionStartTime = sessionTransferResponse.sessionStartTime
                 ? new Date(sessionTransferResponse.sessionStartTime)
@@ -214,7 +200,6 @@ const SessionContainer = () => {
     const renderStage = () => {
         // 이전 스테이지와 현재 스테이지가 같으면 렌더링하지 않음
         if (sessionTransferResponse?.currentSessionStage === sessionStageData.currentStage) {
-            console.log('SessionContainer - sessionStageData:', sessionStageData);
             return null;
         }
 
@@ -292,7 +277,6 @@ const SessionContainer = () => {
     // 만약 웹소켓 연결이 끊어졌다면 재연결 시도
     useEffect(() => {
         if (!isConnected) {
-            console.log('웹소켓 연결 끊김. 재연결 시도...');
         }
     }, [isConnected]);
 

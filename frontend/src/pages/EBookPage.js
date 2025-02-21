@@ -23,7 +23,6 @@ const EBookPage = () => {
         authInstance
             .get(`/books/ebook/${partyId}`)
             .then(response => {
-                console.log('Fetched Data:', response.data);
                 setComicData(response.data);
             })
             .catch(error => console.error('Error fetching ebook:', error))

@@ -28,17 +28,6 @@ const ChildBookParticipationSection = () => {
 
     const fixedWidth = 768;
 
-    // const handlePrevPage = () => {
-    //     setCurrentPage(prev => Math.max(0, prev - 1));
-    // };
-
-    // const handleNextPage = () => {
-    //     if (hasMore) {
-    //         setCurrentPage(prev => prev + 1);
-    //     }
-    //     console.log(bookList);
-    // };
-
     // 데이터 로딩 상태 표시
     if (loading) {
         return (

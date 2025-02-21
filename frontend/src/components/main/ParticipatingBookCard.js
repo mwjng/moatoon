@@ -31,7 +31,6 @@ const ParticipatingBookCard = ({ item, onClick }) => {
   };
 
   const handleClick = (e) => {
-    console.log('카드 클릭됨:', item?.id);
     e.stopPropagation(); // 이벤트 버블링 방지
     onClick?.();
   };
@@ -57,7 +56,6 @@ const ParticipatingBookCard = ({ item, onClick }) => {
           alt={item?.bookTitle || '책 이미지'}
           className="w-full h-40 object-cover"
           onError={(e) => {
-            console.log('이미지 로드 실패:', item?.bookCover);
           }}
         />
 

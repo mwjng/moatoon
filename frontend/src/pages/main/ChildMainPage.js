@@ -17,7 +17,6 @@ function ChildMainPage() {
             try {
                 const res = await getTodayAndUpComingSchedule();
                 setScheduleData(res.data);
-                console.log(scheduleData);
             } catch (error) {
                 console.error('Failed to fetch schedule data:', error);
             }

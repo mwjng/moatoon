@@ -5,8 +5,6 @@ import CharacterKADO from '../../assets/kado.png';
 import BookDetail from '../../components/book/BookDetail';
 
 const ScheduleSection = ({ className, scheduleData }) => {
-    console.log('scheduleData:', scheduleData); // Add this line
-
     const { todaySchedule, upcomingSchedules } = scheduleData || {
         todaySchedule: null,
         upcomingSchedules: [],
@@ -18,9 +16,7 @@ const ScheduleSection = ({ className, scheduleData }) => {
     const [modalLoading, setModalLoading] = useState(false);
 
     const handleCardClick = async partyId => {
-        console.log('카드 클릭 시도:', partyId);
         if (!partyId || typeof partyId !== 'number') {
-            console.log('유효하지 않은 partyId:', partyId);
             return;
         }
         try {

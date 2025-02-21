@@ -31,13 +31,6 @@ function Navigation({
     onTenSecondLeft, // 새로 추가된 prop
     onTimeNotification,
 }) {
-    // console.log('Navigation 렌더링:', {
-    //     stage,
-    //     stageDuration,
-    //     sessionStartTime,
-    //     serverTime,
-    //     currentTime: Date.now()
-    // });
 
     const userInfo = useSelector(state => state.user.userInfo);
 
@@ -159,7 +152,6 @@ function Navigation({
 
     useEffect(() => {
         if (stage && sessionStartTime) {
-            console.log(`sessionStartTime: ${sessionStartTime} serverTime: ${serverTime}`);
             let timeoutNotEvented = true;
             let tenSecondNotified = false; // 새로 추가
 

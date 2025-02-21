@@ -17,10 +17,6 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
     const [checkedWords, setCheckedWords] = useState(new Set());
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log('WordLearning - sessionStageData:', sessionStageData);
-    }, []);
-
     const handleCheck = wordId => {
         setCheckedWords(prev => {
             const newSet = new Set(prev);
@@ -64,7 +60,6 @@ const WordLearning = ({ partyId, sessionStageData, publisher, subscribers, nickn
     // 체크된 단어가 4개면 ready 신호 전송
     useEffect(() => {
         if (checkedWords.size === 4) {
-            console.log('FE: 유저 단어학습 완료!');
             sendReadyRequest();
         }
     }, [checkedWords]);

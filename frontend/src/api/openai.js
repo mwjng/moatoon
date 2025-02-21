@@ -22,7 +22,6 @@ export const generateImage = async prompt => {
 
         return response.data.data[0].url; // 생성된 이미지 URL 반환
     } catch (error) {
-        console.log('API_KEY 확인해보자!!:', process.env.REACT_APP_OPENAI_API_KEY); // 환경 변수 값 확인
         console.error('이미지 생성 오류:', error);
         return null;
     }

@@ -56,7 +56,6 @@ const BookForm = ({ onSubmit, selectTimeHandler, closeModal }) => {
         if (!selectedId) return; // 빈 선택인 경우 처리하지 않음
 
         const selectedChild = userChildren.find(child => child.id === selectedId);
-        console.log('Selected child:', selectedChild); // 선택된 아이 확인
 
         if (selectedChild && !selectedChildren.some(child => child.id === selectedChild.id)) {
             setSelectedChildren(prev => [...prev, selectedChild]);

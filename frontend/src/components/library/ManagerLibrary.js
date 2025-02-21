@@ -9,7 +9,6 @@ function ManagerLibraryPage() {
     const userInfo = useSelector(state => state.user.userInfo);
 
     const backgroundColors = ['bg-light-cream-blue', 'bg-white', 'bg-light-blue'];
-    console.log(userInfo);
 
     const [selectedChild, setSelectedChild] = useState(userInfo.childrenList?.[0] || null);
     const [isOpen, setIsOpen] = useState(false);

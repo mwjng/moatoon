@@ -57,7 +57,6 @@ export const sendStoryToBackend = async (storyData, imageUrl) => {
 export const getPartyDetail = async partyId => {
     try {
         const response = await authInstance.get(`/parties/${partyId}`);
-        console.log('상세 조회 : ', response);
         return response.data;
     } catch (error) {
         console.error('파티 상세 정보 가져오기 실패:', error);
@@ -100,7 +99,6 @@ export const getPartyDetailByPin = async pinNumber => {
         const response = await authInstance.get(`/parties/pin`, {
             params: { pinNumber },
         });
-        console.log('방 상세 조회:', response);
         return response.data;
     } catch (error) {
         console.error('파티 상세 정보 가져오기 실패:', error);

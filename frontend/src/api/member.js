@@ -95,7 +95,6 @@ export const uploadImage = async file => {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        console.log(response);
         const img = await response.data;
         return img;
     } catch (error) {
