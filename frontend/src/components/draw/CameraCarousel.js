@@ -18,7 +18,7 @@ function CameraCarousel({ publisher, subscribers, nickname }) {
 
     return (
         <div className="relative flex items-center justify-center">
-            <button onClick={prevCamera} className="absolute left-0 bg-gray-300 p-2 rounded-full z-[3]">
+            <button onClick={prevCamera} className="absolute -left-6 bg-gray-300 p-2 rounded-full z-[3]">
                 <IoIosArrowBack className="h-6 w-6" />
             </button>
             <div className={`absolute ${isMyCamera ? '' : 'invisible'}`}>
@@ -31,7 +31,7 @@ function CameraCarousel({ publisher, subscribers, nickname }) {
                         <SubscriberVideo streamManager={subscriber} small />
                     </div>
                 ))}
-            <button onClick={nextCamera} className="absolute right-0 bg-gray-300 p-2 rounded-full z-[3]">
+            <button onClick={nextCamera} className="absolute -right-6 bg-gray-300 p-2 rounded-full z-[3]">
                 <IoIosArrowForward className="h-6 w-6" />
             </button>
         </div>
