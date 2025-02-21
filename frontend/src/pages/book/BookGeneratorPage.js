@@ -26,14 +26,6 @@ const BookGeneratorPage = () => {
         return dayList.map(day => dayMap[day] || day); // 변환된 리스트 반환
     };
 
-    useEffect(() => {
-        console.log('State changes:', {
-            showStoryGenerator,
-            currentPartyId,
-            showBookDetail,
-        });
-    }, [showStoryGenerator, currentPartyId, showBookDetail]);
-
     const handleFormSubmit = async formData => {
         const payload = {
             startDate: formData.startDate,
@@ -45,7 +37,6 @@ const BookGeneratorPage = () => {
         try {
             await checkCanJoin(payload);
         } catch (err) {
-            console.log(err);
             if (err.response.data.code == 2007) {
                 setModalText('해당 시간 그림책에 참여중인 아동이 있습니다.');
                 setModalState(true);

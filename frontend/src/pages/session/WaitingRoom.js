@@ -25,7 +25,6 @@ function WaitingRoom({
     nickname,
     leaveSession,
 }) {
-    console.log(bookInfo);
     const dispatch = useDispatch();
     const [showNotice, setShowNotice] = useState(false);
 

@@ -36,7 +36,6 @@ const DrawingEndPage = ({
 
         // 10초 후에 버튼 활성화
         const timer = setTimeout(() => {
-            console.log('버튼 활성화');
             setIsButtonDisabled(false);
         }, 10000);
 
@@ -45,7 +44,6 @@ const DrawingEndPage = ({
 
     const handleClick = () => {
         if (typeof onTimeout === 'function') {
-            console.log('마무리 버튼 클릭');
             onTimeout();
         }
     };

@@ -61,7 +61,6 @@ function App() {
                 setLoading(false);
             } catch (error) {
                 console.error('accessToken 만료됨, refreshToken 확인 중...' + error);
-
                 try {
                     const newAccessToken = await refreshAccessToken();
 
@@ -74,7 +73,6 @@ function App() {
                         throw new Error('refreshToken 만료됨');
                     }
                 } catch (err) {
-                    console.log('인증 실패, 로그아웃 처리');
                     localStorage.removeItem('accessToken');
                     dispatch(clearUserInfo());
                     setLoading(false); // 로딩 완료

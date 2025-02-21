@@ -16,7 +16,6 @@ const Overview = ({
 }) => {
     // 페이지 진입 시 Drawing 방문 상태 업데이트
     useEffect(() => {
-        console.log(readyStatusResponse); // {1: false} 멤버아이디: ready값 형식식
         setIsFirstOverviewVisit(false);
     }, []);
 

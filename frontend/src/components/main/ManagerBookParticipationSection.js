@@ -22,18 +22,13 @@ const ManagerBookParticipationSection = ({ childrenList }) => {
         handleNextPage,
     } = useFetchBooks(selectedChild?.id, false, 5);
 
-    console.log(nextPageBookList);
-
-    console.log(currentPage);
     // 방 상세 모달
     const [currentPartyId, setCurrentPartyId] = useState(0);
     const [showBookDetail, setShowBookDetail] = useState(false);
     const [modalLoading, setModalLoading] = useState(false);
 
     const handleCardClick = useCallback(async partyId => {
-        console.log('카드 클릭 시도:', partyId);
         if (!partyId || typeof partyId !== 'number') {
-            console.log('유효하지 않은 partyId:', partyId);
             return;
         }
         try {

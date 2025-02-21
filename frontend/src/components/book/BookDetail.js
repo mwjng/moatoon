@@ -176,7 +176,6 @@ const BookDetail = ({ partyIdOrPin, onClose, setModalLoading, onPartyUpdate }) =
             setAlertMessage('삭제되었습니다.');
             setAlertModalState(true);
         } catch (err) {
-            console.log('삭제 시 에러 이유 ', err);
             setAlertMessage('멤버 삭제 중 오류가 발생했습니다.');
             setAlertModalState(true);
         } finally {

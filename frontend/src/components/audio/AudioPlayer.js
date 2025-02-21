@@ -26,9 +26,7 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
 
   useEffect(() => {
       const handleStorageChange = (e) => {
-          console.log('Storage change event:', e.detail);
           if (e.detail.key === GUIDE_ENABLED_KEY) {
-              console.log('TTS setting changed to:', e.detail.value);
               setGuideOn(JSON.parse(e.detail.value));
           }
       };
@@ -86,7 +84,6 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
         audioState.instance = audioRef.current;
         
         audioRef.current.onended = () => {
-          console.log(`[${new Date().toLocaleTimeString()}] 오디오 재생 완료:`, audioType);
           if (audioState.instance === audioRef.current) {
             URL.revokeObjectURL(url);
             audioState.instance = null;
@@ -106,7 +103,6 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
     
         audioState.isPlaying = true;
         audioState.currentType = audioType;
-        console.log(`[${new Date().toLocaleTimeString()}] 재생 시작:`, audioType);
       } catch (error) {
         console.error(`[${new Date().toLocaleTimeString()}] 오류 발생:`, error);
         await stopCurrentAudio();
@@ -121,7 +117,6 @@ const AudioPlayer = ({ audioType, isOn=true }) => {
     initializeAudio();
 
     return () => {
-      console.log(`[${new Date().toLocaleTimeString()}] 컴포넌트 언마운트 - audioType:`, audioType);
       mountedRef.current = false;
       if (audioRef.current === audioState.instance) {
         stopCurrentAudio();

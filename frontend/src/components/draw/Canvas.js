@@ -26,19 +26,13 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     // 웹소켓 훅 사용
     const handleComplete = async () => {
-        console.log("완료 버튼 클릭! 현재 readyStatus:", readyStatus);
         if (readyStatus) {
             // 이미 완료 상태면 ready 상태를 false로 변경
-            console.log("완료상태에서 미완료상태로 변경 시도");
             sendReady(!readyStatus); // ready 상태 토글
-            console.log("sendReady 함수 호출 완료");
             return;
         }
-        console.log("미완료상태에서 완료상태로 변경 시도");
         await handleExportCanvasData(); // 캔버스 데이터 임시 저장
-        console.log("캔버스 데이터 저장 완료, 완료 신호 전송");
         sendReady(!readyStatus); // 완료 신호 전송
-        console.log("sendReady 함수 호출 완료");
     };
 
     //redis에 cut 초기화 데이터 추가
@@ -55,7 +49,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
                     throw new Error('캔버스 초기화 실패');
                 }
 
-                console.log('캔버스 데이터 초기화 성공');
             } catch (error) {
                 console.error('캔버스 초기화 중 오류 발생:', error);
             }
@@ -70,11 +63,9 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         stompClient.current = new Client({
             webSocketFactory: () => socket,
             onConnect: () => {
-                console.log('WebSocket 연결 성공!');
                 setConnected(true);
             },
             onDisconnect: () => {
-                console.log('WebSocket 연결 종료');
                 setConnected(false);
             },
             onWebSocketError: error => {
@@ -108,7 +99,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
             });
 
             if (response.status === 200) {
-                //console.log('캔버스 임시 저장 성공');
                 return response;
             } else {
                 console.error('캔버스 임시 저장 실패:', response.status);
@@ -257,8 +247,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         if (readyStatus || undoneLines.length === 0) return;
         dispatch(redoLine());
 
-        console.log(undoneLines[undoneLines.length - 1]);
-
         //서버로 REDO 신호 전송
         if (connected && stompClient.current) {
             stompClient.current.publish({
@@ -292,8 +280,6 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
 
     const exportCanvasState = () => {
         const canvasState = JSON.stringify(lines);
-        console.log('내보내는 캔버스 상태:', canvasState);
-
         return canvasState;
     };
 
@@ -308,9 +294,7 @@ const Canvas = ({ sendReady, stageRef, toggleView, partyId, cutId, cutIds, userS
         if (isSaving) return;
         setIsSaving(true);
         try {
-            console.log("전체 보기 버튼 클릭: 캔버스 데이터 저장 시작");
             await handleExportCanvasData(); // 저장 완료될 때까지 기다림
-            console.log("캔버스 데이터 저장 완료, 화면 전환");
             toggleView(); // 저장 후 화면 전환
         } catch (error) {
             console.error('데이터 저장 중 오류 발생:', error);

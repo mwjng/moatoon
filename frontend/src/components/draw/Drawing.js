@@ -66,7 +66,6 @@ const Drawing = forwardRef(
                 const response = await authInstance.patch(`/cuts/save-final/${cutId}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
-                console.log('서버 응답:', response.data);
                 // alert('SVG 파일이 성공적으로 업로드되었습니다!');
             } catch (error) {
                 console.error('업로드 실패:', error);

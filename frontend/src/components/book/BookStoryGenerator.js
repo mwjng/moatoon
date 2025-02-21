@@ -44,25 +44,13 @@ const BookStoryGenerator = ({
                 throw new Error('단어를 가져오는 데 실패했습니다.');
             }
             setWords(data.words); // ✅ 상태 업데이트
-            console.log('초기단어 가지고 온 꼴 : ', data.word);
         } catch (error) {
             console.error('단어 가져오기 실패:', error.message);
         }
     };
 
     useEffect(() => {
-        console.log('무드 in BookStoryGenerator:', mood.keyword);
-        console.log('장르 in BookStoryGenerator:', genre.keyword);
-        console.log('테마   in BookStoryGenerator:', theme.keyword);
-        console.log('난이도   in BookStoryGenerator:', level);
-        console.log('챕터 수  in BookStoryGenerator:', episodeLength);
-        
-    }, [mood, genre, theme]);
-
-    useEffect(() => {
         fetchWords();
-        console.log('단어셋 가져오는데 들어가는 난이도:', difficulty);
-        console.log('단어셋 가져오는데 들어가는 챕터수:', episodeLength);
     }, [difficulty, episodeLength]);
 
     useEffect(() => {
@@ -104,8 +92,6 @@ const BookStoryGenerator = ({
             const wordListWithId = words
                 .map((w, idx) => `words[${idx}] = {"id": ${w.wordId}, "word": "${w.word}"}`)
                 .join('\n');
-
-            console.log('가져온 단어 셋 : ', words);
 
             const prompt = `
     동화책 제목: 생성된 이야기와 어울리는 동화책 제목을 지어줘. 
@@ -189,8 +175,6 @@ const BookStoryGenerator = ({
       *부가설명 말고, json으로 형식만 응답해.*
     `;
 
-            console.log('최종프롬프트 : ', prompt);
-
             // 🔹 OpenAI 요청
             const response = await openai.chat.completions.create({
                 // model: "gpt-3.5-turbo",
@@ -203,13 +187,11 @@ const BookStoryGenerator = ({
             if (!responseText) {
                 throw new Error('OpenAI 응답이 비어 있습니다.');
             }
-            console.log('AI 응답 원본:', responseText);
             responseText = responseText.replace(/```json\n?|\n?```/g, '').trim();
 
             let generatedStory;
             try {
                 generatedStory = JSON.parse(responseText);
-                console.log('JSON 변환 성공:', generatedStory);
             } catch (jsonError) {
                 console.error('JSON 파싱 오류:', jsonError);
                 throw new Error('OpenAI에서 올바른 JSON 응답을 받지 못했습니다.');
@@ -276,7 +258,6 @@ const BookStoryGenerator = ({
             };
 
             const result = await sendStoryToBackend(payload, generatedCover);
-            console.log('스토리 전송 성공', result); //result = partyId
             setPartyId(result);
 
             if (result) {
